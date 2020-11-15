@@ -24,15 +24,19 @@ $ docker-compose up -d --build
 
 ### Dashboard
 
+![dashboard](https://i.imgur.com/4vnCKPo.png)
 
+### View CTF 
 
-### CTF
+![ctf](https://i.imgur.com/3XPxnwB.png)
 
+### Import CTFs from CTFtime
 
+![ctftime](https://i.imgur.com/DFzD5lA.png)
 
 ### Challenge
 
-
+![challenge](https://i.imgur.com/nz2ob76.png)
 
 ## Why
 
