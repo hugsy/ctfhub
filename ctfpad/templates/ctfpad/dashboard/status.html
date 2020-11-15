@@ -1,0 +1,53 @@
+<br>
+
+
+
+<div class="row">
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total-player-registered">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Number of player registered</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title">{{members | length}}</h3>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total-ctf-played">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Number of CTFs played</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title">{{ctfs | length}}</h3>
+			  	</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="current-ctf">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Currently running CTF(s): {{current_ctfs | length}}</h5>
+			  	</div>
+			  	<div class="card-body">
+				  	<ul>
+					  {% for ctf in current_ctfs %}
+						<li>
+							<strong><a href="#">{{ctf.name | upper}}</a></strong>
+							(ends in {{ctf.end_date | timeuntil}})
+						</li>
+					  {% empty %}
+					  <li><h5 class="card-title">No CTF...</h4></li>
+					  {% endfor %}
+				  	</ul>
+			  	</div>
+			</div>
+		</div>
+	</div>
+</div>

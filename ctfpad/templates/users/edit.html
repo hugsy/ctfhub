@@ -1,0 +1,75 @@
+{%  extends 'ctfpad/main.html' %}
+
+{% block content %}
+
+<br/>
+
+{% include 'snippets/messages.html' %}
+
+{{ form.errors }}
+
+<div style="padding-left: 33%;">
+
+    <div class="card" style="width: 35rem;">
+        <div class="card-header">
+            <h5 class="card-title">
+                <p class="card-header-title">Settings for profile '{{member.username}}'</p>
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <form class="form" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+
+                    <label class="label"><strong>Avatar</strong></label>
+                        {{ form.avatar }}
+                    </div>
+
+                    <label class="label"><strong>Description</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-hat-cowboy-side"></i>
+                            </span>
+                        </div>
+                        <textarea id={{form.description.id_for_label}} name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control"></textarea>
+                    </div>
+
+                    <label class="label"><strong>Country</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-pen"></i>
+                            </span>
+                        </div>
+                        {{ form.country }}
+                    </div>
+
+                    <label class="label"><strong>Timezone</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-flag"></i>
+                            </span>
+                        </div>
+                        {{ form.timezone }}
+                    </div>
+                </div>
+
+                <div class="card-footer text-muted">
+                    <div class="control card-footer-item">
+                        <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">Update Settings</button>
+                        <button type="button" class="btn btn-secondary btn-sm btn-block" onclick="window.history.back();">Cancel</button>
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

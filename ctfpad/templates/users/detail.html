@@ -1,0 +1,55 @@
+{%  extends 'ctfpad/main.html' %}
+
+{% block content %}
+
+<br/>
+
+{% include 'snippets/messages.html' %}
+
+<div class="row">
+    <div class="col-md-5">
+        <h5>{{member.username | upper}}</h5>
+		<hr>
+		<div class="card card-body">
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-action">
+                    <img width="75px" height="75px" src="{{member.avatar.url}}" alt="{{member.username|lower}}_avatar" class="rounded-circle">
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Email:</strong>
+                    {{member.email}}
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Description:</strong>
+                    {{member.description}}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+    <h5>Accomplishments</h5>
+		<hr>
+		<div class="card card-body">
+			<table class="table table-sm table-hover">
+				<tr>
+					<th>CTF</th>
+					<th>Challenge</th>
+					<th>Category</th>
+					<th>Points</th>
+					<th></th>
+				</tr>
+
+                <tr>
+                    <td>TODO: CTF</td>
+					<td>TODO: CATEGORY</td>
+					<td>TODO: POINTS</td>
+					<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:ctfs-list'  %}">Jump to CTF</a></td>
+				</tr>
+			</table>
+        </div>
+    </div>
+</div>
+{% endblock %}

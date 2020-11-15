@@ -1,0 +1,166 @@
+{%  extends 'ctfpad/main.html' %}
+
+{% block content %}
+
+<br/>
+
+{% include 'snippets/messages.html' %}
+
+<div class="row">
+    <div class="col-md-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}"><strong>{{challenge.ctf.name | upper}}</strong></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><strong>{{challenge.name | upper}}</strong></li>
+                <li class="breadcrumb-item" aria-current="page"><strong>INFO</strong></li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="col-md-9">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}"><strong>{{challenge.ctf.name | upper}}</strong></a></li>
+                <li class="breadcrumb-item active" aria-current="page"><strong>{{challenge.name | upper}}</strong></li>
+                <li class="breadcrumb-item" aria-current="page"><strong>NOTES</strong></li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+
+		<div class="card card-body">
+			<a class="btn btn-warning btn-sm btn-block" href="{% url 'ctfpad:challenges-edit' challenge.id %}"><strong>Edit Challenge</strong></a>
+            <ul class="list-group">
+                <li class="list-group-item active">
+                    <strong>Info</strong>
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Points:</strong>
+                    {{challenge.points}}
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Category:</strong>
+                    {{challenge.category}}
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Description:</strong>
+                    <code>{{challenge.description}}</code>
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Note Id:</strong>
+                    <code>{{challenge.note_id}}</code>
+                </li>
+            </ul>
+
+            <br>
+
+            <div>
+                <div class="form-group">
+                {% if challenge.status == "solved" %}
+                    <input type="text" class="form-control" style="background-color: lightgreen;" id={{flag_form.flag.id_for_label}} name="{{flag_form.flag.html_name}}" placeholder="{{challenge.ctf.flag_prefix}}" value="{{challenge.flag}}" readonly/>
+                    <small>by <strong>{{challenge.solver}}</strong> at <em>{{challenge.solved_time}}</em></small>
+                {% else %}
+                    <form method="POST" action="{% url 'ctfpad:challenges-score' challenge.id %}">
+                        {% csrf_token %}
+                        <input type="text" class="form-control" style="background-color: lightyellow;" id={{flag_form.flag.id_for_label}} name="{{flag_form.flag.html_name}}" placeholder="{{challenge.ctf.flag_prefix}}" value="" />
+                        <input type="hidden" id="{{flag_form.last_update_by.id_for_label}}" name="{{flag_form.last_update_by.html_name}}" value="{{ request.user.id }}" />
+                        <button type="submit" class="btn btn-primary">Score flag</button>
+                    </form>
+                {% endif %}
+                </div>
+            </div>
+
+            <br>
+
+            <a class="btn btn-info btn-sm" data-toggle="modal" data-target="#QuickAddFileModal"><strong>Add a file</strong></a>
+			<table class="table table-sm table-hover">
+				<tr>
+					<th>File</th>
+					<th>Type</th>
+					<th>Size</th>
+					<th></th>
+					<th></th>
+				</tr>
+
+
+                {% for file in challenge.challengefile_set.all %}
+                <tr>
+                    <td><small>{{file.name}}</small></td>
+					<td><small>{{file.mime}}</small></td>
+					<td><small>{{file.size | filesizeformat}}</small></td>
+
+                    <td>
+                        <a href="{{file.file.url}}">
+                            ⏬
+                        </a>
+                    </td>
+
+                    <td>
+                        <a href="{% url 'ctfpad:challenge-files-delete' challenge.id file.id %}">
+                            ❌
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+
+    <div class="col-md-9">
+        <div class="row">
+
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe
+                class="embed-responsive-item"
+                width="100%"
+                height="500"
+                src="{{ challenge.note_url }}"
+                frameborder="0"
+                >
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="QuickAddFileModal" tabindex="-1" aria-labelledby="QuickAddFileModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	  <div class="modal-content">
+		<div class="modal-header">
+		    <h5 class="modal-title" id="QuickAddFileModalLabel">Upload challenge file</h5>
+		    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+		        <span aria-hidden="true">&times;</span>
+		    </button>
+		</div>
+
+        <form id="QuickAddForm" method="POST" action="{% url 'ctfpad:challenge-files-add' challenge.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fas fa-file-upload"></i></span>
+                        </div>
+                        {{ file_upload_form.file }}
+                    </div>
+                </div>
+                <input type="hidden" id={{file_upload_form.challenge.id_for_label}} name="{{file_upload_form.challenge.html_name }}" value="{{challenge.id}}" />
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="document.getElementById('QuickAddForm').submit();">Upload File</button>
+            </div>
+        </form>
+	</div>
+</div>
+
+{% endblock %}

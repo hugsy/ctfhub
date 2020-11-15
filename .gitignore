@@ -1,0 +1,5 @@
+.vscode
+.ctftools/__pycache__
+.ctfpad/__pycache__
+*.pyc
+*.pyo

@@ -1,0 +1,77 @@
+{%  extends 'ctfpad/main.html' %}
+
+{% block content %}
+
+<br/>
+
+
+{% include 'snippets/messages.html' %}
+
+
+<div class="row">
+
+    <div class="col-md-2"></div>
+
+    <div class="col">
+    {% if object_list %}
+        <table class="table table-sm table-hover">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Best category</th>
+                <th scope="col">Joined since</th>
+                <th scope="col"></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for member in page_obj %}
+            <tr>
+                <th scope="row">{{member.username}}</td>
+                <td>{{member.email}}</td>
+                <td>TODO</td>
+                <td>{{member.creation_time}}</td>
+                <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <nav aria-label="CTF Page navigation">
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="#">{{ page_obj.number }} / {{ paginator.num_pages }} <span class="sr-only">(current)</span></a>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+
+    <div class="col-md-2"></div>
+</div>
+
+{% endblock %}

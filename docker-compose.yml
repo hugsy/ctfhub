@@ -1,0 +1,60 @@
+#
+# Just run
+#
+# $ docker-compose up --build
+#
+
+version: '3'
+services:
+  db:
+    image: postgres:9.6-alpine
+    environment:
+      - POSTGRES_DB=ctfpad
+      - POSTGRES_USER=ctfpad
+      - POSTGRES_PASSWORD=tookahlaiphee2KieTeeg5ooxutang4o
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      backend:
+    restart: always
+    # ports:
+    #   - "5432:5432"
+
+  codimd:
+    image: quay.io/codimd/server:1.6.0
+    environment:
+      - CMD_DB_URL=postgres://ctfpad:tookahlaiphee2KieTeeg5ooxutang4o@db:5432/ctfpad
+    ports:
+      - "3000:3000"
+    networks:
+      backend:
+    restart: always
+    depends_on:
+      - db
+
+  ctfpad:
+    #image: ctfpad:latest
+    container_name: ctfpad
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      - CTFPAD_DB_NAME=ctfpad
+      - CTFPAD_DB_USER=ctfpad
+      - CTFPAD_DB_PASSWORD=tookahlaiphee2KieTeeg5ooxutang4o
+      - CTFPAD_DB_HOST=db
+      - CTFPAD_DB_PORT=5432
+    depends_on:
+      - db
+      - codimd
+    ports:
+      - "1337:8000"
+    networks:
+      backend:
+    restart: always
+
+
+networks:
+  backend:
+
+volumes:
+  db:

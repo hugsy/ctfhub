@@ -1,0 +1,46 @@
+{% load bootstrap_tags %}
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8">
+		{% for message in messages %}
+
+        {% if message.level == 20 %}
+		<div class="alert alert-info alert-dismissible fade show">
+            <strong>INFO</strong>&nbsp;&nbsp;
+            {{message}}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+
+		{% elif message.level == 25%}
+		<div class="alert alert-success alert-dismissible fade show">
+            <strong>SUCCESS</strong>&nbsp;&nbsp;
+            {{message}}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+
+        {% elif message.level == 30 %}
+		<div class="alert alert-warning alert-dismissible fade show">
+            <strong>WARNING</strong>&nbsp;&nbsp;
+            {{message}}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+
+        {% elif message.level == 40 %}
+		<div class="alert alert-danger alert-dismissible fade show">
+            <strong>ERROR</strong>&nbsp;&nbsp;
+            {{message}}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+
+        {% else %}
+		<div class="alert alert-primary alert-dismissible fade show">
+            <strong>{{message.tags|upper}}</strong>&nbsp;&nbsp;
+            {{message}}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+        {% endif %}
+
+        {% endfor %}
+	</div>
+	<div class="col-md-2"></div>
+</div>

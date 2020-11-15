@@ -1,0 +1,81 @@
+{%  extends 'ctfpad/main.html' %}
+
+{% block content %}
+
+<br>
+
+{% include 'snippets/messages.html' %}
+
+{{ form.errors }}
+
+
+<div class="container h-100">
+	<div class="d-flex justify-content-center h-100">
+		<div class="user_card">
+			<div class="d-flex justify-content-center">
+			    <h3 id="form-title">Register a new member</h3>
+			</div>
+			<div class="d-flex justify-content-center form_container">
+				<form method="POST" action="{% url 'ctfpad:users-register' %}">
+					{% csrf_token %}
+					<div class="input-group mb-2">
+						<div class="input-group-append">
+							<span class="input-group-text"><i class="fas fa-user"></i></span>
+						</div>
+						{{form.username}}
+					</div>
+                    <div class="input-group mb-2">
+						<div class="input-group-append">
+							<span class="input-group-text"><i class="fas fa-envelope-square"></i></span>
+						</div>
+						{{form.email}}
+					</div>
+					<div class="input-group mb-2">
+						<div class="input-group-append">
+							<span class="input-group-text"><i class="fas fa-key"></i></span>
+						</div>
+						{{form.password1}}
+					</div>
+					<div class="input-group mb-2">
+						<div class="input-group-append">
+							<span class="input-group-text"><i class="fas fa-key"></i></span>
+						</div>
+						{{form.password2}}
+					</div>
+					<div class="input-group mb-2">
+						<div class="input-group-append">
+							<span class="input-group-text"><i class="fas fa-key"></i></span>
+						</div>
+						{{form.api_key}}
+					</div>
+                    <div class="d-flex justify-content-center mt-3 login_container">
+                        <input class="btn btn-primary" type="submit" value="Create User">
+                      </div>
+				</form>
+			</div>
+			{{ form.errors }}
+			<div class="mt-4">
+				{% if not request.user.is_authenticated %}
+				<div class="d-flex justify-content-center links">
+                    Already have an account? <a class="is-link" href="{% url 'ctfpad:user-login' %}">Log in here</a>
+				</div>
+				<div class="d-flex justify-content-center links">
+					No API key, <a class="is-link" href="{% url 'ctfpad:team-register' %}">create a team first here</a>
+				</div>
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+var form_fields = document.getElementsByTagName('input')
+form_fields[1].placeholder='Username..';
+form_fields[2].placeholder='Email..';
+form_fields[3].placeholder='Enter password...';
+form_fields[4].placeholder='Re-enter Password...';
+
+for (var field in form_fields)
+    form_fields[field].className += ' form-control';
+</script>
+
+{% endblock %}

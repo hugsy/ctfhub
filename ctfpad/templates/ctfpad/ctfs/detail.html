@@ -1,0 +1,122 @@
+{%  extends 'ctfpad/main.html' %}
+
+{% block content %}
+
+{% include 'ctfpad/ctfs/status.html' %}
+
+<br/>
+
+{% include 'snippets/messages.html' %}
+
+<div class="row">
+    <div class="col-md-5">
+        <h5>{{ctf.name | upper}}</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-warning btn-sm btn-block" href="{% url 'ctfpad:ctfs-edit' ctf.id %}"><strong>Edit CTF</strong></a>
+            <ul class="list-group">
+                <li class="list-group-item list-group-item-action">
+                    <strong>Description:</strong>
+                    {{ctf.description}}
+                </li>
+
+                {% if not ctf.is_permanent %}
+                <li class="list-group-item list-group-item-action">
+                    <strong>Start Date:</strong>
+                    {{ctf.start_date}}
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>End Date:</strong>
+                    {{ctf.end_date}}
+                </li>
+                {% endif %}
+
+                {% if ctf.url %}
+                <li class="list-group-item list-group-item-action">
+                    <strong>URL:</strong>
+                    <a href="{{ctf.url}}" target="_blank">{{ctf.url}} <i class="fas fa-external-link-alt"></i></a>
+                </li>
+                {% endif %}
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Flag Prefix:</strong>
+                    <code>{{ctf.flag_prefix}}</code>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+    <h5>Challenges</h5>
+		<hr>
+		<div class="card card-body">
+            <div class="row">
+                <div class="col">
+                    <a class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#QuickAddCategoryModal" href="#"><strong>Add a category</strong></a>
+                </div>
+                <div class="col">
+                    <a class="btn btn-info btn-sm btn-block" href="{% url 'ctfpad:challenges-create' ctf=ctf.id %}"><strong>Add a challenge</strong></a>
+                </div>
+            </div>
+			<table class="table table-sm table-hover">
+				<tr>
+					<th>Name</th>
+					<th>Category</th>
+					<th>Points</th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+
+				{% for challenge in ctf.challenges %}
+                    {% if challenge.status == "solved" %}
+                    <tr class="ctf-completed-challenge-row">
+                    {% else %}
+                    <tr>
+                    {% endif %}
+						<td>{{challenge.name}}</td>
+						<td>{{challenge.category.name}}</td>
+						<td>{{challenge.points}}</td>
+						<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:challenges-detail' challenge.id %}">Goto</a></td>
+						<td><a class="btn btn-sm btn-info" href="{% url 'ctfpad:challenges-edit' challenge.id %}">Update</a></td>
+						<td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:challenges-delete' challenge.id %}">Delete</a></td>
+					</tr>
+				{% endfor %}
+			</table>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="QuickAddCategoryModal" tabindex="-1" aria-labelledby="QuickAddCategoryModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	    <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="QuickAddCategoryModalLabel">Quick Add Category</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'ctfpad:categories-create' %}">
+            {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group mb-3">
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="fas fa-folder-open"></i></span>
+                            </div>
+                            <input name="category_name" class="form-control" type="text" placeholder="Category Name..." required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="this.form.submit();">Add a category</button>
+                    </div>
+                </div>
+            </form>
+	    </div>
+	</div>
+</div>
+
+{% endblock %}
