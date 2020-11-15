@@ -28,7 +28,7 @@ SECRET_KEY = 'ow#8y081ih3nunjqh)u^ug)ln_$xri3-upt^e)7h)&l$05-7tf'
 DEBUG = os.getenv('DEBUG') or True
 
 # SECURITY WARNING: harden for production!
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", os.getenv("CTFPAD_HOSTNAME")]
 
 
 # Application definition

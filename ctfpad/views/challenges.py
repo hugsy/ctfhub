@@ -48,11 +48,11 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return render(request, self.template_name, {'form': form})
 
 
-    def form_valid(self, form):
-        if Challenge.objects.filter(name=form.instance.name).count() > 0:
-            form.errors["name"] = "ChallengeAlreadyExistError"
-            return render(self.request, self.template_name, {'form': form})
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     if Challenge.objects.filter(name=form.instance.name).count() > 0:
+    #         form.errors["name"] = "ChallengeAlreadyExistError"
+    #         return render(self.request, self.template_name, {'form': form})
+    #     return super().form_valid(form)
 
 
     def get_success_url(self):
