@@ -3,6 +3,4 @@ Pillow
 requests
 python-magic
 psycopg2-binary
-plotly>=4.12
-kaleido
 django-model-utils

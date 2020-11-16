@@ -10,7 +10,10 @@
 	<link rel="stylesheet" type="text/css" href="{% static '/css/fontawesome/css/all.min.css' %}" />
 	<link rel="stylesheet" type="text/css" href="{% static '/css/main.css' %}"/>
 
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="{% static '/css/chart.css' %}"/>
+
+	<link rel="stylesheet" type="text/css" href="{% static '/css/podium.css' %} ">
 </head>
 <body>
 	{% if request.user.is_authenticated %}

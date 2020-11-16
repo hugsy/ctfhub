@@ -1,5 +1,5 @@
 .vscode
-.ctftools/__pycache__
-.ctfpad/__pycache__
+**/__pycache__/
 *.pyc
 *.pyo
+debug.log

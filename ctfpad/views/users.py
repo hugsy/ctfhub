@@ -9,41 +9,29 @@ from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import UpdateView, DeleteView, CreateView, ListView, DetailView
+from django.views.generic import (
+    CreateView,
+    UpdateView,
+    DeleteView,
+    ListView,
+    DetailView,
+)
+from django.contrib.auth.views import LoginView, LogoutView
 
 from ctfpad.models import Challenge, ChallengeFile, Member, Team
 from ctfpad.forms import CreateUserForm, UpdateMemberForm
 from ctfpad.decorators import only_if_unauthenticated_user, only_if_authenticated_user
 
 
-@only_if_unauthenticated_user
-def login(request: HttpRequest) -> HttpResponse:
-    """Login user
-
-    Args:
-        request (HttpRequest): [description]
-
-    Returns:
-        HttpResponse: [description]
-    """
-    redirect_to = request.GET.get("redirect_to") or reverse("ctfpad:dashboard")
-
-    if request.method == "POST":
-        username, password = request.POST.get("username"), request.POST.get("password")
-        user = auth.authenticate(request, username=username, password=password)
-        if user is not None:
-            auth.login(request, user)
-            return redirect(redirect_to)
-
-        messages.error(request, "Username or Password is incorrect")
-
-    context = {"redirect_to": redirect_to}
-    return render(request, "users/login.html", context)
+class CtfpadLogin(LoginView):
+    template_name = "users/login.html"
+    redirect_authenticated_user = False
+    redirect_field_name = "redirect_to"
 
 
 @only_if_authenticated_user
 def logout(request: HttpRequest) -> HttpResponse:
-    """Log out from current session
+    """Log out from current session. CBV is not necessary for logging out.
 
     Args:
         request (HttpRequest): [description]

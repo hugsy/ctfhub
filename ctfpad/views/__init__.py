@@ -4,9 +4,6 @@ from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 
-from plotly.offline import plot
-from plotly.graph_objs import Scatter
-
 import datetime
 
 from . import (
@@ -79,13 +76,7 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
         HttpResponse: [description]
     """
     # todo
-    x_data = [0, 1, 2, 3, 5]
-    y_data = [x**2 for x in x_data]
-    plot1 = plot(
-        [Scatter(x=x_data, y=y_data, mode='lines', name='test', opacity=0.8, marker_color='green')],
-        output_type='div',
-        include_plotlyjs=False
-    )
+    plot1 = [0, 1, 2, 3, 5]
 
     # todo
     rank = Member.objects.all()

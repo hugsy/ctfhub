@@ -154,4 +154,4 @@ CODIMD_URL = os.getenv("CODIMD_URL") or 'http://localhost:3000'
 
 CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
 
-
+LOGIN_REDIRECT_URL = "ctfpad:dashboard"

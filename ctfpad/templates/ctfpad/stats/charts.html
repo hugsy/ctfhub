@@ -1,0 +1,94 @@
+
+<div class="row" id="stats">
+	<div class="col-md-4">
+        <div class="wrapper-chart1">
+            <canvas id="chart1" width="33%" height="20%"></canvas>
+            <script>
+new Chart(document.getElementById("chart1"),
+{
+	"type": "bar",
+	"data":
+	{
+		"labels": ["Player1", "Player2", "Player3", "Player4", "Player5", ],
+		"datasets": [
+		{
+			"label": "Most active players*",
+			"data": [10, 11, 4, 7, 9],
+			"fill": false,
+			"backgroundColor": [
+                "rgba(255, 99, 132, 0.2)",
+                "rgba(255, 159, 64, 0.2)",
+                "rgba(255, 205, 86, 0.2)",
+                "rgba(75, 192, 192, 0.2)",
+                "rgba(54, 162, 235, 0.2)",
+            ],
+			"borderColor": [
+                "rgb(255, 99, 132)",
+                "rgb(255, 159, 64)",
+                "rgb(255, 205, 86)",
+                "rgb(75, 192, 192)",
+                "rgb(54, 162, 235)", ],
+			"borderWidth": 1
+		}]
+	},
+	"options":
+	{
+		"scales":
+		{
+			"yAxes": [
+			{
+				"ticks":
+				{
+					"beginAtZero": true
+				}
+			}]
+		}
+	}
+});
+            </script>
+            <small>*: at least one solve in a CTF</small>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+		<div id="wrapper-chart2">
+            <canvas id="chart2" width="33%" height="20%"></canvas>
+            <script>
+new Chart(document.getElementById("chart2"), {
+    "type": "doughnut",
+    "data": {
+        "labels": ["RE", "PWN", "WEB"],
+        "datasets": [{
+            "label": "Most solved categories",
+            "data": [300, 50, 100],
+            "backgroundColor": ["rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"]
+        }]
+    }
+});
+            </script>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+		<div id="wrapper-chart3">
+            <canvas id="chart3" width="33%" height="20%"></canvas>
+            <script>
+new Chart(document.getElementById("chart3"), {
+    "type": "line",
+    "data": {
+        "labels": ["January", "February", "March", "April", "May", "June", "July"],
+        "datasets": [{
+            "label": "Number of CTFs played for the last year",
+            "data": [10, 12, 14, 8, 7, 1, 4],
+            "fill": false,
+            "borderColor": "rgb(75, 192, 192)",
+            "lineTension": 0.1
+        }]
+    },
+    "options": {}
+});
+            </script>
+
+        </div>
+    </div>
+</div>

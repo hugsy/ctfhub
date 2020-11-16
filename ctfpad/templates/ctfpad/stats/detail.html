@@ -2,86 +2,30 @@
 
 {% block content %}
 
-{% load humanize %}
+<br>
+<h2>
+Some stats
+</h2>
 <br>
 
-<div class="row" id="stats">
-	<div class="col-md-4">
-		<h5>Stat1</h5>
-		<hr>
-        {% autoescape off %}
-        {{ plot1 }}
-        {% endautoescape %}
-    </div>
-
-    <div class="col-md-4">
-		<h5>Stat2</h5>
-        <hr>
-        {% autoescape off %}
-        {{ plot2 }}
-        {% endautoescape %}
-    </div>
-
-    <div class="col-md-4">
-		<h5>Stat3</h5>
-        <hr>
-        {% autoescape off %}
-        {{ plot3 }}
-        {% endautoescape %}
-    </div>
+<div style="margin: 20px;">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a href="#charts" class="nav-link active" data-toggle="tab">Charts</a>
+        </li>
+        <li class="nav-item">
+            <a href="#rank" class="nav-link" data-toggle="tab">Ranking</a>
+        </li>
+    </ul>
 </div>
 
-
-<div class="row" id="podium">
-    <div class="col-md-4"></div>
-    <div class="col-md-4">
-        <h5>Podium</h5>
-        <!-- TODO -->
-        <div class="row">
-            <div class="col">
-                <img src="" alt="2nd" class="rounded-circle">
-            </div>
-
-            <div class="col">
-                <img src="" alt="1st" class="rounded-circle">
-            </div>
-
-            <div class="col">
-                <img src="" alt="3rd" class="rounded-circle">
-            </div>
-        </div>
+<div class="tab-content">
+    <div class="tab-pane fade show active" id="charts">
+        {% include 'ctfpad/stats/charts.html' %}
     </div>
-    <div class="col-md-4"></div>
-</div>
-
-
-<div class="row" id="ranking">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
-        <h5>Ranking</h5>
-        <table class="table table-hover">
-            <thead>
-              <tr>
-                <th scope="col">Rank</th>
-                <th scope="col">Member</th>
-                <th scope="col">Points scored</th>
-                <th scope="col">Best category</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for member in ranked_members %}
-                <tr>
-                    <th scope="row">{{ loop.index }}</th>
-                    <td>{{ member.user.username }}</td>
-                    <td>todo</td>
-                    <td>todo</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="tab-pane fade" id="rank">
+        {% include 'ctfpad/stats/rank.html' %}
     </div>
-    <div class="col-md-3"></div>
 </div>
-
 
 {% endblock %}

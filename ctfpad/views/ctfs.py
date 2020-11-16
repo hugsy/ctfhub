@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
@@ -57,9 +58,19 @@ class CtfImportView(CtfCreateView):
     def get(self, request, *args, **kwargs):
         self.initial["name"] = request.GET.get("ctf_name") or ""
         self.initial["url"] = request.GET.get("ctf_url") or ""
-        self.initial["start_date"] = request.GET.get("ctf_start").replace("T", " ")[:19] or ""
         self.initial["end_date"] = request.GET.get("ctf_finish").replace("T", " ")[:19] or ""
         self.initial["description"] = request.GET.get("ctf_description") or ""
+
+        try:
+            self.initial["start_date"] = datetime.strptime(request.GET.get("ctf_start")[:19], "%Y-%m-%dT%H:%M:%S")
+        except:
+            pass
+
+        try:
+            self.initial["end_date"] = datetime.strptime(request.GET.get("ctf_finish")[:19], "%Y-%m-%dT%H:%M:%S")
+        except:
+            pass
+
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {'form': form})
 
@@ -89,5 +100,5 @@ class CtfDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     template_name = "ctfpad/ctfs/confirm_delete.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
-    success_message = "CTF '%(name)s' deleted"
+    success_message = "CTF deleted"
 

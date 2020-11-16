@@ -39,7 +39,7 @@
 				  	<ul>
 					  {% for ctf in current_ctfs %}
 						<li>
-							<strong><a href="#">{{ctf.name | upper}}</a></strong>
+							<strong><a href="{% url 'ctfpad:ctfs-detail' ctf.id %}">{{ctf.name | upper}}</a></strong>
 							(ends in {{ctf.end_date | timeuntil}})
 						</li>
 					  {% empty %}

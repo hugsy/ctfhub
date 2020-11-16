@@ -86,6 +86,10 @@ class Member(TimeStampedModel):
     def email(self):
         return self.user.email
 
+    @property
+    def has_superpowers(self):
+        return self.user.id == 1
+
     def __str__(self):
         return self.username
 

@@ -16,13 +16,13 @@
             Confirm deletion?
         </p>
         <div>
-            <form method="POST" action="{% url 'ctfpad:ctfs-delete' ctfs.id %}">
+            <form method="POST" action="{% url 'ctfpad:ctfs-delete' ctf.id %}">
                 {% csrf_token %}
-                    <div class="modal-footer">
-                        <a type="button" class="btn btn-secondary" href="{% url 'ctfpad:ctfs-detail' ctf.id %}">Cancel</a>
-                        <a type="button" class="btn btn-danger" onclick="this.form.submit();">Confirm</a>
-                    </div>
-                </form>
+                <div class="modal-footer">
+                    <a type="button" class="btn btn-secondary" href="{% url 'ctfpad:ctfs-detail' ctf.id %}">Cancel</a>
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

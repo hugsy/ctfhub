@@ -24,7 +24,7 @@ urlpatterns = [
     path("users/edit/<str:pk>/", views.users.MemberUpdateView.as_view(), name="users-update"),
     path("users/<int:pk>/", views.users.MemberDetailView.as_view(), name="users-detail"), # todo
 
-    path("users/login/", views.users.login, name="user-login"),
+    path("users/login/", views.users.CtfpadLogin.as_view(), name="user-login"),
     path("users/logout/", views.users.logout, name="user-logout"),
 
     # dashboard
