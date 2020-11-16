@@ -108,7 +108,7 @@
                 <th scope="row">{{ctf.title}}</td>
                 <td>{{ctf.start}}</td>
                 <td>{{ctf.finish}}</td>
-                <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:ctfs-create' %}">Import</a></td>
+                <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:ctfs-import' %}?ctf_name={{ctf.title|escape}}&ctf_start={{ctf.start|escape}}&ctf_finish={{ctf.finish|escape}}&ctf_url={{ctf.url|escape}}&ctf_description={{ctf.description|escape}}">Import</a></td>
             </tr>
             {% endfor %}
             </tbody>

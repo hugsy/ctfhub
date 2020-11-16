@@ -11,7 +11,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import UpdateView, DeleteView, CreateView, ListView, DetailView
 
-from ctfpad.models import Member, Team
+from ctfpad.models import Challenge, ChallengeFile, Member, Team
 from ctfpad.forms import CreateUserForm, UpdateMemberForm
 from ctfpad.decorators import only_if_unauthenticated_user, only_if_authenticated_user
 
@@ -143,3 +143,10 @@ class MemberDetailView(LoginRequiredMixin, DetailView):
     template_name = "users/detail.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
+
+    def get_context_data(self, **kwargs):
+        context = super(MemberDetailView, self).get_context_data(**kwargs)
+        context.update(
+            {"solved_challenges": Challenge.objects.filter(solver = self.object.id).order_by("-solved_time")}
+        )
+        return context

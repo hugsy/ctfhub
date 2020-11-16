@@ -6,32 +6,54 @@
 
 {% include 'snippets/messages.html' %}
 
+{% load static %}
+{% load bootstrap_tags %}
+
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-4">
         <h5>{{member.username | upper}}</h5>
 		<hr>
 		<div class="card card-body">
             <ul class="list-group">
-                {% if member.avatar %}
-                <li class="list-group-item list-group-item-action">}
+                <li class="list-group-item list-group-item-action">
+                    {% if member.avatar %}
                     <img width="75px" height="75px" src="{{member.avatar.url}}" alt="{{member.username|lower}}_avatar" class="rounded-circle">
+                    {% else %}
+                    <img width="75px" height="75px" src="{% static 'images/blank-avatar.png' %}" alt="default_avatar" class="rounded-circle">
+                    {% endif %}
                 </li>
-                {% endif %}
 
                 <li class="list-group-item list-group-item-action">
                     <strong>Email:</strong>
-                    {{member.email}}
+                    <a href="mailto:{{member.email}}">{{member.email}}</a>
                 </li>
 
+                {% if member.description %}
                 <li class="list-group-item list-group-item-action">
                     <strong>Description:</strong>
                     {{member.description}}
                 </li>
+                {% endif %}
+
+                {% if member.country %}
+                <li class="list-group-item list-group-item-action">
+                    <strong>Country:</strong>
+                    {{member.country}}
+                </li>
+                {% endif %}
+
+                {% if member.timezone %}
+                <li class="list-group-item list-group-item-action">
+                    <strong>Timezone:</strong>
+                    {{member.timezone}}
+                </li>
+                {% endif %}
+
             </ul>
         </div>
     </div>
 
-    <div class="col-md-7">
+    <div class="col-md-8">
     <h5>Accomplishments</h5>
 		<hr>
 		<div class="card card-body">
@@ -44,13 +66,17 @@
 					<th></th>
 				</tr>
 
+                {% for challenge in solved_challenges %}
                 <tr>
-                    <td>TODO: CTF</td>
-					<td>TODO: CATEGORY</td>
-					<td>TODO: POINTS</td>
-					<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:ctfs-list'  %}">Jump to CTF</a></td>
+                    <td>{{challenge.ctf}}</td>
+                    <td>{{challenge.name}}</td>
+					<td>{{challenge.category}}</td>
+					<td>{{challenge.points}}</td>
+					<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}">Jump to CTF</a></td>
 				</tr>
+                {% endfor %}
 			</table>
+            <!-- TODO: paginate -->
         </div>
     </div>
 </div>

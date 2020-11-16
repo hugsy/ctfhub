@@ -33,6 +33,7 @@ urlpatterns = [
     # ctf
     path("ctfs/", views.ctfs.CtfListView.as_view(), name="ctfs-list"),
     path("ctfs/create/", views.ctfs.CtfCreateView.as_view(), name="ctfs-create"),
+    path("ctfs/import/", views.ctfs.CtfImportView.as_view(), name="ctfs-import"),
     path("ctfs/<uuid:pk>/", views.ctfs.CtfDetailView.as_view(), name="ctfs-detail"),
     path("ctfs/<uuid:pk>/edit/", views.ctfs.CtfUpdateView.as_view(), name="ctfs-edit"),
     path("ctfs/<uuid:pk>/delete/", views.ctfs.CtfDeleteView.as_view(), name="ctfs-delete"),

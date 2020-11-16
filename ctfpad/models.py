@@ -89,6 +89,10 @@ class Member(TimeStampedModel):
     def __str__(self):
         return self.username
 
+    @property
+    def best_category(self):
+        return "TODO"
+
 
 def user_update_last_login(sender, user, request, **kwargs):
     """[summary]

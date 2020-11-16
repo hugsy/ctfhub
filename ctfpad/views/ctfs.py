@@ -53,6 +53,17 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.pk})
 
 
+class CtfImportView(CtfCreateView):
+    def get(self, request, *args, **kwargs):
+        self.initial["name"] = request.GET.get("ctf_name") or ""
+        self.initial["url"] = request.GET.get("ctf_url") or ""
+        self.initial["start_date"] = request.GET.get("ctf_start").replace("T", " ")[:19] or ""
+        self.initial["end_date"] = request.GET.get("ctf_finish").replace("T", " ")[:19] or ""
+        self.initial["description"] = request.GET.get("ctf_description") or ""
+        form = self.form_class(initial=self.initial)
+        return render(request, self.template_name, {'form': form})
+
+
 class CtfDetailView(LoginRequiredMixin, DetailView):
     model = Ctf
     template_name = "ctfpad/ctfs/detail.html"

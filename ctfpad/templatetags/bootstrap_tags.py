@@ -11,3 +11,5 @@ register = template.Library()
 @register.filter
 def as_bootstrap_alert(msg):
     return msg
+
+
