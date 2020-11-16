@@ -26,7 +26,7 @@ $ docker-compose up -d --build
 
 ![dashboard](https://i.imgur.com/4vnCKPo.png)
 
-### View CTF 
+### View CTF
 
 ![ctf](https://i.imgur.com/3XPxnwB.png)
 
