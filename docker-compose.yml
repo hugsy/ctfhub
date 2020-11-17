@@ -31,6 +31,8 @@ services:
     environment:
       - CMD_DB_URL=postgres://ctfpad:tookahlaiphee2KieTeeg5ooxutang4o@db:5432/ctfpad
       - CMD_COOKIE_POLICY=none
+      - CMD_ALLOW_ANONYMOUS=false
+      - CMD_ALLOW_FREEURL=true
     ports:
       - "3000:3000"
     networks:
