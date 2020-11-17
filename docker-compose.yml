@@ -20,10 +20,17 @@ services:
     # ports:
     #   - "5432:5432"
 
-  codimd:
-    image: quay.io/codimd/server:1.6.0
+  hedgedoc:
+    #image: quay.io/codimd/server:1.6.0
+    build:
+      context: externals/hedgedoc-container
+      dockerfile: alpine/Dockerfile
+      args:
+        - "VERSION=master"
+        - "CODIMD_REPOSITORY=https://github.com/hedgedoc/hedgedoc.git"
     environment:
       - CMD_DB_URL=postgres://ctfpad:tookahlaiphee2KieTeeg5ooxutang4o@db:5432/ctfpad
+      - CMD_COOKIE_POLICY=none
     ports:
       - "3000:3000"
     networks:
@@ -45,7 +52,7 @@ services:
       - CTFPAD_DB_PORT=5432
     depends_on:
       - db
-      - codimd
+      - hedgedoc
     ports:
       - "1337:8000"
     networks:
