@@ -20,6 +20,18 @@
                     {{ctf.description}}
                 </li>
 
+                {% if ctf.team_login %}
+                <li class="list-group-item list-group-item-action">
+                    <strong>Team Login:</strong>
+                    <code>{{ctf.team_login}}</code>
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Team Password:</strong>
+                    <code>{{ctf.team_password}}</code>
+                </li>
+                {% endif %}
+
                 {% if not ctf.is_permanent %}
                 <li class="list-group-item list-group-item-action">
                     <strong>Start Date:</strong>
@@ -39,10 +51,12 @@
                 </li>
                 {% endif %}
 
+                {% if ctf.flag_prefix %}
                 <li class="list-group-item list-group-item-action">
                     <strong>Flag Prefix:</strong>
                     <code>{{ctf.flag_prefix}}</code>
                 </li>
+                {% endif %}
             </ul>
         </div>
     </div>
