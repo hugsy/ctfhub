@@ -19,10 +19,9 @@ from ctftools.settings import (
     CODIMD_URL,
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT,
-    USERS_FILE_ROOT,
     USERS_FILE_PATH,
 )
-
+from ctfpad.validators import challenge_file_max_size_validator
 from ctfpad.helpers import create_new_note, get_file_magic, get_file_mime
 
 
@@ -240,7 +239,7 @@ class ChallengeFile(TimeStampedModel):
     CTF file model, for a file associated with a challenge
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    file = models.FileField(null=True, upload_to=CTF_CHALLENGE_FILE_PATH) # todo : add size validator
+    file = models.FileField(null=True, upload_to=CTF_CHALLENGE_FILE_PATH, validators=[challenge_file_max_size_validator,])
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
     mime = models.CharField(max_length=128)
     type = models.CharField(max_length=512)
