@@ -126,6 +126,8 @@ class Ctf(TimeStampedModel):
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
     flag_prefix = models.CharField(max_length=64, blank=True)
+    team_login = models.CharField(max_length=128, blank=True)
+    team_password = models.CharField(max_length=128, blank=True)
 
     def __str__(self) -> str:
         return self.name

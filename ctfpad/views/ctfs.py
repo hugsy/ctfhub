@@ -35,6 +35,8 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         "start_date": "",
         "end_date": "",
         "flag_prefix": "",
+        "team_login": "",
+        "team_password": "",
     }
     success_message = "CTF '%(name)s' created"
 
