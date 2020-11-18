@@ -1,6 +1,7 @@
 import pathlib
 import magic
 import requests
+from uuid import uuid4
 
 from ctftools.settings import (
     CODIMD_URL,
@@ -9,20 +10,12 @@ from ctftools.settings import (
 
 
 def create_new_note() -> str:
-    """"Connects to CodiMD to create a new note, and returns its ID
+    """"Returns a unique note ID so that the note will be automatically created when accessed for the first time
 
     Returns:
         str: the string ID of the new note
     """
-    s = requests.Session()
-    res = s.get(f"{CODIMD_URL}/new", allow_redirects=False)
-    if res.status_code != requests.codes.found:
-        raise RuntimeError(f"CodiMD service returned HTTP code {res.status_code} (expected {requests.codes.found}): {res.reason}")
-    location = res.headers["location"]
-    res = s.get(f"{CODIMD_URL}{location}")
-    if res.status_code != requests.codes.ok:
-        raise RuntimeError(f"CodiMD service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
-    return  location
+    return f"/{uuid4()}"
 
 
 def check_note_id(id: str) -> bool:
