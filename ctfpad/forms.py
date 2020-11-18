@@ -5,7 +5,7 @@ from django import forms
 
 from ctfpad.models import Challenge, ChallengeFile, Ctf, Member, Team
 
-class CreateUpdateTeamForm(forms.ModelForm):
+class TeamCreateUpdateForm(forms.ModelForm):
     class Meta:
         model = Team
         fields = [
@@ -51,7 +51,7 @@ class MemberUpdateForm(forms.ModelForm):
         ]
 
 
-class CreateUpdateCtfForm(forms.ModelForm):
+class CtfCreateUpdateForm(forms.ModelForm):
     class Meta:
         model = Ctf
         fields = [

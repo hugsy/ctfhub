@@ -1,7 +1,7 @@
 from django.views.generic import UpdateView, DeleteView, CreateView
 from django.contrib import messages
 from ctfpad.models import Team
-from ctfpad.forms import CreateUpdateTeamForm
+from ctfpad.forms import TeamCreateUpdateForm
 from django.shortcuts import redirect
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 class TeamCreateView(SuccessMessageMixin, CreateView):
     model = Team
     template_name = "team/create.html"
-    form_class = CreateUpdateTeamForm
+    form_class = TeamCreateUpdateForm
     success_url = reverse_lazy("ctfpad:users-register")
     success_message = "FOO"
 
@@ -33,7 +33,7 @@ class TeamUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy('ctfpad:dashboard')
     template_name = "team/update.html"
     login_url = "/users/login/"
-    form_class = CreateUpdateTeamForm
+    form_class = TeamCreateUpdateForm
     redirect_field_name = "redirect_to"
     success_message = "Team successfully edited"
 

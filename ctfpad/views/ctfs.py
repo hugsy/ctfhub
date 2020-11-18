@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView, UpdateView, DeleteView, C
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from ctfpad.forms import CreateUpdateCtfForm
+from ctfpad.forms import CtfCreateUpdateForm
 from ctfpad.models import Ctf
 from ctfpad.helpers import ctftime_fetch_next_ctf_data
 
@@ -27,7 +27,7 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     template_name = "ctfpad/ctfs/create.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
-    form_class = CreateUpdateCtfForm
+    form_class = CtfCreateUpdateForm
     initial = {
         "name": "",
         "url": "",
@@ -86,7 +86,7 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
 
 class CtfUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Ctf
-    form_class = CreateUpdateCtfForm
+    form_class = CtfCreateUpdateForm
     template_name = "ctfpad/ctfs/create.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"

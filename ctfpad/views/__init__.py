@@ -1,4 +1,4 @@
-from ctfpad.forms import CreateUpdateCtfForm
+from ctfpad.forms import CtfCreateUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
 from ctftools.settings import HEDGEDOC_URL
 from django.http.request import HttpRequest
@@ -55,7 +55,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         start_date__lte = now,
         end_date__gt = now,
     )
-    quick_add_form = CreateUpdateCtfForm()
+    quick_add_form = CtfCreateUpdateForm()
     context = {
         "user": user,
         "members": members,

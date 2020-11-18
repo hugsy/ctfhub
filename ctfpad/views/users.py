@@ -98,10 +98,11 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     redirect_field_name = "redirect_to"
     success_message = "Member successfully updated"
     form_class = MemberUpdateForm
+    initial_context = {"country" : ""}
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if self.object.pk != request.user.id:
+        if not request.user.member.has_superpowers and self.object.pk != request.user.id:
             raise Http404()
         return super().get(request, *args, **kwargs)
 
