@@ -6,6 +6,7 @@
 
 {% include 'snippets/messages.html' %}
 
+{% if request.user.member.hedgedoc_password %}
 <script>
     fetch("{{hedgedoc_url}}/login", {
       method: 'POST',
@@ -16,7 +17,7 @@
       body: "email={{request.user.member.hedgedoc_username}}&password={{request.user.member.hedgedoc_password}}"
     });
 </script>
-
+{% endif %}
 
 <div class="row">
     <div class="col-md-3">

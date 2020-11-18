@@ -9,17 +9,17 @@ from ctftools.settings import (
 )
 
 
-def create_new_hedgedoc_user(username, password):
+def register_new_hedgedoc_user(username, password):
     """ create the hedgedoc user
     """
     res = requests.post(
         f'{HEDGEDOC_URL}/register',
         data={'email': username, 'password': password},
-        # allow_redirects = False
+        allow_redirects = False
     )
 
-    if res.status_code != requests.codes.ok:
-        raise ValueError
+    if res.status_code != requests.codes.found:
+        return False
 
     return True
 

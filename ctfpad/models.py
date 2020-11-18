@@ -16,20 +16,21 @@ from model_utils import Choices, FieldTracker
 
 
 from ctftools.settings import (
+    HEDGEDOC_URL,
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT,
     USERS_FILE_PATH,
 )
 from ctfpad.validators import challenge_file_max_size_validator
-from ctfpad.helpers import create_new_hedgedoc_user, create_new_note, get_file_magic, get_file_mime
+from ctfpad.helpers import register_new_hedgedoc_user, create_new_note, get_file_magic, get_file_mime
 
 
 # Create your models here.
 
 class TimeStampedModel(models.Model):
     """
-    An abstract base class model that provides self-
-    updating ``created`` and ``modified`` fields.
+    An abstract base class model that provides self-updating
+    ``created`` and ``modified`` fields.
     """
     creation_time = models.DateTimeField(auto_now_add=True)
     last_modification_time = models.DateTimeField(auto_now=True)
@@ -105,8 +106,10 @@ class Member(TimeStampedModel):
     def save(self):
         if not self.hedgedoc_password:
             # create the hedgedoc user
-            self.hedgedoc_password = hashlib.sha256( get_random_string(64) )
-            create_new_hedgedoc_user(self.hedgedoc_username, self.hedgedoc_password)
+            self.hedgedoc_password = get_random_string(64)
+            if not register_new_hedgedoc_user(self.hedgedoc_username, self.hedgedoc_password):
+                # password empty == anonymous mode under HedgeMd
+                self.hedgedoc_password = ""
 
         super(Member, self).save()
         return

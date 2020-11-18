@@ -30,6 +30,7 @@ class MemberCreateForm(forms.ModelForm):
             "last_ip",
             "last_active_notification",
             "last_logged_in",
+            "hedgedoc_password",
         ]
 
     username = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
