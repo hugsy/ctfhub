@@ -1,3 +1,0 @@
-[submodule "externals/hedgedoc-container"]
-	path = externals/hedgedoc-container
-	url = git://github.com/hedgedoc/container.git
