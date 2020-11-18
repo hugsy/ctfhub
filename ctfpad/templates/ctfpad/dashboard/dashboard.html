@@ -10,6 +10,16 @@
 
 {% include 'snippets/messages.html' %}
 
+<script>
+fetch("{{CODIMD_URL}}/login", {
+  method: 'POST',
+  mode: 'no-cors',
+  cache: 'no-cache',
+  credentials: 'include',
+  headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+  body: "email={{request.user}}%40localhost.localdomain&password=hedgedoc"});
+</script>
+
 <div aria-live="polite" aria-atomic="true" style="position: relative; min-height: 200px;">
 	<div style="position: absolute; top: 0; right: 0;">
 	  <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">

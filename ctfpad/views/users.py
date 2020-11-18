@@ -1,4 +1,5 @@
 import datetime
+import requests
 
 from django.contrib import auth, messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -21,7 +22,7 @@ from django.contrib.auth.views import LoginView, LogoutView
 from ctfpad.models import Challenge, ChallengeFile, Member, Team
 from ctfpad.forms import CreateUserForm, UpdateMemberForm
 from ctfpad.decorators import only_if_unauthenticated_user, only_if_authenticated_user
-
+from ctftools.settings import CODIMD_URL
 
 class CtfpadLogin(LoginView):
     template_name = "users/login.html"
@@ -68,6 +69,17 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         if users.count() > 0:
             form.errors["name"] = "UsernameAlreadyExistError"
             messages.error(self.request, "Username already exists, try logging in instead")
+            return redirect("ctfpad:home")
+
+        # create the hedgedoc user
+        email = form.cleaned_data["username"] + '@localhost.localdomain'
+        res = requests.post(f'{CODIMD_URL}/register',
+            data={'email': email, 'password': 'hedgedoc'},
+            allow_redirects = False)
+
+        if res.status_code != requests.codes.found:
+            form.errors["name"] = "FailedToCreateHedgedocUser"
+            messages.error(self.request, "Failed to create Hedgedoc user")
             return redirect("ctfpad:home")
 
         # create the django user
