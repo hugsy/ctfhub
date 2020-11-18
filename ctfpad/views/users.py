@@ -21,8 +21,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 from ctfpad.models import Challenge, ChallengeFile, Member, Team
 from ctfpad.forms import CreateUserForm, UpdateMemberForm
-from ctfpad.decorators import only_if_unauthenticated_user, only_if_authenticated_user
-from ctftools.settings import CODIMD_URL
+from ctfpad.decorators import only_if_authenticated_user
+from ctftools.settings import HEDGEDOC_URL
 
 class CtfpadLogin(LoginView):
     template_name = "users/login.html"
@@ -73,7 +73,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
 
         # create the hedgedoc user
         email = form.cleaned_data["username"] + '@localhost.localdomain'
-        res = requests.post(f'{CODIMD_URL}/register',
+        res = requests.post(f'{HEDGEDOC_URL}/register',
             data={'email': email, 'password': 'hedgedoc'},
             allow_redirects = False)
 

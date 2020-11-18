@@ -150,7 +150,7 @@ USERS_FILE_URL  = "/uploads/media/"
 USERS_FILE_PATH = "media/"
 USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
-CODIMD_URL = os.getenv("CODIMD_URL") or 'http://localhost:3000'
+HEDGEDOC_URL = os.getenv("HEDGEDOC_URL") or 'http://localhost:3000'
 
 CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
 

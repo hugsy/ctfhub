@@ -4,7 +4,7 @@ import requests
 from uuid import uuid4
 
 from ctftools.settings import (
-    CODIMD_URL,
+    HEDGEDOC_URL,
     CTFTIME_API_EVENTS_URL,
 )
 
@@ -27,7 +27,7 @@ def check_note_id(id: str) -> bool:
     Returns:
         bool: returns True if it exists
     """
-    res = requests.head( f"{CODIMD_URL}/{id}" )
+    res = requests.head( f"{HEDGEDOC_URL}/{id}" )
     return res.status_code == requests.codes.found
 
 

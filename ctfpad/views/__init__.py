@@ -1,6 +1,6 @@
 from ctfpad.forms import CreateUpdateCtfForm
 from ctfpad.decorators import only_if_authenticated_user
-from ctftools.settings import CODIMD_URL
+from ctftools.settings import HEDGEDOC_URL
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
@@ -46,7 +46,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    members = Member.objects.all().order_by("-last_logged_in")
+    members = Member.objects.all()
     ctfs = Ctf.objects.all().order_by("-last_modification_time")
     user = Member.objects.filter(user__username=request.user).first()
     now = datetime.datetime.now()
@@ -62,7 +62,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         "ctfs": ctfs,
         "current_ctfs": current_ctfs,
         "quick_add_form": quick_add_form,
-        "CODIMD_URL": CODIMD_URL,
+        "hedgedoc_url": HEDGEDOC_URL,
     }
     return render(request, "ctfpad/dashboard/dashboard.html", context)
 

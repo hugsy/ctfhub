@@ -5,7 +5,7 @@ ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV DEBUG 1
 ENV CTFPAD_HOSTNAME localhost
-ENV CODIMD_URL http://hedgedoc:3000
+ENV HEDGEDOC_URL http://hedgedoc:3000
 RUN mkdir /code
 WORKDIR /code
 COPY requirements.txt .
@@ -23,5 +23,4 @@ RUN \
 COPY . .
 RUN chmod +x /code/docker-entrypoint.sh
 
-# CMD ["python3", "manage.py", "runserver"]
 ENTRYPOINT ["/code/docker-entrypoint.sh"]

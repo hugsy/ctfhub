@@ -16,7 +16,7 @@ from model_utils import Choices, FieldTracker
 
 
 from ctftools.settings import (
-    CODIMD_URL,
+    HEDGEDOC_URL,
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT,
     USERS_FILE_PATH,
@@ -72,7 +72,6 @@ class Member(TimeStampedModel):
     country = StatusField(choices_name='COUNTRIES')
     timezone = StatusField(choices_name='TIMEZONES')
     last_scored = models.DateTimeField(null=True)
-    last_ip = models.GenericIPAddressField(null=True)
     show_pending_notifications = models.BooleanField(default=False)
     last_active_notification = models.DateTimeField(null=True)
 
@@ -98,23 +97,6 @@ class Member(TimeStampedModel):
     @property
     def last_logged_in(self):
         return self.user.last_login
-
-
-def user_update_last_login(sender, user, request, **kwargs):
-    """[summary]
-
-    Args:
-        sender ([type]): [description]
-        user ([type]): [description]
-        request ([type]): [description]
-    """
-    member = Member.objects.filter(user_id = user.id).first()
-    member.last_logged_in = datetime.now()
-    member.last_ip = request.META.get("REMOTE_ADDR")
-    member.save()
-    return
-
-user_logged_in.connect(user_update_last_login)
 
 
 class Ctf(TimeStampedModel):
@@ -221,7 +203,7 @@ class Challenge(TimeStampedModel):
     @property
     def note_url(self) -> str:
         note_id = self.note_id or "/"
-        return f"{CODIMD_URL}{note_id}"
+        return f"{HEDGEDOC_URL}{note_id}"
 
     def save(self):
         if not self.note_id:

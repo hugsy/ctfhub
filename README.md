@@ -45,6 +45,6 @@ I was fed up of not finding a tool to my liking to manage CTFs for teams playing
  - [CTFPad](https://github.com/StratumAuhuur/CTFPad): nice project but NodeJS, so yeah. Also  [`etherpad-lite`](https://yopad.eu) doesn't support MarkDown easily. I like the name, so I took it shamelessly
  - [rizzoma](http://rizzoma.com/): a horrible outdated collaborative platform, poorly suited for CTFs.
 
-I discovered [HedgeDoc](https://demo.hedgedoc.org/features?both) (aka. old CodiMD), an awesome platform, 100% Markdown, easily integrable. This project is just an eye-candy around using CodiMD as a central platform when doing a challenge collaboratively.
+I discovered [HedgeDoc](https://demo.hedgedoc.org/features?both) (aka. old CodiMD), an awesome platform, 100% Markdown, easily integrable. This project is just an eye-candy around using HedgeDoc as a central platform when doing a challenge collaboratively.
 
 It's a toy project, so there's a lot of TODOs, features will be added (slowly).
