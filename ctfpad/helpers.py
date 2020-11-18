@@ -9,6 +9,21 @@ from ctftools.settings import (
 )
 
 
+def create_new_hedgedoc_user(username, password):
+    """ create the hedgedoc user
+    """
+    res = requests.post(
+        f'{HEDGEDOC_URL}/register',
+        data={'email': username, 'password': password},
+        # allow_redirects = False
+    )
+
+    if res.status_code != requests.codes.ok:
+        raise ValueError
+
+    return True
+
+
 def create_new_note() -> str:
     """"Returns a unique note ID so that the note will be automatically created when accessed for the first time
 

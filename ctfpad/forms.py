@@ -17,7 +17,8 @@ class CreateUpdateTeamForm(forms.ModelForm):
             "blog_url",
         ]
 
-class CreateUserForm(forms.ModelForm):
+
+class MemberCreateForm(forms.ModelForm):
     class Meta:
         model = Member
         exclude = [
@@ -38,19 +39,7 @@ class CreateUserForm(forms.ModelForm):
     api_key = forms.CharField(required = True, label = "api_key", widget=forms.TextInput(attrs={'placeholder': 'Team API key'}))
 
 
-class UpdateUserForm(UserChangeForm):
-    class Meta:
-        model = User
-        fields = [
-            "username",
-            "email",
-            "password",
-        ]
-
-    current_password = forms.CharField(required=True, help_text="Current password required for any change")
-
-
-class UpdateMemberForm(forms.ModelForm):
+class MemberUpdateForm(forms.ModelForm):
     class Meta:
         model = Member
         fields = [

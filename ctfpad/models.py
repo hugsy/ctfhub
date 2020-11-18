@@ -6,23 +6,22 @@ from pathlib import Path
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.functional import cached_property
 from django.db.models import Sum
 from django.utils.crypto import get_random_string
 from django.contrib.auth.signals import user_logged_in
+
 
 from model_utils.fields import MonitorField, StatusField
 from model_utils import Choices, FieldTracker
 
 
 from ctftools.settings import (
-    HEDGEDOC_URL,
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT,
     USERS_FILE_PATH,
 )
 from ctfpad.validators import challenge_file_max_size_validator
-from ctfpad.helpers import create_new_note, get_file_magic, get_file_mime
+from ctfpad.helpers import create_new_hedgedoc_user, create_new_note, get_file_magic, get_file_mime
 
 
 # Create your models here.
@@ -74,6 +73,7 @@ class Member(TimeStampedModel):
     last_scored = models.DateTimeField(null=True)
     show_pending_notifications = models.BooleanField(default=False)
     last_active_notification = models.DateTimeField(null=True)
+    hedgedoc_password = models.CharField(max_length=64, null=True)
 
     @property
     def username(self):
@@ -97,6 +97,19 @@ class Member(TimeStampedModel):
     @property
     def last_logged_in(self):
         return self.user.last_login
+
+    @property
+    def hedgedoc_username(self):
+        return f"{self.username}@ctfpad"
+
+    def save(self):
+        if not self.hedgedoc_password:
+            # create the hedgedoc user
+            self.hedgedoc_password = hashlib.sha256( get_random_string(64) )
+            create_new_hedgedoc_user(self.hedgedoc_username, self.hedgedoc_password)
+
+        super(Member, self).save()
+        return
 
 
 class Ctf(TimeStampedModel):

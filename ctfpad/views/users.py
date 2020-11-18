@@ -1,11 +1,9 @@
-import datetime
 import requests
 
 from django.contrib import auth, messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
-from django.db.models.functions import datetime
 from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse
 from django.shortcuts import redirect, render
@@ -17,10 +15,10 @@ from django.views.generic import (
     ListView,
     DetailView,
 )
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth.views import LoginView
 
 from ctfpad.models import Challenge, ChallengeFile, Member, Team
-from ctfpad.forms import CreateUserForm, UpdateMemberForm
+from ctfpad.forms import MemberCreateForm, MemberUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
 from ctftools.settings import HEDGEDOC_URL
 
@@ -47,7 +45,7 @@ def logout(request: HttpRequest) -> HttpResponse:
 class MemberCreateView(SuccessMessageMixin, CreateView):
     model = Member
     template_name = "users/register.html"
-    form_class = CreateUserForm
+    form_class = MemberCreateForm
     success_message = "Member '%(username)s' successfully created"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
@@ -69,17 +67,6 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         if users.count() > 0:
             form.errors["name"] = "UsernameAlreadyExistError"
             messages.error(self.request, "Username already exists, try logging in instead")
-            return redirect("ctfpad:home")
-
-        # create the hedgedoc user
-        email = form.cleaned_data["username"] + '@localhost.localdomain'
-        res = requests.post(f'{HEDGEDOC_URL}/register',
-            data={'email': email, 'password': 'hedgedoc'},
-            allow_redirects = False)
-
-        if res.status_code != requests.codes.found:
-            form.errors["name"] = "FailedToCreateHedgedocUser"
-            messages.error(self.request, "Failed to create Hedgedoc user")
             return redirect("ctfpad:home")
 
         # create the django user
@@ -110,7 +97,7 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
     success_message = "Member successfully updated"
-    form_class = UpdateMemberForm
+    form_class = MemberUpdateForm
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
