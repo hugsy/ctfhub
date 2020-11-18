@@ -75,7 +75,6 @@ class Member(TimeStampedModel):
     last_ip = models.GenericIPAddressField(null=True)
     show_pending_notifications = models.BooleanField(default=False)
     last_active_notification = models.DateTimeField(null=True)
-    last_logged_in = models.DateTimeField(null=True)
 
     @property
     def username(self):
@@ -87,7 +86,7 @@ class Member(TimeStampedModel):
 
     @property
     def has_superpowers(self):
-        return self.user.id == 1
+        return self.user.id == 1 # todo: when perm added, use self.user.is_superuser
 
     def __str__(self):
         return self.username
@@ -95,6 +94,10 @@ class Member(TimeStampedModel):
     @property
     def best_category(self):
         return "TODO"
+
+    @property
+    def last_logged_in(self):
+        return self.user.last_login
 
 
 def user_update_last_login(sender, user, request, **kwargs):

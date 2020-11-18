@@ -67,7 +67,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
 
 @only_if_authenticated_user
 def generate_stats(request: HttpRequest) -> HttpResponse:
-    """Generate the graph objects for plot.ly from our statistics
+    """Generate some statistics of the CTFPad
 
     Args:
         request (HttpRequest): [description]
@@ -85,7 +85,6 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
         "plot1": plot1,
         "plot2": plot1,
         "plot3": plot1,
-
         "ranked_members": rank,
     }
     return render(request, "ctfpad/stats/detail.html", context)
