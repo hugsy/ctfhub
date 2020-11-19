@@ -9,8 +9,16 @@ from ctftools.settings import (
 )
 
 
-def register_new_hedgedoc_user(username, password):
-    """ create the hedgedoc user
+def register_new_hedgedoc_user(username: str, password: str) -> bool:
+    """Register the member in hedgedoc. If fail, the member will be
+    seen as anonymous.
+
+    Args:
+        username (str): member HedgeDoc username
+        password (str): member HedgeDoc password
+
+    Returns:
+        bool: if the register action succeeded, returns True; False in any other cases
     """
     res = requests.post(
         f'{HEDGEDOC_URL}/register',

@@ -4,12 +4,11 @@ import hashlib
 from datetime import datetime
 from pathlib import Path
 
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models import Sum
 from django.utils.crypto import get_random_string
-from django.contrib.auth.signals import user_logged_in
-
+from django.utils.functional import cached_property
 
 from model_utils.fields import MonitorField, StatusField
 from model_utils import Choices, FieldTracker
@@ -92,9 +91,30 @@ class Member(TimeStampedModel):
     def __str__(self):
         return self.username
 
+
+    @cached_property
+    def best_category(self) -> str:
+        best_categories_by_point = Challenge.objects.filter(
+            solver = self,
+        ).values("category").annotate(
+            dcount=Sum("points")
+        ).order_by(
+            "-points"
+        )
+        print(best_categories_by_point)
+        if best_categories_by_point.count() == 0:
+            return ""
+        best_category_id = best_categories_by_point.first()["category"]
+        return ChallengeCategory.objects.get(pk=best_category_id)
+
+
     @property
-    def best_category(self):
-        return "TODO"
+    def total_points_scored(self):
+        challenges = Challenge.objects.filter(
+            solver = self,
+        )
+        return challenges.aggregate(Sum("points"))["points__sum"] or 0
+
 
     @property
     def last_logged_in(self):

@@ -41,6 +41,7 @@
 <hr>
 <br>
 
+{% load humanize %}
 <div class="row" id="ranking">
     <div class="col-md-3"></div>
     <div class="col-md-6">
@@ -57,10 +58,10 @@
             <tbody>
                 {% for member in ranked_members %}
                 <tr>
-                    <th scope="row">{{ loop0.index }}</th>
+                    <th scope="row">{{ forloop.counter | ordinal }}</th>
                     <td>{{ member.username }}</td>
-                    <td>todo</td>
-                    <td>todo</td>
+                    <td>{{ member.total_points_scored }}</td>
+                    <td>{{ member.best_category | upper }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

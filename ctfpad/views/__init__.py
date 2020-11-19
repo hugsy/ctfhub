@@ -1,3 +1,4 @@
+from django.urls.base import reverse
 from ctfpad.forms import CtfCreateUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
 from ctftools.settings import HEDGEDOC_URL
@@ -85,8 +86,11 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     # todo
     plot1 = [0, 1, 2, 3, 5]
 
-    # todo
-    rank = Member.objects.all()
+    rank = sorted(
+        Member.objects.all(),
+        key=lambda x: x.total_points_scored,
+        reverse=True
+    )
 
     context = {
         "plot1": plot1,
