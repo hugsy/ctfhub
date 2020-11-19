@@ -53,7 +53,7 @@ urlpatterns = [
     path("challenges/<uuid:challenge_id>/files/<uuid:pk>/delete/", views.files.ChallengeFileDeleteView.as_view(), name="challenge-files-delete"),
 
     # categories
-    path("categories/create/", views.categories.create, name="categories-create"),
+    path("categories/create/", views.categories.CategoryCreateView.as_view(), name="categories-create"),
 
     # stats
     path("stats/", views.generate_stats, name="stats-detail"),

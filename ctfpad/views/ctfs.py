@@ -5,7 +5,7 @@ from django.views.generic import ListView, DetailView, UpdateView, DeleteView, C
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from ctfpad.forms import CtfCreateUpdateForm
+from ctfpad.forms import CategoryCreateForm, CtfCreateUpdateForm
 from ctfpad.models import Ctf
 from ctfpad.helpers import ctftime_fetch_next_ctf_data
 
@@ -83,6 +83,9 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
     template_name = "ctfpad/ctfs/detail.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
+    extra_context = {
+        "add_category_form": CategoryCreateForm(),
+    }
 
 
 class CtfUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

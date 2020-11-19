@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 from django import forms
 
-from ctfpad.models import Challenge, ChallengeFile, Ctf, Member, Team
+from ctfpad.models import Challenge, ChallengeCategory, ChallengeFile, Ctf, Member, Team
 
 class TeamCreateUpdateForm(forms.ModelForm):
     class Meta:
@@ -117,4 +117,12 @@ class ChallengeFileCreateForm(forms.ModelForm):
         fields = [
             "file",
             "challenge",
+        ]
+
+
+class CategoryCreateForm(forms.ModelForm):
+    class Meta:
+        model = ChallengeCategory
+        fields = [
+            "name",
         ]
