@@ -11,6 +11,7 @@ from ctfpad.forms import (
     ChallengeFileCreateForm,
 )
 from ctfpad.models import Challenge, Ctf
+from ctftools.settings import HEDGEDOC_URL
 
 
 
@@ -67,6 +68,7 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
     extra_context = {
         "flag_form": ChallengeSetFlagForm(),
         "file_upload_form": ChallengeFileCreateForm(),
+        "hedgedoc_url": HEDGEDOC_URL,
     }
 
     # def get_context_data(self, **kwargs):
