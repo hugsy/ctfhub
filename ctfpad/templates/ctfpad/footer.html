@@ -13,21 +13,38 @@
 
       <div class="col-lg-9 h-100 text-center text-lg-right my-auto">
         <ul class="list-inline mb-0">
+          {% if request.user.member.team.blog_url %}
           <li class="list-inline-item mr-3">
-            <a href="#">
+            <a href="{{request.user.member.team.blog_url}}" target="_blank">
               <i class="fas fa-blog fa-2x fa-fw"></i>
             </a>
           </li>
+          {% endif %}
+
+          {% if request.user.member.team.twitter_url %}
           <li class="list-inline-item mr-3">
-            <a href="#">
+            <a href="{{request.user.member.team.twitter_url}}" target="_blank">
               <i class="fab fa-twitter fa-2x fa-fw"></i>
             </a>
           </li>
+          {% endif %}
+
+          {% if request.user.member.team.github_url %}
           <li class="list-inline-item mr-3">
-            <a href="#">
-              <i class="fas fa-envelope fa-2x fa-fw"></i>
+            <a href="{{request.user.member.team.github_url}}" target="_blank">
+              <i class="fab fa-github fa-2x fa-fw"></i>
             </a>
           </li>
+          {% endif %}
+
+          {% if request.user.member.team.youtube_url %}
+          <li class="list-inline-item mr-3">
+            <a href="{{request.user.member.team.youtube_url}}" target="_blank">
+              <i class="fab fa-youtube fa-2x fa-fw"></i>
+            </a>
+          </li>
+          {% endif %}
+
         </ul>
       </div>
     </div>
