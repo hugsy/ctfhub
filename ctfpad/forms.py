@@ -17,6 +17,7 @@ class TeamCreateUpdateForm(forms.ModelForm):
             "blog_url",
             "avatar",
             "api_key",
+            "ctftime_id",
         ]
 
 
@@ -33,6 +34,7 @@ class MemberCreateForm(forms.ModelForm):
             "last_active_notification",
             "last_logged_in",
             "hedgedoc_password",
+            "joined_time",
         ]
 
     username = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
@@ -50,6 +52,7 @@ class MemberUpdateForm(forms.ModelForm):
             "description",
             "country",
             "timezone",
+            "joined_time",
         ]
 
 
@@ -65,6 +68,7 @@ class CtfCreateUpdateForm(forms.ModelForm):
             "flag_prefix",
             "team_login",
             "team_password",
+            "ctftime_id",
         ]
 
 

@@ -8,6 +8,8 @@
 
 {% include 'snippets/messages.html' %}
 
+{% load humanize %}
+
 <div class="row">
     <div class="col-md-5">
         <h5>{{ctf.name | upper}}</h5>
@@ -15,6 +17,9 @@
 		<div class="card card-body">
 			<a class="btn btn-warning btn-sm btn-block" href="{% url 'ctfpad:ctfs-edit' ctf.id %}"><strong>Edit CTF</strong></a>
             <ul class="list-group">
+                <li class="list-group-item list-group-item-action" style="text-align: center;">
+                    <img width="75px" height="75px" src="{{ctf.ctftime_logo_url}}" alt="{{ctf.name|lower}} avatar" class="rounded-circle">
+                </li>
                 <li class="list-group-item list-group-item-action">
                     <strong>Description:</strong>
                     {{ctf.description}}
@@ -57,6 +62,14 @@
                     <code>{{ctf.flag_prefix}}</code>
                 </li>
                 {% endif %}
+
+                {% if ctf.ctftime_id %}
+                <li class="list-group-item list-group-item-action">
+                    View on <strong>
+                        <a href="{{ctf.ctftime_url}}" target="_blank">CTFTime<i class="fas fa-external-link-alt"></i></a>
+                    </strong>
+                </li>
+                {% endif %}
             </ul>
         </div>
     </div>
@@ -75,9 +88,10 @@
             </div>
 			<table class="table table-sm table-hover">
 				<tr>
+					<th></th>
 					<th>Name</th>
-					<th>Category</th>
 					<th>Points</th>
+					<th>Last Modified</th>
 					<th></th>
 					<th></th>
 					<th></th>
@@ -89,11 +103,14 @@
                     {% else %}
                     <tr>
                     {% endif %}
-						<td>{{challenge.name}}</td>
-						<td>{{challenge.category.name}}</td>
+						<td>
+                            <span class="badge badge-pill badge-primary">{{challenge.category.name}}</span>
+                        </td>
+                        <td>{{challenge.name}}</td>
 						<td>{{challenge.points}}</td>
+                        <td>{{challenge.last_modification_time|naturaltime}}</td>
 						<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:challenges-detail' challenge.id %}">Goto</a></td>
-						<td><a class="btn btn-sm btn-info" href="{% url 'ctfpad:challenges-edit' challenge.id %}">Update</a></td>
+						<td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:challenges-edit' challenge.id %}">Update</a></td>
 						<td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:challenges-delete' challenge.id %}">Delete</a></td>
 					</tr>
 				{% endfor %}

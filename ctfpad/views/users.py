@@ -53,6 +53,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         # validate team presence
         teams = Team.objects.all()
         if teams.count() == 0:
+            messages.error(self.request, "A team must be registered first!")
             return redirect("ctfpad:team-register")
 
         # validate api_key

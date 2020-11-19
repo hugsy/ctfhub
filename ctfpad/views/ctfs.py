@@ -62,6 +62,7 @@ class CtfImportView(CtfCreateView):
         self.initial["url"] = request.GET.get("ctf_url") or ""
         self.initial["end_date"] = request.GET.get("ctf_finish").replace("T", " ")[:19] or ""
         self.initial["description"] = request.GET.get("ctf_description") or ""
+        self.initial["ctftime_id"] = request.GET.get("ctf_ctftime_id") or ""
 
         try:
             self.initial["start_date"] = datetime.strptime(request.GET.get("ctf_start")[:19], "%Y-%m-%dT%H:%M:%S")

@@ -1,11 +1,15 @@
 import pathlib
 import magic
 import requests
+import os
+
 from uuid import uuid4
 
 from ctftools.settings import (
+    CTPAD_ACCEPTED_IMAGE_EXTENSIONS,
     HEDGEDOC_URL,
     CTFTIME_API_EVENTS_URL,
+    CTFPAD_DEFAULT_CTF_LOGO, STATIC_URL,
 )
 
 
@@ -97,3 +101,45 @@ def ctftime_fetch_next_ctf_data() -> list:
     except Exception:
         result = []
     return result
+
+
+
+def ctftime_get_ctf_info(ctftime_id: int) -> dict:
+    """Retrieve all the information for a specific CTF from CTFTime.
+
+    Args:
+        ctftime_id (int): [description]
+
+    Returns:
+        str: [description]
+    """
+    if ctftime_id == 0:
+        return []
+    try:
+        url = f"{CTFTIME_API_EVENTS_URL}{ctftime_id}/"
+        res = requests.get(url, headers={"user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"})
+        if res.status_code != requests.codes.ok:
+            raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
+        result = res.json()
+    except Exception:
+        result = []
+    return result
+
+
+
+def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
+    """[summary]
+
+    Args:
+        ctftime_id (int): [description]
+
+    Returns:
+        str: [description]
+    """
+    default_logo = f"{STATIC_URL}/images/{CTFPAD_DEFAULT_CTF_LOGO}"
+    ctf_info = ctftime_get_ctf_info(ctftime_id)
+    logo = ctf_info.setdefault("logo", default_logo)
+    _, ext = os.path.splitext(logo)
+    if ext.lower() not in CTPAD_ACCEPTED_IMAGE_EXTENSIONS:
+        return default_logo
+    return logo

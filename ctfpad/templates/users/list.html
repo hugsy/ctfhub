@@ -18,9 +18,8 @@
             <thead>
             <tr>
                 <th scope="col">Name</th>
-                <th scope="col">Email</th>
                 <th scope="col">Best category</th>
-                <th scope="col">Joined since</th>
+                <th scope="col">Member Since</th>
                 <th scope="col"></th>
                 {% if request.user.member.has_superpowers %}
                 <th scope="col"></th>
@@ -30,10 +29,13 @@
             <tbody>
             {% for member in page_obj %}
             <tr>
-                <th scope="row">{{member.username}}</td>
-                <td>{{member.email}}</td>
+                <th scope="row">
+                    <a href="mailto:{{member.email}}">
+                        {{member.username}}
+                    </a>
+                </td>
                 <td>{{member.best_category}}</td>
-                <td>{{member.creation_time}}</td>
+                <td>{{member.joined_time | date:'Y'}}</td>
                 <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
                 {% if request.user.member.has_superpowers %}
                 <td>

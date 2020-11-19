@@ -55,6 +55,16 @@
                         </div>
                         {{ form.timezone }}
                     </div>
+
+                    <label class="label"><strong>Member Since</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar-week"></i>
+                            </span>
+                        </div>
+                        <input type="date" id={{form.joined_time.id_for_label}} name="{{form.joined_time.html_name }}" placeholder="{{form.joined_time.label}}" value="{{form.joined_time.value}}" class="form-control">
+                    </div>
                 </div>
 
                 <div class="card-footer text-muted">

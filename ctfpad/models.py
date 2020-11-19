@@ -19,9 +19,16 @@ from ctftools.settings import (
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT,
     USERS_FILE_PATH,
+    CTFTIME_URL,
 )
 from ctfpad.validators import challenge_file_max_size_validator
-from ctfpad.helpers import register_new_hedgedoc_user, create_new_note, get_file_magic, get_file_mime
+from ctfpad.helpers import (
+    register_new_hedgedoc_user,
+    create_new_note,
+    get_file_magic,
+    get_file_mime,
+    ctftime_get_ctf_logo_url,
+)
 
 
 # Create your models here.
@@ -50,12 +57,21 @@ class Team(TimeStampedModel):
     blog_url = models.URLField(blank=True)
     api_key = models.CharField(max_length=128, blank=True)
     avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
+    ctftime_id = models.IntegerField(default=0, blank=True, null=True)
+
+    def __str__(self) -> str:
+        return self.name
 
     def save(self):
         if not self.api_key:
             self.api_key = get_random_string(128)
         super(Team, self).save()
         return
+
+    @property
+    def ctftime_url(self) -> str:
+        return f"{CTFTIME_URL}/team/{self.ctftime_id}"
+
 
 
 class Member(TimeStampedModel):
@@ -74,6 +90,7 @@ class Member(TimeStampedModel):
     last_scored = models.DateTimeField(null=True)
     show_pending_notifications = models.BooleanField(default=False)
     last_active_notification = models.DateTimeField(null=True)
+    joined_time = models.DateTimeField(null=True)
     hedgedoc_password = models.CharField(max_length=64, null=True)
 
     @property
@@ -148,6 +165,7 @@ class Ctf(TimeStampedModel):
     flag_prefix = models.CharField(max_length=64, blank=True)
     team_login = models.CharField(max_length=128, blank=True)
     team_password = models.CharField(max_length=128, blank=True)
+    ctftime_id = models.IntegerField(default=0, blank=True, null=True)
 
     def __str__(self) -> str:
         return self.name
@@ -196,6 +214,14 @@ class Ctf(TimeStampedModel):
     def is_running(self):
         now = datetime.now()
         return self.start_date <= now < self.end_date
+
+    @cached_property
+    def ctftime_url(self):
+        return f"{CTFTIME_URL}/event/{self.ctftime_id}"
+
+    @cached_property
+    def ctftime_logo_url(self):
+        return ctftime_get_ctf_logo_url(self.ctftime_id)
 
 
 
@@ -286,18 +312,8 @@ class ChallengeFile(TimeStampedModel):
             if not self.type: self.type = get_file_magic(p)
             if not self.hash: self.hash = hashlib.sha256( open(abs_path, "rb").read() ).hexdigest()
             super(ChallengeFile, self).save()
-
         return
 
-
-
-class ChallengeWriteup(TimeStampedModel):
-    """
-    CTF challenge write-up model
-    """
-    url = models.CharField(max_length=2048)
-    added_by = models.ForeignKey(Member, on_delete=models.PROTECT)
-    challenge = models.ForeignKey(Challenge, on_delete=models.PROTECT)
 
 
 class Notification(TimeStampedModel):

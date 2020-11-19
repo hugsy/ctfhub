@@ -74,8 +74,8 @@
 						<td>{% if ctf.is_permanent %}✔{% else %}❌{% endif %}</td>
 						<td>{% if ctf.is_permanent %}✔{% elif ctf.is_running %}✔{% else %}❌{% endif %}</td>
 						<td>{% if ctf.duration == 0 %}♾{% else %}{{ ctf.duration | naturaltime}}{% endif %}</td>
-						<td><a class="btn btn-sm btn-info" href="{% url 'ctfpad:ctfs-detail' ctf.id %}">View</a></td>
-						<td><a class="btn btn-sm btn-info" href="{% url 'ctfpad:ctfs-edit' ctf.id %}">Update</a></td>
+						<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:ctfs-detail' ctf.id %}">View</a></td>
+						<td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:ctfs-edit' ctf.id %}">Update</a></td>
 						<td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:ctfs-delete' ctf.id %}">Delete</a></td>
 					</tr>
 				{% endfor %}

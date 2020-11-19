@@ -121,6 +121,16 @@
                         </button>
                     </div>
 
+                    <label class="label"><strong>CTFTime Id</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-random"></i>
+                            </span>
+                        </div>
+                        <input id="{{form.ctftime_id.id_for_label}}" name="{{form.ctftime_id.html_name }}" placeholder="{{form.ctftime_id.label}}"  class="form-control" type="text" value="{{form.ctftime_id.value}}" >
+                    </div>
+
                 </div>
 
                 <div class="card-footer text-muted">
@@ -133,9 +143,7 @@
                         <button type="button" class="btn btn-secondary btn-sm btn-block" onclick="window.history.back();">Cancel</button>
                     </div>
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>
