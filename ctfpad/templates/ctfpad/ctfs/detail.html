@@ -22,7 +22,7 @@
                 </li>
                 <li class="list-group-item list-group-item-action">
                     <strong>Description:</strong>
-                    {{ctf.description}}
+                    {{ctf.description|safe}}
                 </li>
 
                 {% if ctf.team_login %}

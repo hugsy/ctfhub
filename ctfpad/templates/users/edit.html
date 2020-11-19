@@ -63,7 +63,7 @@
                                 <i class="fas fa-calendar-week"></i>
                             </span>
                         </div>
-                        <input type="date" id={{form.joined_time.id_for_label}} name="{{form.joined_time.html_name }}" placeholder="{{form.joined_time.label}}" value="{{form.joined_time.value}}" class="form-control">
+                        <input type="date" id={{form.joined_time.id_for_label}} name="{{form.joined_time.html_name }}" placeholder="{{form.joined_time.label}}" value="{{form.joined_time.value|date:'Y-m-d'}}" class="form-control">
                     </div>
                 </div>
 

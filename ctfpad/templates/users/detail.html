@@ -15,7 +15,7 @@
 		<hr>
 		<div class="card card-body">
             <ul class="list-group">
-                <li class="list-group-item list-group-item-action">
+                <li class="list-group-item list-group-item-action" style="text-align: center;">
                     {% if member.avatar %}
                     <img width="75px" height="75px" src="{{member.avatar.url}}" alt="{{member.username|lower}}_avatar" class="rounded-circle">
                     {% else %}
@@ -31,7 +31,7 @@
                 {% if member.description %}
                 <li class="list-group-item list-group-item-action">
                     <strong>Description:</strong>
-                    {{member.description}}
+                    {{member.description|safe}}
                 </li>
                 {% endif %}
 
@@ -46,6 +46,13 @@
                 <li class="list-group-item list-group-item-action">
                     <strong>Timezone:</strong>
                     {{member.timezone}}
+                </li>
+                {% endif %}
+
+                {% if member.joined_time %}
+                <li class="list-group-item list-group-item-action">
+                    <strong>Member Since:</strong>
+                    {{member.joined_time|date:'F Y'}}
                 </li>
                 {% endif %}
 
