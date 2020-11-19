@@ -1,7 +1,6 @@
 from django.urls.base import reverse
 from ctfpad.forms import CtfCreateUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
-from ctftools.settings import HEDGEDOC_URL
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
@@ -68,7 +67,6 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         "current_ctfs": current_ctfs,
         "next_ctf": next_ctf,
         "quick_add_form": quick_add_form,
-        "hedgedoc_url": HEDGEDOC_URL,
     }
     return render(request, "ctfpad/dashboard/dashboard.html", context)
 

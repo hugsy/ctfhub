@@ -121,7 +121,7 @@ class Member(TimeStampedModel):
 
     @property
     def hedgedoc_username(self):
-        return f"{self.username}@ctfpad"
+        return f"{self.username}@ctfpad.localdomain"
 
     def save(self):
         if not self.hedgedoc_password:
