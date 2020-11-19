@@ -18,7 +18,7 @@ from . import (
 )
 
 from ..models import (
-    Ctf, Team,
+    Ctf, CtfStats, Team,
     Member,
 )
 
@@ -83,9 +83,10 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    # todo
-    plot1 = [0, 1, 2, 3, 5]
+    # stats
+    stats = CtfStats()
 
+    # ranking
     rank = sorted(
         Member.objects.all(),
         key=lambda x: x.total_points_scored,
@@ -93,9 +94,9 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     )
 
     context = {
-        "plot1": plot1,
-        "plot2": plot1,
-        "plot3": plot1,
+        "player_ctf_count": stats.players_activity(),
+        "most_solved": stats.solved_categories(),
+        "last_year_stats": stats.last_year_stats(),
         "ranked_members": rank,
     }
     return render(request, "ctfpad/stats/detail.html", context)

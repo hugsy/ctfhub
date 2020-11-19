@@ -1,3 +1,21 @@
+<script>
+function get_random_int(max)
+{
+  return Math.floor(Math.random() * Math.floor(max));
+}
+
+function generate_random_rgba()
+{
+    return `rgba(${get_random_int(256)}, ${get_random_int(256)}, ${get_random_int(256)}, 0.2)`;
+}
+
+function generate_random_rgb()
+{
+    return `rgb(${get_random_int(256)}, ${get_random_int(256)}, ${get_random_int(256)})`;
+}
+
+</script>
+
 
 <div class="row" id="stats">
 	<div class="col-md-4">
@@ -9,26 +27,22 @@ new Chart(document.getElementById("chart1"),
 	"type": "bar",
 	"data":
 	{
-		"labels": ["Player1", "Player2", "Player3", "Player4", "Player5", ],
+		"labels": [
+        {% for player in player_ctf_count %}
+            "{{player}}",
+        {% endfor %}
+        ],
 		"datasets": [
 		{
 			"label": "Most active players*",
-			"data": [10, 11, 4, 7, 9],
-			"fill": false,
-			"backgroundColor": [
-                "rgba(255, 99, 132, 0.2)",
-                "rgba(255, 159, 64, 0.2)",
-                "rgba(255, 205, 86, 0.2)",
-                "rgba(75, 192, 192, 0.2)",
-                "rgba(54, 162, 235, 0.2)",
+			"data": [
+            {% for player, count in player_ctf_count.items %}
+            {{count}},
+            {% endfor %}
             ],
-			"borderColor": [
-                "rgb(255, 99, 132)",
-                "rgb(255, 159, 64)",
-                "rgb(255, 205, 86)",
-                "rgb(75, 192, 192)",
-                "rgb(54, 162, 235)", ],
-			"borderWidth": 1
+			"fill": false,
+			"borderWidth": 1,
+            "backgroundColor": [ {% for i in player_ctf_count %}generate_random_rgba(), {% endfor %}]
 		}]
 	},
 	"options":
@@ -50,6 +64,8 @@ new Chart(document.getElementById("chart1"),
         </div>
     </div>
 
+
+
     <div class="col-md-4">
 		<div id="wrapper-chart2">
             <canvas id="chart2" width="33%" height="20%"></canvas>
@@ -57,17 +73,27 @@ new Chart(document.getElementById("chart1"),
 new Chart(document.getElementById("chart2"), {
     "type": "doughnut",
     "data": {
-        "labels": ["RE", "PWN", "WEB"],
+        "labels": [
+            {% for solved in most_solved %}
+            "{{solved.category__name|upper}}",
+            {% endfor %}
+        ],
         "datasets": [{
             "label": "Most solved categories",
-            "data": [300, 50, 100],
-            "backgroundColor": ["rgb(255, 99, 132)", "rgb(54, 162, 235)", "rgb(255, 205, 86)"]
+            "data": [
+                {% for solved in most_solved %}
+                {{solved.dcount|upper}},
+                {% endfor %}
+                ],
+            "backgroundColor": [ {% for i in most_solved %}generate_random_rgba(), {% endfor %}]
         }]
     }
 });
             </script>
         </div>
     </div>
+
+
 
     <div class="col-md-4">
 		<div id="wrapper-chart3">
@@ -76,10 +102,14 @@ new Chart(document.getElementById("chart2"), {
 new Chart(document.getElementById("chart3"), {
     "type": "line",
     "data": {
-        "labels": ["January", "February", "March", "April", "May", "June", "July"],
+        "labels": [
+        {% for month in last_year_stats %}"{{month}}",{%endfor%}
+        ],
         "datasets": [{
             "label": "Number of CTFs played for the last year",
-            "data": [10, 12, 14, 8, 7, 1, 4],
+            "data": [
+            {% for month, count in last_year_stats.items %}{{count}},{%endfor%}
+            ],
             "fill": false,
             "borderColor": "rgb(75, 192, 192)",
             "lineTension": 0.1

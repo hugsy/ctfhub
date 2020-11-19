@@ -1,12 +1,12 @@
 import uuid
 import os
 import hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 
@@ -96,15 +96,15 @@ class Member(TimeStampedModel):
     def best_category(self) -> str:
         best_categories_by_point = Challenge.objects.filter(
             solver = self,
-        ).values("category").annotate(
+        ).values("category__name").annotate(
             dcount=Sum("points")
         ).order_by(
             "-points"
         )
         if best_categories_by_point.count() == 0:
             return ""
-        best_category_id = best_categories_by_point.first()["category"]
-        return ChallengeCategory.objects.get(pk=best_category_id)
+
+        return best_categories_by_point.first()["category__name"]
 
 
     @property
@@ -314,4 +314,48 @@ class CtfStats:
     """
     Statistic collection class
     """
-    pass
+
+    def players_activity(self) -> dict:
+        """
+        Retrieve all the players activity (i.e. number of CTFs with at least
+        one solved challenge)
+        """
+        res = {}
+        players = Member.objects.filter(solver__isnull=False)
+        for player in players:
+            res[ player.username ] = Challenge.objects.filter( solver = player).distinct("ctf").count()
+        return res
+
+
+    def solved_categories(self) -> dict:
+        """[summary]
+
+        Returns:
+            dict: [description]
+        """
+        count_solved_challenges = Challenge.objects.filter(
+            solver__isnull=False
+        ).values("category__name").annotate(
+            dcount=Count("category")
+        )
+        return count_solved_challenges
+
+
+    def last_year_stats(self) -> dict:
+        """[summary]
+
+        Returns:
+            dict: [description]
+        """
+        res = {}
+        now = datetime.now()
+        cur_month = now
+        for _ in range(12):
+            start_cur_month = cur_month.replace(day=1)
+            ctf_by_month = Ctf.objects.filter(
+                start_date__month = start_cur_month.month
+            ).count()
+            res[start_cur_month.strftime("%Y/%m")] = ctf_by_month
+            cur_month = start_cur_month - timedelta(days=1)
+        return res
+
