@@ -48,7 +48,7 @@ class Team(TimeStampedModel):
     github_url = models.URLField(blank=True)
     youtube_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
-    api_key = models.CharField(max_length=128)
+    api_key = models.CharField(max_length=128, blank=True)
     avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
 
     def save(self):
