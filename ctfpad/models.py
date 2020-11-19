@@ -101,7 +101,6 @@ class Member(TimeStampedModel):
         ).order_by(
             "-points"
         )
-        print(best_categories_by_point)
         if best_categories_by_point.count() == 0:
             return ""
         best_category_id = best_categories_by_point.first()["category"]

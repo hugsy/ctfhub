@@ -1,31 +1,52 @@
 {% load static %}
+{% load humanize %}
 
 <div class="row" id="podium">
     <div class="col-md-4"></div>
     <div class="col-md-4">
         <h5>Podium</h5>
 
+
+
         <div class="row">
             <div id="podium-box" class="row" style="height: 300px">
                 <div class="col-md-4 step-container m-0 p-0">
                     <div>
+                        {% if ranked_members.1.avatar %}
+                        <img width="100px" height="100px" src="{{ranked_members.1.avatar.url}}" alt="1st" class="rounded-circle">
+                        {% else %}
                         <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="2nd" class="rounded-circle">
+                        {% endif %}
+                        {{ranked_members.1}}
                     </div>
                     <div id="second-step" class="bg-blue step centerBoth podium-number">
                         2
                     </div>
                 </div>
+
+
                 <div class="col-md-4 step-container m-0 p-0">
                     <div>
+                        {% if ranked_members.0.avatar %}
+                        <img width="100px" height="100px" src="{{ranked_members.0.avatar.url}}" alt="1st" class="rounded-circle">
+                        {% else %}
                         <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="1st" class="rounded-circle">
+                        {% endif %}
+                        {{ranked_members.0}}
                     </div>
                     <div id="first-step" class="bg-blue step centerBoth podium-number">
                         1
                     </div>
                 </div>
+
                 <div class="col-md-4 step-container m-0 p-0">
                     <div>
+                        {% if ranked_members.2.avatar %}
+                        <img width="100px" height="100px" src="{{ranked_members.2.avatar.url}}" alt="1st" class="rounded-circle">
+                        {% else %}
                         <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="3rd" class="rounded-circle">
+                        {% endif %}
+                        {{ranked_members.2}}
                     </div>
                     <div id="third-step" class="bg-blue step centerBoth podium-number">
                         3
@@ -41,7 +62,7 @@
 <hr>
 <br>
 
-{% load humanize %}
+
 <div class="row" id="ranking">
     <div class="col-md-3"></div>
     <div class="col-md-6">
