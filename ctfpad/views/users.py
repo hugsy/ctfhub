@@ -98,7 +98,6 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     redirect_field_name = "redirect_to"
     success_message = "Member successfully updated"
     form_class = MemberUpdateForm
-    initial_context = {"country" : ""}
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -107,6 +106,7 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().get(request, *args, **kwargs)
 
 
+# todo add AdminRequiredMixin
 class MemberDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Member
     success_url = reverse_lazy('ctfpad:dashboard')
@@ -114,7 +114,6 @@ class MemberDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
     success_message = "Member successfully deleted"
-    # todo: also delete user
 
 
 class MemberListView(LoginRequiredMixin, ListView):

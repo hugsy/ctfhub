@@ -20,9 +20,15 @@
   <span class="greet-user-msg">
     Hi, {{request.user}}!
   </span>
+  {% if request.user.member.has_superpowers %}
   <span class="greet-user-msg">
-    <a href="{% url 'ctfpad:users-update' request.user.id %}">Settings</a>
-    <i class="fas fa-user-cog"></i>
+    <a href="{% url 'ctfpad:team-edit' request.user.member.team.id %}">Settings</a>
+    <i class="fas fa-cogs"></i>
+  </span>
+  {% endif %}
+  <span class="greet-user-msg">
+    <a href="{% url 'ctfpad:users-update' request.user.id %}">Profile</a>
+    <i class="far fa-address-card"></i>
   </span>
   <span class="greet-user-msg">
     <a href="{% url 'ctfpad:user-logout' %}"> Logout</a>

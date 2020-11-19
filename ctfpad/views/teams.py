@@ -13,7 +13,7 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
     template_name = "team/create.html"
     form_class = TeamCreateUpdateForm
     success_url = reverse_lazy("ctfpad:users-register")
-    success_message = "FOO"
+    success_message = "Team successfully created"
 
     def form_valid(self, form):
         if Team.objects.count() == 1:
@@ -28,20 +28,22 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
         return msg
 
 
+# todo add AdminRequiredMixin
 class TeamUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Team
     success_url = reverse_lazy('ctfpad:dashboard')
-    template_name = "team/update.html"
+    template_name = "team/edit.html"
     login_url = "/users/login/"
     form_class = TeamCreateUpdateForm
     redirect_field_name = "redirect_to"
     success_message = "Team successfully edited"
 
 
+# todo add AdminRequiredMixin
 class TeamDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     model = Team
     success_url = reverse_lazy('ctfpad:team-register')
-    template_name = "team/delete.html"
+    template_name = "team/confirm_delete.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
     success_message = "Team successfully deleted"

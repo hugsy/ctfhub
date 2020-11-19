@@ -50,6 +50,7 @@ class Team(TimeStampedModel):
     youtube_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
     api_key = models.CharField(max_length=128)
+    avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
 
     def save(self):
         if not self.api_key:

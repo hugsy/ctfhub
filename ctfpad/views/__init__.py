@@ -55,12 +55,17 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         start_date__lte = now,
         end_date__gt = now,
     )
+    next_ctf = Ctf.objects.filter(
+        end_date__isnull=False,
+        start_date__gt=now,
+    ).order_by("start_date").first()
     quick_add_form = CtfCreateUpdateForm()
     context = {
         "user": user,
         "members": members,
         "ctfs": ctfs,
         "current_ctfs": current_ctfs,
+        "next_ctf": next_ctf,
         "quick_add_form": quick_add_form,
         "hedgedoc_url": HEDGEDOC_URL,
     }

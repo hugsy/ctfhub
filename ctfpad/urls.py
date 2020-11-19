@@ -14,15 +14,15 @@ urlpatterns = [
     # team
     ## create
     path("teams/register/", views.teams.TeamCreateView.as_view(), name="team-register"),
-    path("teams/delete/", views.teams.TeamDeleteView.as_view(), name="team-delete"), # todo
-    path("teams/edit/", views.teams.TeamUpdateView.as_view(), name="team-edit"), # todo
+    path("teams/edit/<int:pk>", views.teams.TeamUpdateView.as_view(), name="team-edit"),
+    path("teams/delete/", views.teams.TeamDeleteView.as_view(), name="team-delete"),
 
     # user
     path("users/", views.users.MemberListView.as_view(), name="users-list"),
     path("users/add/", views.users.MemberCreateView.as_view(), name="users-register"),
-    path("users/delete/", views.users.MemberDeleteView.as_view(), name="users-delete"), # todo
-    path("users/edit/<str:pk>/", views.users.MemberUpdateView.as_view(), name="users-update"),
-    path("users/<int:pk>/", views.users.MemberDetailView.as_view(), name="users-detail"), # todo
+    path("users/delete/", views.users.MemberDeleteView.as_view(), name="users-delete"),
+    path("users/edit/<int:pk>/", views.users.MemberUpdateView.as_view(), name="users-update"),
+    path("users/<int:pk>/", views.users.MemberDetailView.as_view(), name="users-detail"),
 
     path("users/login/", views.users.CtfpadLogin.as_view(), name="user-login"),
     path("users/logout/", views.users.logout, name="user-logout"),

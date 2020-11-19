@@ -1,7 +1,5 @@
 <br>
 
-
-
 <div class="row">
 	<div class="col">
 		<div class="col-md">
@@ -43,8 +41,12 @@
 							(ends in {{ctf.end_date | timeuntil}})
 						</li>
 					  {% empty %}
-					  <li><h5 class="card-title">No CTF...</h4>
-						(TODO: add next reg ctfs)
+					  <li>
+					  	<h5 class="card-title">No CTF
+						{% if next_ctf %}
+						<small>(next up: <a href="{% url 'ctfpad:ctfs-detail' next_ctf.id %}">{{next_ctf}}</a>, in {{next_ctf.start_date|timeuntil}})</small>
+						{% endif %}
+						</h5>
 					  </li>
 					  {% endfor %}
 				  	</ul>
