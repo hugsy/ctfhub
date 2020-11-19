@@ -20,7 +20,7 @@ urlpatterns = [
     # user
     path("users/", views.users.MemberListView.as_view(), name="users-list"),
     path("users/add/", views.users.MemberCreateView.as_view(), name="users-register"),
-    path("users/delete/", views.users.MemberDeleteView.as_view(), name="users-delete"),
+    path("users/delete/<int:pk>/", views.users.MemberDeleteView.as_view(), name="users-delete"),
     path("users/edit/<int:pk>/", views.users.MemberUpdateView.as_view(), name="users-update"),
     path("users/<int:pk>/", views.users.MemberDetailView.as_view(), name="users-detail"),
 

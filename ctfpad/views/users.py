@@ -1,5 +1,3 @@
-import requests
-
 from django.contrib import auth, messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -17,9 +15,10 @@ from django.views.generic import (
 )
 from django.contrib.auth.views import LoginView
 
-from ctfpad.models import Challenge, ChallengeFile, Member, Team
+from ctfpad.models import Challenge, Member, Team
 from ctfpad.forms import MemberCreateForm, MemberUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
+from ctfpad.mixins import RequireSuperPowersMixin
 from ctftools.settings import HEDGEDOC_URL
 
 class CtfpadLogin(LoginView):
@@ -106,11 +105,10 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().get(request, *args, **kwargs)
 
 
-# todo add AdminRequiredMixin
-class MemberDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class MemberDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView):
     model = Member
     success_url = reverse_lazy('ctfpad:dashboard')
-    template_name = "users/delete.html"
+    template_name = "users/confirm_delete.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
     success_message = "Member successfully deleted"

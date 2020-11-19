@@ -15,6 +15,8 @@ class TeamCreateUpdateForm(forms.ModelForm):
             "github_url",
             "youtube_url",
             "blog_url",
+            "avatar",
+            "api_key",
         ]
 
 

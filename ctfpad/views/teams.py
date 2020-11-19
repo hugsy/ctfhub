@@ -7,6 +7,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from ctfpad.mixins import RequireSuperPowersMixin
+
 
 class TeamCreateView(SuccessMessageMixin, CreateView):
     model = Team
@@ -28,8 +30,7 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
         return msg
 
 
-# todo add AdminRequiredMixin
-class TeamUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class TeamUpdateView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, UpdateView):
     model = Team
     success_url = reverse_lazy('ctfpad:dashboard')
     template_name = "team/edit.html"
@@ -39,8 +40,7 @@ class TeamUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_message = "Team successfully edited"
 
 
-# todo add AdminRequiredMixin
-class TeamDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class TeamDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView):
     model = Team
     success_url = reverse_lazy('ctfpad:team-register')
     template_name = "team/confirm_delete.html"

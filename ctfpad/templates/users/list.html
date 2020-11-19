@@ -22,6 +22,9 @@
                 <th scope="col">Best category</th>
                 <th scope="col">Joined since</th>
                 <th scope="col"></th>
+                {% if request.user.member.has_superpowers %}
+                <th scope="col"></th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
@@ -32,6 +35,11 @@
                 <td>{{member.best_category}}</td>
                 <td>{{member.creation_time}}</td>
                 <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
+                {% if request.user.member.has_superpowers %}
+                <td>
+                    <a class="btn btn-sm btn-danger" href="{% url 'ctfpad:users-delete' member.id %}">Delete</a>
+                </td>
+                {% endif %}
             </tr>
             {% endfor %}
             </tbody>
