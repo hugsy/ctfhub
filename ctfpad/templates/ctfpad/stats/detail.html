@@ -3,9 +3,7 @@
 {% block content %}
 
 <br>
-<h2>
-Statistics and Ranking
-</h2>
+<h2>Team Information</h2>
 <br>
 
 <div class="row">
@@ -14,7 +12,10 @@ Statistics and Ranking
         <div style="margin: 20px;">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a href="#charts" class="nav-link active" data-toggle="tab">Global</a>
+                    <a href="#team" class="nav-link active" data-toggle="tab">Global</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#charts" class="nav-link" data-toggle="tab">Stats</a>
                 </li>
                 <li class="nav-item">
                     <a href="#rank" class="nav-link" data-toggle="tab">Player Ranking</a>
@@ -23,7 +24,10 @@ Statistics and Ranking
         </div>
 
         <div class="tab-content">
-            <div class="tab-pane fade show active" id="charts">
+            <div class="tab-pane fade show active" id="team">
+                {% include 'ctfpad/stats/team.html' %}
+            </div>
+            <div class="tab-pane fade" id="charts">
                 {% include 'ctfpad/stats/charts.html' %}
             </div>
             <div class="tab-pane fade" id="rank">

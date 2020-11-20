@@ -79,6 +79,9 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
+    # team info
+    team = Team.objects.first()
+
     # stats
     stats = CtfStats()
 
@@ -90,6 +93,7 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     )
 
     context = {
+        "team": team,
         "player_ctf_count": stats.players_activity(),
         "most_solved": stats.solved_categories(),
         "last_year_stats": stats.last_year_stats(),

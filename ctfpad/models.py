@@ -72,6 +72,10 @@ class Team(TimeStampedModel):
     def ctftime_url(self) -> str:
         return f"{CTFTIME_URL}/team/{self.ctftime_id}"
 
+    @property
+    def members(self):
+        return self.member_set.all()
+
 
 
 
