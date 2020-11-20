@@ -122,7 +122,6 @@ def search(request: HttpRequest) -> HttpResponse:
         return redirect("ctfpad:dashboard")
 
     search = SearchEngine(q)
-    print(search.results)
     paginator = Paginator(search.results, 25)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
