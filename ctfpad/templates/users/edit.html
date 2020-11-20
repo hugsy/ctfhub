@@ -33,7 +33,7 @@
                                 <i class="fas fa-hat-cowboy-side"></i>
                             </span>
                         </div>
-                        <textarea id={{form.description.id_for_label}} name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control"></textarea>
+                        <textarea id="{{form.description.id_for_label}}" name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control"></textarea>
                     </div>
 
                     <label class="label"><strong>Current CTF</strong></label>
@@ -43,27 +43,47 @@
                                 <i class="fas fa-flag"></i>
                             </span>
                         </div>
-                        {{ form.selected_ctf }}
+
+                        <select class="form-control" id="{{ form.selected_ctf.id_for_label }}" name="{{ form.selected_ctf.html_name }}">
+                            {% for choice in form.selected_ctf %}
+                              {{choice}}
+                            {% endfor %}
+                        </select>
                     </div>
 
-                    <label class="label"><strong>Country</strong></label>
-                    <div class="input-group mb-3">
-                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fas fa-pen"></i>
-                            </span>
-                        </div>
-                        {{ form.country }}
-                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label class="label"><strong>Country</strong></label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-globe-asia"></i>
+                                    </span>
+                                </div>
 
-                    <label class="label"><strong>Timezone</strong></label>
-                    <div class="input-group mb-3">
-                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fas fa-flag"></i>
-                            </span>
+                                <select class="form-control" id="{{ form.country.id_for_label }}" name="{{ form.country.html_name }}">
+                                    {% for choice in form.country %}
+                                    {{choice}}
+                                    {% endfor %}
+                                </select>
+                            </div>
                         </div>
-                        {{ form.timezone }}
+
+                        <div class="form-group col-md-6">
+                            <label class="label"><strong>Timezone</strong></label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-clock"></i>
+                                    </span>
+                                </div>
+                                <select class="form-control" id="{{ form.timezone.id_for_label }}" name="{{ form.timezone.html_name }}">
+                                    {% for choice in form.timezone %}
+                                    {{choice}}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
                     </div>
 
                     <label class="label"><strong>Blog URL</strong></label>
@@ -73,7 +93,7 @@
                                 <i class="fas fa-link"></i>
                             </span>
                         </div>
-                        <input id={{form.blog_url.id_for_label}} name="{{form.blog_url.html_name }}" placeholder="{{form.blog_url.label}}" value="{{form.blog_url.value}}" class="form-control"/>
+                        <input type="url" id="{{form.blog_url.id_for_label}}" name="{{form.blog_url.html_name }}" placeholder="{{form.blog_url.label}}" value="{{form.blog_url.value}}" class="form-control"/>
                     </div>
 
                     <label class="label"><strong>Github</strong></label>
@@ -83,7 +103,7 @@
                                 <i class="fab fa-github"></i>
                             </span>
                         </div>
-                        <input id={{form.github_url.id_for_label}} name="{{form.github_url.html_name }}" placeholder="{{form.github_url.label}}" value="{{form.github_url.value}}" class="form-control"/>
+                        <input type="url" id="{{form.github_url.id_for_label}}" name="{{form.github_url.html_name }}" placeholder="{{form.github_url.label}}" value="{{form.github_url.value}}" class="form-control"/>
                     </div>
 
                     <label class="label"><strong>Twitter</strong></label>
@@ -93,7 +113,7 @@
                                 <i class="fab fa-twitter"></i>
                             </span>
                         </div>
-                        <input id={{form.twitter_url.id_for_label}} name="{{form.twitter_url.html_name }}" placeholder="{{form.twitter_url.label}}" value="{{form.twitter_url.value}}" class="form-control"/>
+                        <input type="url" id={{form.twitter_url.id_for_label}} name="{{form.twitter_url.html_name }}" placeholder="{{form.twitter_url.label}}" value="{{form.twitter_url.value}}" class="form-control"/>
                     </div>
 
                     <label class="label"><strong>Member Since</strong></label>
