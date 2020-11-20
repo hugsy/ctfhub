@@ -125,7 +125,7 @@ class MemberDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessa
     success_message = "Member successfully deleted"
 
 
-class MemberListView(LoginRequiredMixin, ListView):
+class MemberListView(LoginRequiredMixin, RequireSuperPowersMixin, ListView):
     model = Member
     template_name = "users/list.html"
     login_url = "/users/login/"
