@@ -3,6 +3,7 @@ import magic
 import requests
 import os
 
+from functools import lru_cache
 from uuid import uuid4
 
 from ctftools.settings import (
@@ -86,7 +87,7 @@ def get_file_mime(fpath: pathlib.Path) -> str:
     return magic.from_file(abspath, mime=True) if fpath.exists() else "application/octet-stream"
 
 
-
+@lru_cache(maxsize=128)
 def ctftime_fetch_next_ctf_data() -> list:
     """Retrieve the next CTFs from CTFTime API
 
@@ -103,7 +104,7 @@ def ctftime_fetch_next_ctf_data() -> list:
     return result
 
 
-
+@lru_cache(maxsize=128)
 def ctftime_get_ctf_info(ctftime_id: int) -> dict:
     """Retrieve all the information for a specific CTF from CTFTime.
 
@@ -126,7 +127,7 @@ def ctftime_get_ctf_info(ctftime_id: int) -> dict:
     return result
 
 
-
+@lru_cache(maxsize=128)
 def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     """[summary]
 
@@ -143,3 +144,4 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     if ext.lower() not in CTPAD_ACCEPTED_IMAGE_EXTENSIONS:
         return default_logo
     return logo
+    return default_logo
