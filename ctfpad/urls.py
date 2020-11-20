@@ -31,6 +31,12 @@ urlpatterns = [
     # dashboard
     path("dashboard/", views.dashboard, name="dashboard"),
 
+    # search
+    path("search/", views.search, name="search"),
+
+    # stats
+    path("stats/", views.generate_stats, name="stats-detail"),
+
     # ctf
     path("ctfs/", views.ctfs.CtfListView.as_view(), name="ctfs-list"),
     path("ctfs/create/", views.ctfs.CtfCreateView.as_view(), name="ctfs-create"),
@@ -55,9 +61,6 @@ urlpatterns = [
 
     # categories
     path("categories/create/", views.categories.CategoryCreateView.as_view(), name="categories-create"),
-
-    # stats
-    path("stats/", views.generate_stats, name="stats-detail"),
 ]
 
 if settings.DEBUG:

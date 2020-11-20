@@ -1,0 +1,58 @@
+{%  extends 'ctfpad/main.html' %}
+
+{% block content %}
+
+<br/>
+
+{% include 'snippets/messages.html' %}
+
+
+<div class="row">
+    <div class="col-md-2"></div>
+    <div class="col">
+        <h4>Showing matching result(s) for '<em>{{q}}</em>' in '<em>{{selected_category}}</em>' category: {{total_result}} found</h4>
+        <hr>
+
+        {% for result in page_obj %}
+        <div class="card">
+            <h5 class="card-header"><strong>Category:</strong> {{result.category}}</h5>
+            <div class="card-body">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <blockquote class="blockquote mb-0">
+                            {{result.description}}
+                            <footer class="blockquote-footer"><a href="{{ result.link}}">{{ result.name }}</a></footer>
+                        </blockquote>
+                    </li>
+                  </ul>
+            </div>
+        </div>
+        <br>
+        {% endfor %}
+
+        <nav aria-label="Search result Page navigation">
+            <nav>
+               <ul class="pagination">
+                   {% if page_obj.has_previous %}
+                       <li class="page-item"><a class="page-link" href="?q={{q|urlencode}}&page={{ page_obj.previous_page_number }}">Previous</a></li>
+                   {% endif %}
+                   {% for page in paginator.page_range %}
+                       <li class="page-item {% if page == page_obj.number %}active{% endif %}">
+                           <a class="page-link" href="?q={{q|urlencode}}&page={{ page }}">{{ page }}</a>
+                       </li>
+                   {% endfor %}
+                   {% if page_obj.has_next %}
+                       <li class="page-item"><a class="page-link" href="?q={{q|urlencode}}&page={{ page_obj.next_page_number }}">Next</a></li>
+                   {% endif %}
+               </ul>
+           </nav>
+        </nav>
+
+
+    </div>
+    <div class="col-md-2"></div>
+</div>
+
+
+
+{% endblock %}

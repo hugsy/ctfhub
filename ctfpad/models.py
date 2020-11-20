@@ -3,10 +3,12 @@ import os
 import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
+from collections import namedtuple
 
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, Q
+from django.urls.base import reverse
 from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 
@@ -391,3 +393,70 @@ class CtfStats:
             cur_month = start_cur_month - timedelta(days=1)
         return res
 
+
+SearchResult = namedtuple("SearchResult", "category name description link" )
+
+class SearchEngine:
+    """[summary]
+    """
+    VALID_SEARCH_CATEGORIES = (
+        "ctf",
+        "challenge",
+        "member",
+        "ctftime",
+        "category",
+        "file",
+    )
+
+    def __init__(self, query, *args, **kwargs):
+        query = query.lower()
+        patterns = query.split()
+        self.selected_category = None
+
+        # if a specific category was selected, use it
+        for p in patterns:
+            if p.startswith("cat:"):
+                p = p.replace("cat:", "")
+                if p in SearchEngine.VALID_SEARCH_CATEGORIES:
+                    self.selected_category = p
+                    query = query.replace(f"cat:{p}", "")
+                    break
+
+        self.results = []
+
+        # search in ctf name & description
+        if self.selected_category in (None, "ctf"):
+            for entry in Ctf.objects.filter(
+                    Q(name__icontains = query) |
+                    Q(description__icontains = query)
+                ):
+                if query.lower() in entry.name:
+                    description = entry.name
+                else:
+                    description = entry.description[50:]
+
+                self.results.append(
+                    SearchResult(
+                        "ctf",
+                        entry.name,
+                        description,
+                        reverse("ctfpad:ctfs-detail", kwargs={"pk": entry.id})
+                    )
+                )
+
+        # search members
+        if self.selected_category in (None, "member"):
+            for entry in Member.objects.filter(
+                    Q(user__username__icontains = query) |
+                    Q(user__email__icontains = query) |
+                    Q(description__icontains = query)
+                ):
+
+                self.results.append(
+                    SearchResult(
+                        "member",
+                        entry.username,
+                        entry.description,
+                        reverse("ctfpad:users-detail", kwargs={"pk": entry.id})
+                    )
+                )

@@ -1,9 +1,11 @@
+from django.contrib import messages
 from django.urls.base import reverse
-from ctfpad.forms import CtfCreateUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
+from django.core.paginator import Paginator
+
 
 import datetime
 
@@ -17,7 +19,7 @@ from . import (
 )
 
 from ..models import (
-    Ctf, CtfStats, Team,
+    Ctf, CtfStats, SearchEngine, Team,
     Member,
 )
 
@@ -100,3 +102,35 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
         "ranked_members": rank,
     }
     return render(request, "ctfpad/stats/detail.html", context)
+
+
+
+
+@only_if_authenticated_user
+def search(request: HttpRequest) -> HttpResponse:
+    """Search pattern(s) in database
+
+    Args:
+        request (HttpRequest): [description]
+
+    Returns:
+        HttpResponse: [description]
+    """
+    q = request.GET.get("q")
+    if not q:
+        messages.warning(request, f"No search pattern given")
+        return redirect("ctfpad:dashboard")
+
+    search = SearchEngine(q)
+    print(search.results)
+    paginator = Paginator(search.results, 25)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    context = {
+        "q": q,
+        "selected_category": search.selected_category or "All",
+        "total_result": len(search.results),
+        "page_obj": page_obj,
+        "paginator": paginator,
+    }
+    return render(request, "search/list.html", context)
