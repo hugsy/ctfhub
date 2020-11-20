@@ -1,0 +1,37 @@
+<!-- QuickAddCtf Modal -->
+<div class="modal fade" id="QuickAddCtfModal" tabindex="-1" aria-labelledby="QuickAddCtfModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+	    <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="QuickAddCtfModalLabel">Quick Add CTF</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{% url 'ctfpad:ctfs-create' %}">
+            {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="input-group mb-3">
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="fas fa-hat-cowboy-side"></i></span>
+                            </div>
+                            <input id=id_name name="name" class="form-control" type="text" placeholder="CTF Name..." required>
+                        </div>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text"><i class="fas fa-link"></i></span>
+                        </div>
+                        <input id=id_url name="url" class="form-control" type="text" placeholder="URL (opt.)...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="this.form.submit();">Create CTF</button>
+                </div>
+            </form>
+	    </div>
+	</div>
+</div>

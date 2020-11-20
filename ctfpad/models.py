@@ -74,93 +74,6 @@ class Team(TimeStampedModel):
 
 
 
-class Member(TimeStampedModel):
-    """
-    CTF team member model
-    """
-    COUNTRIES = Choices("", "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","The Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo, Republic of the","Congo, Democratic Republic of the","Costa Rica","Cote d'Ivoire","Croatia","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","East Timor (Timor-Leste)","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Fiji","Finland","France","Gabon","The Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Korea, North","Korea, South","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia, Federated States of","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar (Burma)","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","Norway","Oman","Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City (Holy See)","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe")
-    TIMEZONES = Choices("UTC", "UTC-12", "UTC-11", "UTC-10", "UTC-9", "UTC-8", "UTC-7", "UTC-6", "UTC-5", "UTC-4", "UTC-3", "UTC-2", "UTC-1", "UTC+1", "UTC+2", "UTC+3", "UTC+4", "UTC+5", "UTC+6", "UTC+7", "UTC+8", "UTC+9", "UTC+10", "UTC+11", "UTC+12")
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    team = models.ForeignKey(Team, on_delete=models.PROTECT)
-    avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
-    description = models.TextField(blank=True)
-    country = StatusField(choices_name='COUNTRIES')
-    timezone = StatusField(choices_name='TIMEZONES')
-    last_scored = models.DateTimeField(null=True)
-    show_pending_notifications = models.BooleanField(default=False)
-    last_active_notification = models.DateTimeField(null=True)
-    joined_time = models.DateTimeField(null=True)
-    hedgedoc_password = models.CharField(max_length=64, null=True)
-    twitter_url = models.URLField(blank=True)
-    github_url = models.URLField(blank=True)
-    blog_url = models.URLField(blank=True)
-
-    @property
-    def username(self):
-        return self.user.username
-
-    @property
-    def email(self):
-        return self.user.email
-
-    @property
-    def has_superpowers(self):
-        return self.user.id == 1 # todo: when perm added, use self.user.is_superuser
-
-    def __str__(self):
-        return self.username
-
-
-    @cached_property
-    def best_category(self) -> str:
-        best_categories_by_point = Challenge.objects.filter(
-            solver = self,
-        ).values("category__name").annotate(
-            dcount=Sum("points")
-        ).order_by(
-            "-points"
-        )
-        if best_categories_by_point.count() == 0:
-            return ""
-
-        return best_categories_by_point.first()["category__name"]
-
-
-    @property
-    def total_points_scored(self):
-        challenges = Challenge.objects.filter(
-            solver = self,
-        )
-        return challenges.aggregate(Sum("points"))["points__sum"] or 0
-
-
-    @property
-    def last_logged_in(self):
-        return self.user.last_login
-
-    @property
-    def hedgedoc_username(self):
-        return f"{self.username}@ctfpad.localdomain"
-
-    def save(self):
-        if not self.hedgedoc_password:
-            # create the hedgedoc user
-            self.hedgedoc_password = get_random_string(64)
-            if not register_new_hedgedoc_user(self.hedgedoc_username, self.hedgedoc_password):
-                # password empty == anonymous mode under HedgeMd
-                self.hedgedoc_password = ""
-
-        super(Member, self).save()
-        return
-
-    @property
-    def flag_url(self):
-        if not self.country:
-            return f"{STATIC_URL}/images/flags/blank-country.png"
-        return f"{STATIC_URL}/images/flags/{self.country.lower()}.png"
-
-
 
 class Ctf(TimeStampedModel):
     """
@@ -232,6 +145,95 @@ class Ctf(TimeStampedModel):
     @cached_property
     def ctftime_logo_url(self):
         return ctftime_get_ctf_logo_url(self.ctftime_id)
+
+
+class Member(TimeStampedModel):
+    """
+    CTF team member model
+    """
+    COUNTRIES = Choices("", "Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","The Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cambodia","Cameroon","Canada","Cape Verde","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo, Republic of the","Congo, Democratic Republic of the","Costa Rica","Cote d'Ivoire","Croatia","Cuba","Cyprus","Czech Republic","Denmark","Djibouti","Dominica","Dominican Republic","East Timor (Timor-Leste)","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Ethiopia","Fiji","Finland","France","Gabon","The Gambia","Georgia","Germany","Ghana","Greece","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Korea, North","Korea, South","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macedonia","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia, Federated States of","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar (Burma)","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","Norway","Oman","Pakistan","Palau","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","Sao Tome and Principe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Swaziland","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States of America","Uruguay","Uzbekistan","Vanuatu","Vatican City (Holy See)","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe")
+    TIMEZONES = Choices("UTC", "UTC-12", "UTC-11", "UTC-10", "UTC-9", "UTC-8", "UTC-7", "UTC-6", "UTC-5", "UTC-4", "UTC-3", "UTC-2", "UTC-1", "UTC+1", "UTC+2", "UTC+3", "UTC+4", "UTC+5", "UTC+6", "UTC+7", "UTC+8", "UTC+9", "UTC+10", "UTC+11", "UTC+12")
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.PROTECT)
+    avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
+    description = models.TextField(blank=True)
+    country = StatusField(choices_name='COUNTRIES')
+    timezone = StatusField(choices_name='TIMEZONES')
+    last_scored = models.DateTimeField(null=True)
+    show_pending_notifications = models.BooleanField(default=False)
+    last_active_notification = models.DateTimeField(null=True)
+    joined_time = models.DateTimeField(null=True)
+    hedgedoc_password = models.CharField(max_length=64, null=True)
+    twitter_url = models.URLField(blank=True)
+    github_url = models.URLField(blank=True)
+    blog_url = models.URLField(blank=True)
+    selected_ctf = models.ForeignKey(Ctf, on_delete=models.DO_NOTHING, null=True, blank=True)
+
+    @property
+    def username(self):
+        return self.user.username
+
+    @property
+    def email(self):
+        return self.user.email
+
+    @property
+    def has_superpowers(self):
+        return self.user.id == 1 # todo: when perm added, use self.user.is_superuser
+
+    def __str__(self):
+        return self.username
+
+
+    @cached_property
+    def best_category(self) -> str:
+        best_categories_by_point = Challenge.objects.filter(
+            solver = self,
+        ).values("category__name").annotate(
+            dcount=Sum("points")
+        ).order_by(
+            "-points"
+        )
+        if best_categories_by_point.count() == 0:
+            return ""
+
+        return best_categories_by_point.first()["category__name"]
+
+
+    @property
+    def total_points_scored(self):
+        challenges = Challenge.objects.filter(
+            solver = self,
+        )
+        return challenges.aggregate(Sum("points"))["points__sum"] or 0
+
+
+    @property
+    def last_logged_in(self):
+        return self.user.last_login
+
+    @property
+    def hedgedoc_username(self):
+        return f"{self.username}@ctfpad.localdomain"
+
+    def save(self):
+        if not self.hedgedoc_password:
+            # create the hedgedoc user
+            self.hedgedoc_password = get_random_string(64)
+            if not register_new_hedgedoc_user(self.hedgedoc_username, self.hedgedoc_password):
+                # password empty == anonymous mode under HedgeMd
+                self.hedgedoc_password = ""
+
+        super(Member, self).save()
+        return
+
+    @property
+    def flag_url(self):
+        if not self.country:
+            return f"{STATIC_URL}/images/flags/blank-country.png"
+        return f"{STATIC_URL}/images/flags/{self.country.lower()}.png"
+
 
 
 

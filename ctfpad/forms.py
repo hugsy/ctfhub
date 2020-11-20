@@ -38,6 +38,7 @@ class MemberCreateForm(forms.ModelForm):
             "twitter_url",
             "github_url",
             "blog_url",
+            "selected_ctf",
         ]
 
     username = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
@@ -59,6 +60,7 @@ class MemberUpdateForm(forms.ModelForm):
             "twitter_url",
             "github_url",
             "blog_url",
+            "selected_ctf",
         ]
 
 

@@ -1,77 +1,52 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#QuickAddCtfModal">
-    Quick Add CTF
-  </button>
-  <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
-      <li class="nav-item active">
-        <a class="nav-link" href="{% url 'ctfpad:home' %}">Home</a>
-      </li>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-bars"></i>
+                    &nbsp;&nbsp;CTFPad
+                    {% if request.user.is_authenticated %}
+                    &nbsp; <strong>{{request.user.member.team.name}}</strong>
+                    {% endif %}
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                    <h5 class="dropdown-header">Hi, {{request.user}}!</h5>
+                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#QuickAddCtfModal">
+                        <i class="fas fa-plus"></i> Quick Add CTF
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'ctfpad:home' %}"><i class="fas fa-home"></i> Home</a>
+                    <a class="dropdown-item" href="{% url 'ctfpad:ctfs-list' %}"><i class="fas fa-flag"></i> CTFs</a>
+                    <a class="dropdown-item" href="{% url 'ctfpad:users-list' %}"><i class="fas fa-user-friends"></i> Members</a>
+                    <a class="dropdown-item" href="{% url 'ctfpad:stats-detail'%}"><i class="fas fa-signal"></i> Stats</a>
+                    {% if request.user.is_authenticated %}
+                    <div class="dropdown-divider"></div>
+                    {% if request.user.member.has_superpowers %}
+                    <a class="dropdown-item" href="{% url 'ctfpad:team-edit' request.user.member.team.id %}"><i class="fas fa-cogs"></i> Settings</a>
+                    {% endif %}
+                    <a class="dropdown-item" href="{% url 'ctfpad:users-update' request.user.id %}"><i class="far fa-address-card"></i> Profile</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'ctfpad:user-logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    {% endif %}
+                </div>
+            </li>
 
-      <li class="nav-item"><a class="nav-link" href="{% url 'ctfpad:ctfs-list' %}">CTFs</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'ctfpad:users-list' %}">Members</a></li>
-      <li class="nav-item"><a class="nav-link" href="{% url 'ctfpad:stats-detail'%}">Stats</a></li>
-    </ul>
-  </div>
-
-  <span class="greet-user-msg">
-    Hi, {{request.user}}!
-  </span>
-  {% if request.user.member.has_superpowers %}
-  <span class="greet-user-msg">
-    <a href="{% url 'ctfpad:team-edit' request.user.member.team.id %}">Settings</a>
-    <i class="fas fa-cogs"></i>
-  </span>
-  {% endif %}
-  <span class="greet-user-msg">
-    <a href="{% url 'ctfpad:users-update' request.user.id %}">Profile</a>
-    <i class="far fa-address-card"></i>
-  </span>
-  <span class="greet-user-msg">
-    <a href="{% url 'ctfpad:user-logout' %}"> Logout</a>
-    <i class="fas fa-sign-out-alt"></i>
-  </span>
+            <li>
+                {% if request.user.is_authenticated and request.user.member.selected_ctf %}
+                <a class="btn btn-outline-info my-2 my-sm-0" href="{% url 'ctfpad:ctfs-detail' request.user.member.selected_ctf.id %}">
+                    Jump to <strong>{{request.user.member.selected_ctf}}</strong>
+                </a>
+                {% endif %}
+            </li>
+        </ul>
+    </div>
+    <form class="form-inline my-2 my-lg-0">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
 </nav>
 
-
-<!-- QuickAddCtf Modal -->
-<div class="modal fade" id="QuickAddCtfModal" tabindex="-1" aria-labelledby="QuickAddCtfModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-	  <div class="modal-content">
-		<div class="modal-header">
-		  <h5 class="modal-title" id="QuickAddCtfModalLabel">Quick Add CTF</h5>
-		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		  </button>
-		</div>
-    <form method="POST" action="{% url 'ctfpad:ctfs-create' %}">
-      {% csrf_token %}
-		  <div class="modal-body">
-        <div class="form-group">
-
-          <div class="input-group mb-3">
-            <div class="input-group-append">
-              <span class="input-group-text"><i class="fas fa-hat-cowboy-side"></i></span>
-            </div>
-            <input id={{quick_add_form.name.id_for_label}} name="{{quick_add_form.name.html_name }}" class="form-control" type="text" placeholder="CTF Name..." required>
-          </div>
-        </div>
-
-        <div class="input-group mb-3">
-          <div class="input-group-append">
-            <span class="input-group-text"><i class="fas fa-link"></i></span>
-          </div>
-          <input id={{quick_add_form.url.id_for_label}} name="{{quick_add_form.url.html_name }}" class="form-control" type="text" placeholder="URL (opt.)...">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="this.form.submit();">Create CTF</button>
-      </div>
-    </form>
-	  </div>
-	</div>
-</div>
+{% include 'snippets/quick_add_form.html' %}

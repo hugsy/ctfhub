@@ -36,6 +36,16 @@
                         <textarea id={{form.description.id_for_label}} name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control"></textarea>
                     </div>
 
+                    <label class="label"><strong>Current CTF</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-flag"></i>
+                            </span>
+                        </div>
+                        {{ form.selected_ctf }}
+                    </div>
+
                     <label class="label"><strong>Country</strong></label>
                     <div class="input-group mb-3">
                         <div class="input-group-append">

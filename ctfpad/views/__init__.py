@@ -59,14 +59,12 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         end_date__isnull=False,
         start_date__gt=now,
     ).order_by("start_date").first()
-    quick_add_form = CtfCreateUpdateForm()
     context = {
         "user": user,
         "members": members,
         "ctfs": ctfs,
         "current_ctfs": current_ctfs,
         "next_ctf": next_ctf,
-        "quick_add_form": quick_add_form,
     }
     return render(request, "ctfpad/dashboard/dashboard.html", context)
 

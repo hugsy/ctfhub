@@ -138,9 +138,12 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
         str: [description]
     """
     default_logo = f"{STATIC_URL}/images/{CTFPAD_DEFAULT_CTF_LOGO}"
-    ctf_info = ctftime_get_ctf_info(ctftime_id)
-    logo = ctf_info.setdefault("logo", default_logo)
-    _, ext = os.path.splitext(logo)
-    if ext.lower() not in CTPAD_ACCEPTED_IMAGE_EXTENSIONS:
-        return default_logo
+    try:
+        ctf_info = ctftime_get_ctf_info(ctftime_id)
+        logo = ctf_info.setdefault("logo", default_logo)
+        _, ext = os.path.splitext(logo)
+        if ext.lower() not in CTPAD_ACCEPTED_IMAGE_EXTENSIONS:
+            return default_logo
+    except:
+        logo = default_logo
     return logo
