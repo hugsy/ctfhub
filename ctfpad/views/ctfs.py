@@ -60,7 +60,6 @@ class CtfImportView(CtfCreateView):
     def get(self, request, *args, **kwargs):
         self.initial["name"] = request.GET.get("ctf_name") or ""
         self.initial["url"] = request.GET.get("ctf_url") or ""
-        self.initial["end_date"] = request.GET.get("ctf_finish").replace("T", " ")[:19] or ""
         self.initial["description"] = request.GET.get("ctf_description") or ""
         self.initial["ctftime_id"] = request.GET.get("ctf_ctftime_id") or ""
 

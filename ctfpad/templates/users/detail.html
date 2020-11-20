@@ -56,6 +56,18 @@
                 </li>
                 {% endif %}
 
+                <li class="list-group-item list-group-item-action">
+                    <strong>Social Media:</strong>
+                    {% if member.blog_url %}
+                    <a target="_blank" href="{{member.blog_url}}"><i class="fas fa-blog"></i></i></a>&nbsp;
+                    {% endif %}
+                    {% if member.twitter_url %}
+                    <a target="_blank" href="{{member.twitter_url}}"><i class="fab fa-twitter"></i></a>&nbsp;
+                    {% endif %}
+                    {% if member.github_url %}
+                    <a target="_blank" href="{{member.github_url}}"><i class="fab fa-github"></i></a>&nbsp;
+                    {% endif %}
+                </li>
             </ul>
         </div>
     </div>

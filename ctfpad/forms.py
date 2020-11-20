@@ -35,6 +35,9 @@ class MemberCreateForm(forms.ModelForm):
             "last_logged_in",
             "hedgedoc_password",
             "joined_time",
+            "twitter_url",
+            "github_url",
+            "blog_url",
         ]
 
     username = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
@@ -53,6 +56,9 @@ class MemberUpdateForm(forms.ModelForm):
             "country",
             "timezone",
             "joined_time",
+            "twitter_url",
+            "github_url",
+            "blog_url",
         ]
 
 

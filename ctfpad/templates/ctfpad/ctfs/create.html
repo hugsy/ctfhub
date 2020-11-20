@@ -74,11 +74,11 @@
                             </span>
                         </div>
 
-                        <input id={{form.start_date.id_for_label}} name="{{form.start_date.html_name }}" placeholder="{{form.start_date.label}}"
+                        <input  type="datetime-local" id={{form.start_date.id_for_label}} name="{{form.start_date.html_name }}" placeholder="{{form.start_date.label}}"
                         {% if form.start_date.value %}
-                        value="{{form.start_date.value | date:'Y-m-d H:i:s'}}"
+                        value="{{form.start_date.value | date:'Y-m-d\TH:i'}}"
                         {% endif %}
-                        class="form-control" type="text">
+                        class="form-control">
                         <small class="form-text text-muted"><a href="https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-DATETIME_INPUT_FORMATS">Accepted date formats</a></small>
                     </div>
 
@@ -89,11 +89,11 @@
                                 <i class="fas fa-calendar-day"></i>
                             </span>
                         </div>
-                        <input id={{form.end_date.id_for_label}} name="{{form.end_date.html_name }}" placeholder="{{form.end_date.label}}"
+                        <input type="datetime-local" id={{form.end_date.id_for_label}} name="{{form.end_date.html_name }}" placeholder="{{form.end_date.label}}"
                         {% if form.end_date.value %}
-                        value="{{form.end_date.value | date:'Y-m-d H:i:s'}}"
+                        value="{{form.end_date.value | date:'Y-m-d\TH:i'}}"
                         {% endif %}
-                        class="form-control" type="text">
+                        class="form-control">
                         <small class="form-text text-muted"><a href="https://docs.djangoproject.com/en/3.1/ref/settings/#std:setting-DATETIME_INPUT_FORMATS">Accepted date formats</a></small>
                     </div>
 

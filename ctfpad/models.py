@@ -17,7 +17,7 @@ from model_utils import Choices, FieldTracker
 from ctftools.settings import (
     HEDGEDOC_URL,
     CTF_CHALLENGE_FILE_PATH,
-    CTF_CHALLENGE_FILE_ROOT,
+    CTF_CHALLENGE_FILE_ROOT, STATIC_URL,
     USERS_FILE_PATH,
     CTFTIME_URL,
 )
@@ -92,6 +92,9 @@ class Member(TimeStampedModel):
     last_active_notification = models.DateTimeField(null=True)
     joined_time = models.DateTimeField(null=True)
     hedgedoc_password = models.CharField(max_length=64, null=True)
+    twitter_url = models.URLField(blank=True)
+    github_url = models.URLField(blank=True)
+    blog_url = models.URLField(blank=True)
 
     @property
     def username(self):
@@ -150,6 +153,13 @@ class Member(TimeStampedModel):
 
         super(Member, self).save()
         return
+
+    @property
+    def flag_url(self):
+        if not self.country:
+            return f"{STATIC_URL}/images/flags/blank-country.png"
+        return f"{STATIC_URL}/images/flags/{self.country.lower()}.png"
+
 
 
 class Ctf(TimeStampedModel):
