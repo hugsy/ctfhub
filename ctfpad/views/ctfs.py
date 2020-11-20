@@ -16,7 +16,7 @@ class CtfListView(LoginRequiredMixin, ListView):
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
     paginate_by = 10
-    ordering = ["id"]
+    ordering = ["-id"]
     extra_context = {
         "ctftime_ctfs": ctftime_fetch_next_ctf_data(),
     }

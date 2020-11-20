@@ -75,7 +75,7 @@
     </div>
 
     <div class="col-md-7">
-    <h5>Challenges</h5>
+    <h5>Challenges <span class="badge badge-light">{{ctf.challenges|length}}</span></h5>
 		<hr>
 		<div class="card card-body">
             <div class="row">
@@ -104,7 +104,7 @@
                     <tr>
                     {% endif %}
 						<td>
-                            <span class="badge badge-pill badge-primary">{{challenge.category.name}}</span>
+                            <span class="badge badge-primary">{{challenge.category.name}}</span>
                         </td>
                         <td>{{challenge.name}}</td>
 						<td>{{challenge.points}}</td>

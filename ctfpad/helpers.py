@@ -144,4 +144,3 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     if ext.lower() not in CTPAD_ACCEPTED_IMAGE_EXTENSIONS:
         return default_logo
     return logo
-    return default_logo
