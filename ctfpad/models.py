@@ -172,7 +172,7 @@ class Member(TimeStampedModel):
     twitter_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
-    selected_ctf = models.ForeignKey(Ctf, on_delete=models.DO_NOTHING, null=True, blank=True)
+    selected_ctf = models.ForeignKey(Ctf, on_delete=models.PROTECT, null=True, blank=True)
 
     @property
     def username(self):
