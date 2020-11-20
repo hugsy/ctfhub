@@ -16,7 +16,7 @@ from django.views.generic import (
 from django.contrib.auth.views import LoginView
 
 from ctfpad.models import Challenge, Member, Team
-from ctfpad.forms import MemberCreateForm, MemberUpdateForm
+from ctfpad.forms import MemberCreateForm, MemberMarkAsSelectedForm, MemberUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
 from ctfpad.mixins import RequireSuperPowersMixin
 from ctftools.settings import HEDGEDOC_URL
@@ -106,6 +106,16 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().get(request, *args, **kwargs)
 
 
+class MemberMarkAsSelectedView(MemberUpdateView):
+    form_class = MemberMarkAsSelectedForm
+
+    def get_success_url(self):
+        return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.selected_ctf.id})
+
+    def get_success_message(self, cleaned_data):
+        return f"CTF {cleaned_data['selected_ctf']} mark as Current"
+
+
 class MemberDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView):
     model = Member
     success_url = reverse_lazy('ctfpad:dashboard')
@@ -136,3 +146,5 @@ class MemberDetailView(LoginRequiredMixin, DetailView):
             {"solved_challenges": Challenge.objects.filter(solver = self.object.id).order_by("-solved_time")}
         )
         return context
+
+

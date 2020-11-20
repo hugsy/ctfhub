@@ -15,7 +15,29 @@
         <h5>{{ctf.name | upper}}</h5>
 		<hr>
 		<div class="card card-body">
-			<a class="btn btn-warning btn-sm btn-block" href="{% url 'ctfpad:ctfs-edit' ctf.id %}"><strong>Edit CTF</strong></a>
+            <div class="row">
+                <div class="col">
+                    {% if request.user.member.selected_ctf.id == ctf.id %}
+                    <button class="btn btn-secondary btn-sm btn-block" disabled>
+                        <strong>Current CTF</strong>
+                    </button>
+                    {% else %}
+                    <form action="{% url 'ctfpad:users-select' request.user.id %}" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="selected_ctf" value="{{ctf.id}}">
+                        <button class="btn btn-success btn-sm btn-block" onclick="this.form.submit();">
+                            <strong>Select CTF</strong>
+                        </a>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="col">
+                    <a class="btn btn-warning btn-sm btn-block" href="{% url 'ctfpad:ctfs-edit' ctf.id %}">
+                        <strong>Edit CTF</strong>
+                    </a>
+                </div>
+            </div>
+
             <ul class="list-group">
                 <li class="list-group-item list-group-item-action" style="text-align: center;">
                     <img width="75px" height="75px" src="{{ctf.ctftime_logo_url}}" alt="{{ctf.name|lower}} avatar" class="rounded-circle">
@@ -66,7 +88,7 @@
                 {% if ctf.ctftime_id %}
                 <li class="list-group-item list-group-item-action">
                     View on <strong>
-                        <a href="{{ctf.ctftime_url}}" target="_blank">CTFTime<i class="fas fa-external-link-alt"></i></a>
+                        <a href="{{ctf.ctftime_url}}" target="_blank">CTFTime <i class="fas fa-external-link-alt"></i></a>
                     </strong>
                 </li>
                 {% endif %}

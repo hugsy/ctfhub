@@ -38,14 +38,14 @@
 				<tr>
 					<th></th>
 					<th>Nickname</th>
-					<th>Last seen</th>
+					<th>Working On</th>
 				</tr>
 
 				{% for member in members %}
 					<tr>
 						<td><a class="btn btn-sm btn-info" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
 						<td>{{member.username}}</td>
-						<td>{{member.last_logged_in | naturaltime}}</td>
+						<td>{% if member.selected_ctf %}{{member.selected_ctf}}{% endif %}</td>
 					</tr>
 				{% endfor %}
 			</table>

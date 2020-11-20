@@ -5,7 +5,10 @@ from django.views.generic import ListView, DetailView, UpdateView, DeleteView, C
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from ctfpad.forms import CategoryCreateForm, CtfCreateUpdateForm
+from ctfpad.forms import (
+    CategoryCreateForm,
+    CtfCreateUpdateForm,
+)
 from ctfpad.models import Ctf
 from ctfpad.helpers import ctftime_fetch_next_ctf_data
 

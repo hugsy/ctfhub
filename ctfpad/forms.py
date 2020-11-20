@@ -134,3 +134,12 @@ class CategoryCreateForm(forms.ModelForm):
         fields = [
             "name",
         ]
+
+
+
+class MemberMarkAsSelectedForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields = [
+            "selected_ctf",
+        ]
