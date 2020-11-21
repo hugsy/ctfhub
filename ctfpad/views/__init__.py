@@ -49,7 +49,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         HttpResponse: [description]
     """
     members = Member.objects.all()
-    ctfs = Ctf.objects.all().order_by("-last_modification_time")
+    latest_ctfs = Ctf.objects.all().order_by("-last_modification_time")
     user = Member.objects.filter(user__username=request.user).first()
     now = datetime.datetime.now()
     current_ctfs = Ctf.objects.filter(
@@ -64,7 +64,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     context = {
         "user": user,
         "members": members,
-        "ctfs": ctfs,
+        "latest_ctfs": latest_ctfs[:10],
         "current_ctfs": current_ctfs,
         "next_ctf": next_ctf,
     }

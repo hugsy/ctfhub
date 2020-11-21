@@ -48,7 +48,7 @@
 	</div>
 
 	<div class="col-md-7">
-		<h5>Recently added CTFs</h5>
+		<h5>Latest CTFs</h5>
 		<hr>
 		<div class="card card-body">
 			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'ctfpad:ctfs-create'%}">New CTF</a>
@@ -63,7 +63,7 @@
 					<th></th>
 				</tr>
 
-				{% for ctf in ctfs %}
+				{% for ctf in latest_ctfs %}
 					<tr>
 						<td>{{ctf.name}}</td>
 						<td>{% if ctf.is_permanent %}✔{% else %}❌{% endif %}</td>
