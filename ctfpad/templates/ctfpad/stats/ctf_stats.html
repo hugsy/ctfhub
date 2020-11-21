@@ -1,0 +1,31 @@
+{% load humanize %}
+<div class="card card-body">
+    <div class="row">
+        <div class="col">
+            <div id="wrapper-chart-ctf-stats">
+                <canvas id="ctf-stats"></canvas>
+                <script>
+new Chart(document.getElementById("ctf-stats"), {
+    "type": "line",
+    "data": {
+        "labels": [
+
+        {% for solved in ctf.solved_challenges_for_graph %}"{{solved.time}}",{%endfor%}
+        ],
+        "datasets": [{
+            "label": "Scored points",
+            "data": [
+            {% for solved in ctf.solved_challenges_for_graph %}{{solved.accu}}, {%endfor%}
+            ],
+            "fill": false,
+            "borderColor": "rgb(75, 192, 192)",
+            "lineTension": 0.1
+        }]
+    },
+    "options": {}
+});
+                </script>
+            </div>
+        </div>
+    </div>
+</div>

@@ -144,6 +144,11 @@ class Ctf(TimeStampedModel):
         now = datetime.now()
         return self.start_date <= now < self.end_date
 
+    @property
+    def is_finished(self):
+        now = datetime.now()
+        return now >= self.end_date
+
     @cached_property
     def ctftime_url(self):
         return f"{CTFTIME_URL}/event/{self.ctftime_id}"
@@ -151,6 +156,17 @@ class Ctf(TimeStampedModel):
     @cached_property
     def ctftime_logo_url(self):
         return ctftime_get_ctf_logo_url(self.ctftime_id)
+
+    @cached_property
+    def solved_challenges_for_graph(self):
+        res = []
+        Point = namedtuple("Point", "time accu")
+        accu = 0
+        for solved in self.solved_challenges:
+            accu += solved.points
+            res.append( Point(solved.solved_time, accu) )
+        return res
+
 
 
 class Member(TimeStampedModel):

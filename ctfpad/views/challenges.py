@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from django.urls import reverse, reverse_lazy
@@ -86,6 +87,12 @@ class ChallengeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("ctfpad:challenges-detail", kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        #if form.instance.ctf.is_finished:
+        #    messages.error(self.request, f"Cannot score when CTF is over")
+        #    return redirect("ctfpad:ctfs-detail", kwargs={'pk': form.instance.ctf.id})
+        return super().form_valid(form)
 
 
 class ChallengeSetFlagView(ChallengeUpdateView):

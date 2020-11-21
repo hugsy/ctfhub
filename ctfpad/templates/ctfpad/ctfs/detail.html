@@ -22,6 +22,11 @@
                         <strong>Current CTF</strong>
                     </button>
                     {% else %}
+                    {% if ctf.is_finished %}
+                    <button class="btn btn-secondary btn-sm btn-block" disabled>
+                        <strong>This CTF is over</strong>
+                    </button>
+                    {% else %}
                     <form action="{% url 'ctfpad:users-select' request.user.id %}" method="POST">
                         {% csrf_token %}
                         <input type="hidden" name="selected_ctf" value="{{ctf.id}}">
@@ -29,6 +34,7 @@
                             <strong>Work on this CTF</strong>
                         </a>
                     </form>
+                    {% endif %}
                     {% endif %}
                 </div>
                 <div class="col">
@@ -97,79 +103,31 @@
     </div>
 
     <div class="col-md-7">
-    <h5>Challenges <span class="badge badge-light">{{ctf.challenges|length}}</span></h5>
-		<hr>
-		<div class="card card-body">
-            <div class="row">
-                <div class="col">
-                    <a class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#QuickAddCategoryModal" href="#"><strong>Add a category</strong></a>
-                </div>
-                <div class="col">
-                    <a class="btn btn-info btn-sm btn-block" href="{% url 'ctfpad:challenges-create' ctf=ctf.id %}"><strong>Add a challenge</strong></a>
-                </div>
-            </div>
-			<table class="table table-sm table-hover">
-				<tr>
-					<th></th>
-					<th>Name</th>
-					<th>Points</th>
-					<th>Last Modified</th>
-					<th></th>
-					<th></th>
-					<th></th>
-				</tr>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a href="#challenges" class="nav-link active" data-toggle="tab">
+                    Challenges <span class="badge badge-light">{{ctf.challenges|length}}</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="#stats" class="nav-link" data-toggle="tab">
+                    Stats
+                </a>
+            </li>
+        </ul>
 
-				{% for challenge in ctf.challenges %}
-                    {% if challenge.status == "solved" %}
-                    <tr class="ctf-completed-challenge-row">
-                    {% else %}
-                    <tr>
-                    {% endif %}
-						<td>
-                            <span class="badge badge-primary">{{challenge.category.name}}</span>
-                        </td>
-                        <td>{{challenge.name}}</td>
-						<td>{{challenge.points}}</td>
-                        <td>{{challenge.last_modification_time|naturaltime}}</td>
-						<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:challenges-detail' challenge.id %}">Goto</a></td>
-						<td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:challenges-edit' challenge.id %}">Update</a></td>
-						<td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:challenges-delete' challenge.id %}">Delete</a></td>
-					</tr>
-				{% endfor %}
-			</table>
+        <div class="tab-content" style="margin-top: 17px;">
+            <div class="tab-pane fade show active" id="challenges">
+                {% include 'ctfpad/ctfs/detail_challenges.html' %}
+            </div>
+            <div class="tab-pane fade" id="stats">
+                {% include 'ctfpad/stats/ctf_stats.html' %}
+            </div>
         </div>
     </div>
 </div>
 
 
-<div class="modal fade" id="QuickAddCategoryModal" tabindex="-1" aria-labelledby="QuickAddCategoryModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-	    <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="QuickAddCategoryModalLabel">Quick Add Category</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form method="POST" action="{% url 'ctfpad:categories-create' %}">
-            {% csrf_token %}
-                <div class="modal-body">
-                    <div class="form-group">
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
-                                <span class="input-group-text"><i class="fas fa-folder-open"></i></span>
-                            </div>
-                            <input id="{{add_category_form.name.id_for_label}}" name="{{add_category_form.name.html_name }}" placeholder="{{add_category_form.name.label}}"  class="form-control" type="text" value="" required>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary" onclick="this.form.submit();">Add a category</button>
-                    </div>
-                </div>
-            </form>
-	    </div>
-	</div>
-</div>
+{% include 'snippets/quick_add_category.html' %}
 
 {% endblock %}

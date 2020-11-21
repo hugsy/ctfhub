@@ -9,18 +9,21 @@
                     <i class="fas fa-bars"></i>
                     &nbsp;&nbsp;CTFPad
                     {% if request.user.is_authenticated %}
-                    &nbsp; <strong>{{request.user.member.team.name}}</strong>
+                    &nbsp;
+                    <strong>{{request.user.member.username}}</strong>
+                    {% if request.user.member.avatar %}
+                    &nbsp;<img src="{{request.user.member.avatar.url}}" alt="avatar" class="rounded-circle" width="25px" height="25">
+                    {% endif %}
                     {% endif %}
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <h5 class="dropdown-header">Hi, {{request.user}}!</h5>
+                    <h5 class="dropdown-header">Hi, {{request.user}} ({{request.user.member.team.name}})!</h5>
                     <a class="dropdown-item" href="#" data-toggle="modal" data-target="#QuickAddCtfModal">
                         <i class="fas fa-plus"></i> Quick Add CTF
                     </a>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item" href="{% url 'ctfpad:home' %}"><i class="fas fa-home"></i> Home</a>
                     <a class="dropdown-item" href="{% url 'ctfpad:ctfs-list' %}"><i class="fas fa-flag"></i> CTFs</a>
-                    <!-- <a class="dropdown-item" href="{% url 'ctfpad:users-list' %}"><i class="fas fa-user-friends"></i> Members</a> -->
                     <a class="dropdown-item" href="{% url 'ctfpad:stats-detail'%}"><i class="fas fa-signal"></i> Team Info</a>
                     {% if request.user.is_authenticated %}
                     <div class="dropdown-divider"></div>
