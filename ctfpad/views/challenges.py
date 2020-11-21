@@ -99,6 +99,10 @@ class ChallengeSetFlagView(ChallengeUpdateView):
         if form.instance.ctf.is_finished:
             messages.error(self.request, f"Cannot score when CTF is over")
             return redirect("ctfpad:challenges-detail", self.object.id)
+
+        if not form.instance.flag.startswith( form.instance.ctf.flag_prefix ):
+            messages.warning(self.request, f"Unexpected format for flag (missing '{form.instance.ctf.flag_prefix}')")
+
         return super().form_valid(form)
 
 

@@ -16,7 +16,7 @@
             Confirm deletion?
         </p>
         <div>
-            <form method="POST" action="{% url 'ctfpad:team-delete' team.id %}">
+            <form method="POST" action="{% url 'ctfpad:team-delete' %}">
                 {% csrf_token %}
                 <div class="modal-footer">
                     <a type="button" class="btn btn-secondary" href="{% url 'ctfpad:dashboard' %}">Cancel</a>

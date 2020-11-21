@@ -146,6 +146,8 @@ class Ctf(TimeStampedModel):
 
     @property
     def is_finished(self):
+        if self.is_permanent:
+            return False
         now = datetime.now()
         return now >= self.end_date
 

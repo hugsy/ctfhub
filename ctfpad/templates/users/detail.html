@@ -23,6 +23,21 @@
                     {% endif %}
                 </li>
 
+                <li class="list-group-item list-group-item-action" style="text-align: center;">
+                    <div class="row">
+                        {% if request.user.member.has_superpowers or request.user.id == member.user.id %}
+                        <div class="col">
+                            <a class="btn btn-block btn-sm btn-warning" href="{% url 'ctfpad:users-update' member.user.id %}">Edit</a>
+                        </div>
+                        {% endif %}
+                        {% if request.user.member.has_superpowers %}
+                        <div class="col">
+                            <a class="btn btn-block btn-sm btn-danger" href="{% url 'ctfpad:users-delete' member.user.id %}">Delete</a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </li>
+
                 <li class="list-group-item list-group-item-action">
                     <strong>Email:</strong>
                     <a href="mailto:{{member.email}}">{{member.email}}</a>

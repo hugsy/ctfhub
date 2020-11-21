@@ -67,7 +67,7 @@
                         </select>
                     </div>
 
-                    <input type="hidden" id={{form.ctf.id_for_label}} name="{{form.ctf.html_name }}" value="{{form.ctf.value}}" />
+                    <input type="hidden" id="{{form.ctf.id_for_label}}" name="{{form.ctf.html_name }}" value="{{form.ctf.value}}" />
                     <input type="hidden" id="{{form.last_update_by.id_for_label}}" name="{{form.last_update_by.html_name}}" value="{{ request.user.id }}" />
 
                     <label class="label"><strong>Description</strong></label>
@@ -77,7 +77,7 @@
                                 <i class="fas fa-pen"></i>
                             </span>
                         </div>
-                        <textarea id={{form.description.id_for_label}} name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control"></textarea>
+                        <textarea id="{{form.description.id_for_label}}" name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control"></textarea>
                     </div>
 
                     {% if form.is_update %}
@@ -88,7 +88,7 @@
                                 <i class="fas fa-flag"></i>
                             </span>
                         </div>
-                        <input type="text" id={{form.flag.id_for_label}} name="{{form.flag.html_name }}" placeholder="{{form.flag.label}}" value="{{form.flag.value}}" class="form-control"/>
+                        <input type="text" id="{{form.flag.id_for_label}}" name="{{form.flag.html_name }}" placeholder="{{form.flag.label}}" value="{{form.flag.value}}" class="form-control"/>
                     </div>
 
                     {% if form.solver %}

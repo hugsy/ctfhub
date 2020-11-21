@@ -80,6 +80,7 @@
                     <th scope="col">Twitter</th>
                     <th scope="col">Github</th>
                     <th scope="col"></th>
+                    <th scope="col"></th>
                     {% if request.user.member.has_superpowers %}
                     <th scope="col"></th>
                     {% endif %}
@@ -95,14 +96,15 @@
                     </td>
                     <td>{{member.best_category}}</td>
                     <td>{{member.joined_time | date:'Y'}}</td>
-                    <td>{% if member.blog_url%}<a href="{{member.blog_url}}"><i class="fas fa-blog"></i></i></a>{% endif %}</td>
-                    <td>{% if member.twitter_url%}<a href="{{member.twitter_url}}"><i class="fab fa-twitter"></i></a>{% endif %}</td>
-                    <td>{% if member.github_url%}<a href="{{member.github_url}}"><i class="fab fa-github"></i></a>{% endif %}</td>
+                    <td>{% if member.blog_url%}<a href="{{member.blog_url}}" target="_blank"><i class="fas fa-blog"></i></i></a>{% endif %}</td>
+                    <td>{% if member.twitter_url%}<a href="{{member.twitter_url}}" target="_blank"><i class="fab fa-twitter"></i></a>{% endif %}</td>
+                    <td>{% if member.github_url%}<a href="{{member.github_url}}" target="_blank"><i class="fab fa-github"></i></a>{% endif %}</td>
                     <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
+                    {% if request.user.member.has_superpowers or request.user.id == member.user.id %}
+                    <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:users-update' member.user.id %}">Edit</a></td>
+                    {% endif %}
                     {% if request.user.member.has_superpowers %}
-                    <td>
-                        <a class="btn btn-sm btn-danger" href="{% url 'ctfpad:users-delete' member.id %}">Delete</a>
-                    </td>
+                    <td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:users-delete' member.user.id %}">Delete</a></td>
                     {% endif %}
                 </tr>
                 {% endfor %}
