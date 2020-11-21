@@ -289,7 +289,7 @@ class Challenge(TimeStampedModel):
     flag = models.CharField(max_length=128, blank=True)
     flag_tracker = FieldTracker(fields=['flag',])
     status = StatusField()
-    solver = models.ForeignKey(Member, on_delete=models.DO_NOTHING, null=True, related_name='solver')
+    solver = models.ForeignKey(Member, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='solver')
     solved_time = MonitorField(monitor='status', when=['solved',])
 
     @property

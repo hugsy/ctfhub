@@ -91,6 +91,7 @@
                         <input type="text" id={{form.flag.id_for_label}} name="{{form.flag.html_name }}" placeholder="{{form.flag.label}}" value="{{form.flag.value}}" class="form-control"/>
                     </div>
 
+                    {% if form.solver %}
                     <label class="label"><strong>Solver</strong></label>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
@@ -98,8 +99,13 @@
                                 <i class="fas fa-pen"></i>
                             </span>
                         </div>
-                        {{ form.solver }}
+                        <select class="form-control" id="{{ form.solver.id_for_label }}" name="{{ form.solver.html_name }}">
+                            {% for choice in form.solver %}
+                              {{choice}}
+                            {% endfor %}
+                        </select>
                     </div>
+                    {% endif %}
                     {% endif %}
 
                     {% if form.note_id.value %}

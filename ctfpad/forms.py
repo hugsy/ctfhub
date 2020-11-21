@@ -2,6 +2,7 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 
 from django import forms
+from django.forms import widgets
 
 from ctfpad.models import Challenge, ChallengeCategory, ChallengeFile, Ctf, Member, Team
 
@@ -105,6 +106,7 @@ class ChallengeUpdateForm(forms.ModelForm):
             "ctf",
             "flag",
             "last_update_by",
+            "solver",
         ]
 
     is_update = True

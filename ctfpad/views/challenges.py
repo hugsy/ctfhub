@@ -88,18 +88,18 @@ class ChallengeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse("ctfpad:challenges-detail", kwargs={'pk': self.object.pk})
 
-    def form_valid(self, form):
-        #if form.instance.ctf.is_finished:
-        #    messages.error(self.request, f"Cannot score when CTF is over")
-        #    return redirect("ctfpad:ctfs-detail", kwargs={'pk': form.instance.ctf.id})
-        return super().form_valid(form)
-
 
 class ChallengeSetFlagView(ChallengeUpdateView):
     form_class = ChallengeSetFlagForm
 
     def get_success_url(self):
-        return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.ctf.id})
+        return reverse("ctfpad:challenges-detail", kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        if form.instance.ctf.is_finished:
+            messages.error(self.request, f"Cannot score when CTF is over")
+            return redirect("ctfpad:challenges-detail", self.object.id)
+        return super().form_valid(form)
 
 
 class ChallengeDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
