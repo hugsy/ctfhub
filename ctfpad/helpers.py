@@ -104,20 +104,17 @@ def ctftime_parse_date(date: str) -> datetime:
 
 
 @lru_cache(maxsize=128)
-def ctftime_fetch_running_ctf_data() -> list:
+def ctftime_fetch_running_ctf_data(limit=100) -> list:
     """Retrieve the currently running CTFs from CTFTime API. I couldn't do this by only using the CTFTime API.
 
     Returns:
         list: JSON output from CTFTime
     """
     try:
-        # retrieve CTFs that are supposed to start and finish within a 14-day window
-        res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit=100&start={time()-(3600*24*7):.0f}&finish={time()+(3600*24*7):.0f}",
+        res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*7):.0f}&finish={time()+(3600*24*7):.0f}",
             headers={"user-agent": CTFTIME_USER_AGENT})
         if res.status_code != requests.codes.ok:
             raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
-
-        # only keep CTFs that have already started and not yet finished
         result = []
         for ctf in res.json():
             start, finish, now = ctftime_parse_date(ctf["start"]), ctftime_parse_date(ctf["finish"]), now
