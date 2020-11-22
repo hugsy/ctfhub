@@ -19,7 +19,7 @@
                 </td>
                 <td>{{ctf.start}}</td>
                 <td>{{ctf.finish}}</td>
-                <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:ctfs-import' %}?ctf_ctftime_id={{ctf.id|urlencode}}&ctf_name={{ctf.title|urlencode}}&ctf_start={{ctf.start|urlencode}}&ctf_finish={{ctf.finish|urlencode}}&ctf_url={{ctf.url|urlencode}}&ctf_description={{ctf.description|urlencode}}">Import</a></td>
+                <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:ctfs-import' %}?url={{ctf.ctftime_url|urlencode}}">Import</a></td>
             </tr>
             {% endfor %}
             </tbody>

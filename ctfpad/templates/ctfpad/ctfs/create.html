@@ -12,7 +12,7 @@
     <div class="card" style="width: 35rem;">
         <div class="card-header">
             <h5 class="card-title">
-                {% if form.name.value %}
+                {% if form.instance.creation_time %}
                 <p class="card-header-title">Updating CTF {{form.name.value}}</p>
                 {% else %}
                 <p class="card-header-title">New CTF</p>
@@ -133,7 +133,7 @@
 
                 <div class="card-footer text-muted">
                     <div class="control card-footer-item">
-                        {% if form.name.value %}
+                        {% if form.instance.creation_time %}
                         <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">Update CTF</button>
                         {% else %}
                         <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">Create CTF</button>
