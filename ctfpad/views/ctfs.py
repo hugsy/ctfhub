@@ -1,4 +1,6 @@
 from datetime import datetime
+from urllib.parse import quote, urlencode
+import re
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
@@ -10,7 +12,12 @@ from ctfpad.forms import (
     CtfCreateUpdateForm,
 )
 from ctfpad.models import Ctf
-from ctfpad.helpers import ctftime_fetch_next_ctf_data
+from ctfpad.helpers import (
+    ctftime_fetch_running_ctf_data,
+    ctftime_fetch_next_ctf_data,
+    ctftime_get_ctf_info,
+    ctftime_parse_date
+)
 
 
 class CtfListView(LoginRequiredMixin, ListView):
@@ -21,7 +28,7 @@ class CtfListView(LoginRequiredMixin, ListView):
     paginate_by = 10
     ordering = ["-id"]
     extra_context = {
-        "ctftime_ctfs": ctftime_fetch_next_ctf_data(),
+        "ctftime_ctfs": ctftime_fetch_running_ctf_data() + ctftime_fetch_next_ctf_data(),
     }
 
 
@@ -61,22 +68,22 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 class CtfImportView(CtfCreateView):
     def get(self, request, *args, **kwargs):
-        self.initial["name"] = request.GET.get("ctf_name") or ""
-        self.initial["url"] = request.GET.get("ctf_url") or ""
-        self.initial["description"] = request.GET.get("ctf_description") or ""
-        self.initial["ctftime_id"] = request.GET.get("ctf_ctftime_id") or ""
+        initial = {}
+        initial["name"] = request.GET.get("name") or ""
+        initial["url"] = request.GET.get("url") or ""
 
-        try:
-            self.initial["start_date"] = datetime.strptime(request.GET.get("ctf_start")[:19], "%Y-%m-%dT%H:%M:%S")
-        except:
-            pass
+        rx = re.match('https://ctftime.org/.+/(\d+)', request.GET.get("url"))
+        if rx:
+            ctf = ctftime_get_ctf_info(rx.group(1))
 
-        try:
-            self.initial["end_date"] = datetime.strptime(request.GET.get("ctf_finish")[:19], "%Y-%m-%dT%H:%M:%S")
-        except:
-            pass
+            initial["ctftime_id"] = ctf["id"]
+            initial["name"] = ctf["title"]
+            initial["url"] = ctf["url"]
+            initial["description"] = ctf["description"]
+            initial["start_date"] = ctftime_parse_date(ctf["start"])
+            initial["end_date"] = ctftime_parse_date(ctf["finish"])
 
-        form = self.form_class(initial=self.initial)
+        form = self.form_class(initial=initial)
         return render(request, self.template_name, {'form': form})
 
 

@@ -90,8 +90,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME':     os.getenv("CTFPAD_DB_NAME") or 'ctfpad',
-        'USER':     os.getenv("CTFPAD_DB_USER") or 'postgres',
-        'PASSWORD': os.getenv("CTFPAD_DB_PASSWORD") or 'shu2aem8DahJ4coubaquaengooqu5nae',
+        'USER':     os.getenv("CTFPAD_DB_USER") or 'ctfpad',
+        'PASSWORD': os.getenv("CTFPAD_DB_PASSWORD") or 'tookahlaiphee2KieTeeg5ooxutang4o',
         'HOST':     os.getenv("CTFPAD_DB_HOST") or 'localhost',
         'PORT':     os.getenv("CTFPAD_DB_PORT") or '5432',
     }
@@ -152,7 +152,9 @@ USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
 HEDGEDOC_URL = os.getenv("HEDGEDOC_URL") or 'http://localhost:3000'
 
+CTFTIME_URL = "https://ctftime.org"
 CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
+CTFTIME_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"
 
 LOGIN_REDIRECT_URL = "ctfpad:dashboard"
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
@@ -162,6 +164,5 @@ FIRST_DAY_OF_WEEK = 1
 SHORT_DATE_FORMAT = 'Y-m-d'
 SHORT_DATETIME_FORMAT = 'Y-m-d P'
 
-CTFTIME_URL = "https://ctftime.org"
 CTFPAD_DEFAULT_CTF_LOGO = "blank-ctf.png"
-CTPAD_ACCEPTED_IMAGE_EXTENSIONS = (".png", ".jpg", ".gif", ".bmp")
+CTFPAD_ACCEPTED_IMAGE_EXTENSIONS = (".png", ".jpg", ".gif", ".bmp")

@@ -2,15 +2,19 @@ import pathlib
 import magic
 import requests
 import os
+from time import time
+from datetime import datetime
 
 from functools import lru_cache
 from uuid import uuid4
 
 from ctftools.settings import (
-    CTPAD_ACCEPTED_IMAGE_EXTENSIONS,
+    CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
+    CTFPAD_DEFAULT_CTF_LOGO,
     HEDGEDOC_URL,
+    STATIC_URL,
     CTFTIME_API_EVENTS_URL,
-    CTFPAD_DEFAULT_CTF_LOGO, STATIC_URL,
+    CTFTIME_USER_AGENT,
 )
 
 
@@ -59,7 +63,6 @@ def check_note_id(id: str) -> bool:
     return res.status_code == requests.codes.found
 
 
-
 def get_file_magic(fpath: pathlib.Path) -> str:
     """Returns the file description from its magic number (ex. 'PE32+ executable (console) x86-64, for MS Windows' )
 
@@ -71,7 +74,6 @@ def get_file_magic(fpath: pathlib.Path) -> str:
     """
     abspath = str(fpath.absolute())
     return magic.from_file(abspath) if fpath.exists() else "Data"
-
 
 
 def get_file_mime(fpath: pathlib.Path) -> str:
@@ -87,15 +89,55 @@ def get_file_mime(fpath: pathlib.Path) -> str:
     return magic.from_file(abspath, mime=True) if fpath.exists() else "application/octet-stream"
 
 
-@lru_cache(maxsize=128)
-def ctftime_fetch_next_ctf_data() -> list:
-    """Retrieve the next CTFs from CTFTime API
+def ctftime_parse_date(date: str) -> datetime:
+    """Parse a CTFTime date
 
+    Args:
+        date (str): the date to parse
     Returns:
-        list: JSON output of the upcoming CTFs of the output from CTFTime
+        datetime: the date object or "" if there was a parsing error
     """
     try:
-        res = requests.get(CTFTIME_API_EVENTS_URL, headers={"user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"})
+        return datetime.strptime(date[:19], "%Y-%m-%dT%H:%M:%S")
+    except:
+        return ""
+
+
+@lru_cache(maxsize=128)
+def ctftime_fetch_running_ctf_data() -> list:
+    """Retrieve the currently running CTFs from CTFTime API. I couldn't do this by only using the CTFTime API.
+
+    Returns:
+        list: JSON output from CTFTime
+    """
+    try:
+        # retrieve CTFs that are supposed to start and finish within a 14-day window
+        res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit=100&start={time()-(3600*24*7):.0f}&finish={time()+(3600*24*7):.0f}",
+            headers={"user-agent": CTFTIME_USER_AGENT})
+        if res.status_code != requests.codes.ok:
+            raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
+
+        # only keep CTFs that have already started and not yet finished
+        result = []
+        for ctf in res.json():
+            start, finish, now = ctftime_parse_date(ctf["start"]), ctftime_parse_date(ctf["finish"]), now
+            if start < now and finish > now:
+                result.append(ctf)
+    except Exception:
+        result = []
+    return result
+
+
+
+@lru_cache(maxsize=128)
+def ctftime_fetch_next_ctf_data() -> list:
+    """Retrieve upcoming CTFs from CTFTime API
+
+    Returns:
+        list: JSON output from CTFTime
+    """
+    try:
+        res = requests.get(CTFTIME_API_EVENTS_URL, headers={"user-agent": CTFTIME_USER_AGENT})
         if res.status_code != requests.codes.ok:
             raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
         result = res.json()
@@ -109,21 +151,16 @@ def ctftime_get_ctf_info(ctftime_id: int) -> dict:
     """Retrieve all the information for a specific CTF from CTFTime.
 
     Args:
-        ctftime_id (int): [description]
+        ctftime_id (int): CTFTime event ID
 
     Returns:
-        str: [description]
+        dict: JSON output from CTFTime
     """
-    if ctftime_id == 0:
-        return []
-    try:
-        url = f"{CTFTIME_API_EVENTS_URL}{ctftime_id}/"
-        res = requests.get(url, headers={"user-agent": "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"})
-        if res.status_code != requests.codes.ok:
-            raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
-        result = res.json()
-    except Exception:
-        result = []
+    url = f"{CTFTIME_API_EVENTS_URL}{ctftime_id}/"
+    res = requests.get(url, headers={"user-agent": CTFTIME_USER_AGENT})
+    if res.status_code != requests.codes.ok:
+        raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
+    result = res.json()
     return result
 
 
@@ -142,7 +179,7 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
         ctf_info = ctftime_get_ctf_info(ctftime_id)
         logo = ctf_info.setdefault("logo", default_logo)
         _, ext = os.path.splitext(logo)
-        if ext.lower() not in CTPAD_ACCEPTED_IMAGE_EXTENSIONS:
+        if ext.lower() not in CTFPAD_ACCEPTED_IMAGE_EXTENSIONS:
             return default_logo
     except:
         logo = default_logo
