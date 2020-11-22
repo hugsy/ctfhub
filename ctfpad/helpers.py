@@ -1,9 +1,10 @@
-import pathlib
-import magic
-import requests
-import os
-from time import time
 from datetime import datetime
+from time import time
+import magic
+import os
+import pathlib
+import requests
+import smtplib
 
 from functools import lru_cache
 from uuid import uuid4
@@ -15,6 +16,7 @@ from ctftools.settings import (
     STATIC_URL,
     CTFTIME_API_EVENTS_URL,
     CTFTIME_USER_AGENT,
+    EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
 )
 
 
@@ -181,3 +183,30 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     except:
         logo = default_logo
     return logo
+
+
+
+def send_mail(recipients: list, subject: str, body: str) -> bool:
+    """[summary]
+
+    Args:
+        recipients (list): [description]
+        subject (str): [description]
+        body (str): [description]
+
+    Returns:
+        bool: [description]
+    """
+    if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+        try:
+            send_mail(
+                subject,
+                body,
+                EMAIL_HOST_USER,
+                recipients,
+                fail_silently = False
+            )
+            return True
+        except smtplib.SMTPException:
+            pass
+    return False

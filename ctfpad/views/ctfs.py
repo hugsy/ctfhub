@@ -1,6 +1,6 @@
 from datetime import datetime
 from urllib.parse import quote, urlencode
-import re
+
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
@@ -68,14 +68,16 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 class CtfImportView(CtfCreateView):
     def get(self, request, *args, **kwargs):
-        initial = {}
+        initial = self.initial
         initial["name"] = request.GET.get("name") or ""
-        initial["url"] = request.GET.get("url") or ""
 
-        rx = re.match('https://ctftime.org/.+/(\d+)', request.GET.get("url"))
-        if rx:
-            ctf = ctftime_get_ctf_info(rx.group(1))
+        try:
+            initial["ctftime_id"] = int(request.GET.get("ctftime_id"))
+        except ValueError:
+            pass
 
+        if initial["ctftime_id"]:
+            ctf = ctftime_get_ctf_info(initial["ctftime_id"])
             initial["ctftime_id"] = ctf["id"]
             initial["name"] = ctf["title"]
             initial["url"] = ctf["url"]

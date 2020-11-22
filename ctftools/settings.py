@@ -166,3 +166,14 @@ SHORT_DATETIME_FORMAT = 'Y-m-d P'
 
 CTFPAD_DEFAULT_CTF_LOGO = "blank-ctf.png"
 CTFPAD_ACCEPTED_IMAGE_EXTENSIONS = (".png", ".jpg", ".gif", ".bmp")
+
+# EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+# EMAIL_FILE_PATH = MEDIA_ROOT / "email_sent"
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = os.getenv("CTFPAD_EMAIL_SERVER_HOST") or None
+EMAIL_PORT = os.getenv("CTFPAD_EMAIL_SERVER_PORT") or 587
+EMAIL_USE_TLS = os.getenv("CTFPAD_EMAIL_SERVER_USE_TLS") or True
+EMAIL_HOST_USER = os.getenv("CTFPAD_EMAIL_USERNAME") or None
+EMAIL_HOST_PASSWORD = os.getenv("CTFPAD_EMAIL_PASSWORD") or None
+EMAIL_SUBJECT_PREFIX = "[CTFPad] "

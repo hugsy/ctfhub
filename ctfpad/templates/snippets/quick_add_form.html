@@ -8,7 +8,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method="GET" action="{% url 'ctfpad:ctfs-import' %}">
+            <form method="POST" action="{% url 'ctfpad:ctfs-create' %}">
+                {% csrf_token %}
                 <div class="modal-body">
                     <div class="form-group">
                         <div class="input-group mb-3">
@@ -23,7 +24,7 @@
                         <div class="input-group-append">
                             <span class="input-group-text"><i class="fas fa-link"></i></span>
                         </div>
-                        <input id=id_url name="url" class="form-control" type="text" placeholder="URL (optional)...">
+                        <input id=id_ctftime_id name="ctftime_id" class="form-control" type="int" placeholder="CTFTime Id (optional)...">
                     </div>
                 </div>
                 <div class="modal-footer">

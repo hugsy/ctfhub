@@ -52,6 +52,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     latest_ctfs = Ctf.objects.all().order_by("-last_modification_time")
     user = Member.objects.filter(user__username=request.user).first()
     now = datetime.datetime.now()
+    nb_ctf_played = Ctf.objects.all().count()
     current_ctfs = Ctf.objects.filter(
         end_date__isnull=False,
         start_date__lte = now,
@@ -67,6 +68,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         "latest_ctfs": latest_ctfs[:10],
         "current_ctfs": current_ctfs,
         "next_ctf": next_ctf,
+        "nb_ctf_played": nb_ctf_played,
     }
     return render(request, "ctfpad/dashboard/dashboard.html", context)
 

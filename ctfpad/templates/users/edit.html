@@ -33,7 +33,7 @@
                                 <i class="fas fa-hat-cowboy-side"></i>
                             </span>
                         </div>
-                        <textarea id="{{form.description.id_for_label}}" name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control"></textarea>
+                        <textarea id="{{form.description.id_for_label}}" name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control">{%if form.description.value%}{{form.description.value}}{%endif%}</textarea>
                     </div>
 
                     <label class="label"><strong>Current CTF</strong></label>

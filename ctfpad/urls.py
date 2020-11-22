@@ -27,6 +27,8 @@ urlpatterns = [
 
     path("users/login/", views.users.CtfpadLogin.as_view(), name="user-login"),
     path("users/logout/", views.users.logout, name="user-logout"),
+    path("users/reset/", views.users.UserResetPassword.as_view(), name="user-password-reset"),
+    path("users/reset/confirm/<str:uidb64>/<str:token>/", views.users.UserChangePassword.as_view(), name="user-password-change"),
 
     # dashboard
     path("dashboard/", views.dashboard, name="dashboard"),

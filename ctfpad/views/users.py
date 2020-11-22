@@ -1,3 +1,4 @@
+import os
 from django.contrib import auth, messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -13,7 +14,11 @@ from django.views.generic import (
     ListView,
     DetailView,
 )
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import (
+    LoginView,
+    PasswordResetConfirmView,
+    PasswordResetView,
+)
 
 from ctfpad.models import Challenge, Member, Team
 from ctfpad.forms import MemberCreateForm, MemberMarkAsSelectedForm, MemberUpdateForm
@@ -143,8 +148,27 @@ class MemberDetailView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(MemberDetailView, self).get_context_data(**kwargs)
         context.update(
-            {"solved_challenges": Challenge.objects.filter(solver = self.object.id).order_by("-solved_time")}
+            {"solved_challenges": Challenge.objects.filter(solver = self.object).order_by("-solved_time")}
         )
         return context
 
 
+class UserResetPassword(SuccessMessageMixin, PasswordResetView):
+    model = User
+    template_name = "users/password_reset.html"
+    success_message = "If a match was found, an email will be received with the password reset procedure."
+    success_url = reverse_lazy("ctfpad:user-login")
+    email_template_name = "users/password_reset_email.txt"
+    subject_template_name = "users/password_reset_subject.txt"
+    title = "Password Reset"
+
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+class UserChangePassword(SuccessMessageMixin, PasswordResetConfirmView):
+    model = User
+    template_name = "users/password_change.html"
+    success_message = "Password successfully changed."
+    success_url = reverse_lazy("ctfpad:user-login")
+    title = "Password Reset"

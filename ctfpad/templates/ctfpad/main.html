@@ -25,9 +25,10 @@
 	{% block content %}
 	{% endblock %}
     </div>
-	<hr>
 
-    {%  include 'ctfpad/footer.html' %}
+	{% if request.user.is_authenticated %}
+    {% include 'ctfpad/footer.html' %}
+	{% endif %}
 </body>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
