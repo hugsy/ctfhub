@@ -1,22 +1,15 @@
 {%  extends 'ctfpad/main.html' %}
+
 {% block content %}
 
-<br>
+
+{% include 'snippets/messages.html' %}
 
 
-<br>
-<div class="row">
-	<div class="col-md-2"></div>
-	<div class="col-md-8">
-		{% for message in messages %}
-		<div class="alert alert-warning alert-dismissible fade show">
-			<strong>{{message.level}}</strong>{{message}}
-			<button type="button" class="close" data-dismiss="alert">&times;</button>
-		</div>
-		{% endfor %}
-	</div>
-	<div class="col-md-2"></div>
-</div>
+<div class="row" style="margin-top: 100px;"></div>
+
+
+
 
 <div class="container h-100">
 	<div class="d-flex justify-content-center h-100">

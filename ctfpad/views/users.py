@@ -68,6 +68,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
             return redirect("ctfpad:home")
 
         # validate user uniqueness
+        user_cnt = User.objects.all().count()
         users = User.objects.filter(username=form.cleaned_data["username"])
         if users.count() > 0:
             form.errors["name"] = "UsernameAlreadyExistError"
@@ -85,6 +86,11 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         # populate the missing required fields
         form.instance.user = user
         form.instance.team = team
+
+        if user_cnt == 0:
+            # if we created the first user, mark it as superuser
+            user.is_superuser = True
+            user.save()
 
         # process
         return super().form_valid(form)
@@ -130,11 +136,13 @@ class MemberDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessa
     success_message = "Member successfully deleted"
 
     def post(self, request, *args, **kwargs):
-        if self.get_object().has_superpowers:
+        member = self.get_object()
+        if member.has_superpowers:
             messages.error(request, "Refusing to delete super-user")
             return redirect("ctfpad:home")
-        return self.delete(request, *args, **kwargs)
 
+        member.user.delete()
+        return self.delete(request, *args, **kwargs)
 
 
 class MemberListView(LoginRequiredMixin, RequireSuperPowersMixin, ListView):
