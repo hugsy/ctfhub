@@ -129,6 +129,13 @@ class MemberDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessa
     redirect_field_name = "redirect_to"
     success_message = "Member successfully deleted"
 
+    def post(self, request, *args, **kwargs):
+        if self.get_object().has_superpowers:
+            messages.error(request, "Refusing to delete super-user")
+            return redirect("ctfpad:home")
+        return self.delete(request, *args, **kwargs)
+
+
 
 class MemberListView(LoginRequiredMixin, RequireSuperPowersMixin, ListView):
     model = Member
@@ -161,9 +168,6 @@ class UserResetPassword(SuccessMessageMixin, PasswordResetView):
     email_template_name = "users/password_reset_email.txt"
     subject_template_name = "users/password_reset_subject.txt"
     title = "Password Reset"
-
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
 
 
 class UserChangePassword(SuccessMessageMixin, PasswordResetConfirmView):

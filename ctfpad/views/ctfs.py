@@ -59,6 +59,16 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         if Ctf.objects.filter(name=form.instance.name).count() > 0:
             form.errors["name"] = "CtfAlreadyExistError"
             return render(self.request, self.template_name, {'form': form})
+
+        if form.instance.ctftime_id:
+            ctf = ctftime_get_ctf_info( form.instance.ctftime_id )
+            form.instance.ctftime_id = ctf["id"]
+            form.instance.name = ctf["title"]
+            form.instance.url = ctf["url"]
+            form.instance.description = ctf["description"]
+            form.instance.start_date = ctftime_parse_date(ctf["start"])
+            form.instance.end_date = ctftime_parse_date(ctf["finish"])
+
         return super().form_valid(form)
 
 
