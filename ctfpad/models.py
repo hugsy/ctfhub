@@ -345,7 +345,7 @@ class Challenge(TimeStampedModel):
 
     @cached_property
     def jitsi_url(self):
-        return f"{JITSI_URL}/{self.id}"
+        return f"{JITSI_URL}/{self.ctf.id}--{self.id}"
 
     def save(self):
         if not self.note_id:
