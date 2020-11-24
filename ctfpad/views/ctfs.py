@@ -46,6 +46,7 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         "team_login": "",
         "team_password": "",
         "jitsi_id": "",
+        "weight": "1",
     }
     success_message = "CTF '%(name)s' created"
 

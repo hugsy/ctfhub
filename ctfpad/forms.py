@@ -107,7 +107,7 @@ class ChallengeUpdateForm(forms.ModelForm):
             "ctf",
             "flag",
             "last_update_by",
-            "solver",
+            "solvers",
         ]
 
     is_update = True

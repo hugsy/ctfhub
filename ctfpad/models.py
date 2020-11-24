@@ -224,8 +224,7 @@ class Member(TimeStampedModel):
 
     @cached_property
     def best_category(self) -> str:
-        best_categories_by_point = Challenge.objects.filter(
-            solver = self,
+        best_categories_by_point = self.solved_challenges.filter(
             ctf__visibility = "public"
         ).values("category__name").annotate(
             dcount=Sum("points")
@@ -240,8 +239,7 @@ class Member(TimeStampedModel):
 
     @property
     def total_points_scored(self):
-        challenges = Challenge.objects.filter(
-            solver = self,
+        challenges = self.solved_challenges.filter(
             ctf__visibility = "public"
         )
         return challenges.aggregate(Sum("points"))["points__sum"] or 0
@@ -323,8 +321,10 @@ class Challenge(TimeStampedModel):
     flag = models.CharField(max_length=128, blank=True)
     flag_tracker = FieldTracker(fields=['flag',])
     status = StatusField()
-    solver = models.ForeignKey(Member, on_delete=models.DO_NOTHING, null=True, blank=True, related_name='solver')
     solved_time = MonitorField(monitor='status', when=['solved',])
+    solvers = models.ManyToManyField("ctfpad.Member", blank=True, related_name="solved_challenges")
+    tags = models.ManyToManyField("ctfpad.Tag", blank=True, related_name="challenges")
+
 
     @property
     def solved(self) -> bool:
@@ -353,7 +353,7 @@ class Challenge(TimeStampedModel):
 
         if self.flag_tracker.has_changed("flag"):
             self.status = "solved"
-            self.solver = self.last_update_by
+            self.solvers.add( self.last_update_by )
             self.solved_time = datetime.now()
 
         super(Challenge, self).save()
@@ -396,14 +396,14 @@ class ChallengeFile(TimeStampedModel):
 
 
 
-class Notification(TimeStampedModel):
+class Tag(TimeStampedModel):
     """
     Internal notification system
     """
-    sender = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="member_sender")
-    recipient = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="member_recipient", blank=True) # if blank -> broadcast
-    description = models.TextField()
-    challenge = models.ForeignKey(Challenge, on_delete=models.DO_NOTHING, blank=True)
+    name = models.TextField(unique=True)
+
+    def __str__(self):
+        return self.name
 
 
 class CtfStats:
@@ -417,9 +417,9 @@ class CtfStats:
         one solved challenge)
         """
         res = {}
-        players = Member.objects.filter(solver__isnull=False)
-        for player in players:
-            res[ player.username ] = Challenge.objects.filter( solver = player).distinct("ctf").count()
+        active_players = Member.objects.filter(solved_challenges__isnull=False)
+        for player in active_players:
+            res[ player.username ] = Challenge.objects.filter(solvers__in = [player,]).distinct("ctf").count()
         return res
 
 
@@ -430,7 +430,7 @@ class CtfStats:
             dict: [description]
         """
         count_solved_challenges = Challenge.objects.filter(
-            solver__isnull=False
+            solvers__isnull=False
         ).values("category__name").annotate(
             dcount=Count("category")
         )

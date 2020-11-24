@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="form-group">
                 {% if challenge.status == "solved" %}
                     <input type="text" class="form-control" style="background-color: lightgreen;" id={{flag_form.flag.id_for_label}} name="{{flag_form.flag.html_name}}" placeholder="{{challenge.ctf.flag_prefix}}" value="{{challenge.flag}}" readonly/>
-                    <small>by <strong>{{challenge.solver}}</strong> at <em>{{challenge.solved_time}}</em></small>
+                    <small>by <strong>{{challenge.solvers.all|join:", "}}</strong> at <em>{{challenge.solved_time}}</em></small>
                 {% else %}
                     <form method="POST" action="{% url 'ctfpad:challenges-score' challenge.id %}">
                         {% csrf_token %}
