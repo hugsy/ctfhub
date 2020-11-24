@@ -165,35 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 
 
-<div class="modal fade" id="QuickAddFileModal" tabindex="-1" aria-labelledby="QuickAddFileModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-	  <div class="modal-content">
-		<div class="modal-header">
-		    <h5 class="modal-title" id="QuickAddFileModalLabel">Upload challenge file</h5>
-		    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-		        <span aria-hidden="true">&times;</span>
-		    </button>
-		</div>
-
-        <form id="QuickAddForm" method="POST" action="{% url 'ctfpad:challenge-files-add' challenge.id %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-            <div class="modal-body">
-                <div class="form-group">
-                    <div class="input-group mb-3">
-                        <div class="input-group-append">
-                            <span class="input-group-text"><i class="fas fa-file-upload"></i></span>
-                        </div>
-                        {{ file_upload_form.file }}
-                    </div>
-                </div>
-                <input type="hidden" id={{file_upload_form.challenge.id_for_label}} name="{{file_upload_form.challenge.html_name }}" value="{{challenge.id}}" />
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="document.getElementById('QuickAddForm').submit();">Upload File</button>
-            </div>
-        </form>
-	</div>
-</div>
+{% include 'snippets/quick_add_file.html' with challenge=challenge %}
 
 {% endblock %}
