@@ -94,7 +94,6 @@ class Ctf(TimeStampedModel):
     team_password = models.CharField(max_length=128, blank=True)
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
     visibility = StatusField(choices_name="VISIBILITY")
-    jitsi_id = models.CharField(max_length=64, default=get_random_string_64, editable=False)
     weight = models.IntegerField(default=1)
 
     def __str__(self) -> str:
@@ -180,7 +179,7 @@ class Ctf(TimeStampedModel):
 
     @cached_property
     def jitsi_url(self):
-        return f"{JITSI_URL}/{self.jitsi_id}"
+        return f"{JITSI_URL}/{self.id}"
 
 
 
@@ -207,7 +206,6 @@ class Member(TimeStampedModel):
     github_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
     selected_ctf = models.ForeignKey(Ctf, on_delete=models.SET_NULL, null=True, blank=True)
-    jitsi_id = models.CharField(max_length=64, default=get_random_string_64, editable=False)
 
     @property
     def username(self):
@@ -276,7 +274,7 @@ class Member(TimeStampedModel):
 
     @cached_property
     def jitsi_url(self):
-        return f"{JITSI_URL}/{self.jitsi_id}"
+        return f"{JITSI_URL}/{self.id}"
 
     @cached_property
     def private_ctfs(self):
@@ -340,6 +338,14 @@ class Challenge(TimeStampedModel):
     def note_url(self) -> str:
         note_id = self.note_id or "/"
         return f"{HEDGEDOC_URL}{note_id}"
+
+    @cached_property
+    def files(self):
+        return self.challengefile_set.all()
+
+    @cached_property
+    def jitsi_url(self):
+        return f"{JITSI_URL}/{self.id}"
 
     def save(self):
         if not self.note_id:
