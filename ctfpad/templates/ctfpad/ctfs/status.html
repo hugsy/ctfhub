@@ -7,20 +7,21 @@
 		<div class="col-md">
 			<div class="card text-center text-white mb-3" id="total-player-registered">
 			  	<div class="card-header">
-			  		<h5 class="card-title">{{ctf.name | upper}}</h5>
+			  		<h5 class="card-title">{{ctf.name | upper}}{%if ctf.is_private %} (Private){% endif %}</h5>
 			  	</div>
 			  	<div class="card-body">
+					<h5 class="card-title">
 					{% if ctf.is_permanent %}
-			    	<h5 class="card-title">Permanent CTF</h5>
+			    	Permanent CTF
 					{% else %}
-			    	<h5 class="card-title">{{ ctf.duration | naturaltime}}
+			    	{{ ctf.duration | naturaltime}}
 						{% if ctf.is_running %}
 						({{ ctf.end_date | timeuntil }} left)
 						{% elif ctf.is_finished %}
 						(ended {{ ctf.end_date | timesince }} ago)
 						{% endif %}
-					</h5>
 					{% endif %}
+					</h5>
 			  	</div>
 			</div>
 		</div>

@@ -22,10 +22,11 @@ from ctftools.settings import (
     CTF_CHALLENGE_FILE_ROOT, STATIC_URL,
     USERS_FILE_PATH,
     CTFTIME_URL,
+    JITSI_URL,
 )
 from ctfpad.validators import challenge_file_max_size_validator
 from ctfpad.helpers import (
-    register_new_hedgedoc_user,
+    get_random_string_128, get_random_string_64, register_new_hedgedoc_user,
     create_new_note,
     get_file_magic,
     get_file_mime,
@@ -57,18 +58,12 @@ class Team(TimeStampedModel):
     github_url = models.URLField(blank=True)
     youtube_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
-    api_key = models.CharField(max_length=128, blank=True)
+    api_key = models.CharField(max_length=128, default=get_random_string_128)
     avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
 
     def __str__(self) -> str:
         return self.name
-
-    def save(self):
-        if not self.api_key:
-            self.api_key = get_random_string(128)
-        super(Team, self).save()
-        return
 
     @property
     def ctftime_url(self) -> str:
@@ -85,8 +80,11 @@ class Ctf(TimeStampedModel):
     """
     CTF model class
     """
+    VISIBILITY = Choices("public", "private")
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128)
+    created_by = models.ForeignKey("ctfpad.Member", on_delete=models.CASCADE, blank=True, null=True)
     url = models.URLField(blank=True)
     description = models.TextField(blank=True)
     start_date = models.DateTimeField(blank=True, null=True)
@@ -95,6 +93,9 @@ class Ctf(TimeStampedModel):
     team_login = models.CharField(max_length=128, blank=True)
     team_password = models.CharField(max_length=128, blank=True)
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
+    visibility = StatusField(choices_name="VISIBILITY")
+    jitsi_id = models.CharField(max_length=64, default=get_random_string_64, editable=False)
+    weight = models.IntegerField(default=1)
 
     def __str__(self) -> str:
         return self.name
@@ -102,6 +103,14 @@ class Ctf(TimeStampedModel):
     @property
     def is_permanent(self) -> bool:
         return self.start_date is None and self.end_date is None
+
+    @property
+    def is_public(self) -> bool:
+        return self.visibility == "public"
+
+    @property
+    def is_private(self) -> bool:
+        return self.visibility == "private"
 
     @property
     def challenges(self):
@@ -169,6 +178,11 @@ class Ctf(TimeStampedModel):
             res.append( Point(solved.solved_time, accu) )
         return res
 
+    @cached_property
+    def jitsi_url(self):
+        return f"{JITSI_URL}/{self.jitsi_id}"
+
+
 
 
 class Member(TimeStampedModel):
@@ -193,6 +207,7 @@ class Member(TimeStampedModel):
     github_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
     selected_ctf = models.ForeignKey(Ctf, on_delete=models.SET_NULL, null=True, blank=True)
+    jitsi_id = models.CharField(max_length=64, default=get_random_string_64, editable=False)
 
     @property
     def username(self):
@@ -209,11 +224,11 @@ class Member(TimeStampedModel):
     def __str__(self):
         return self.username
 
-
     @cached_property
     def best_category(self) -> str:
         best_categories_by_point = Challenge.objects.filter(
             solver = self,
+            ctf__visibility = "public"
         ).values("category__name").annotate(
             dcount=Sum("points")
         ).order_by(
@@ -229,6 +244,7 @@ class Member(TimeStampedModel):
     def total_points_scored(self):
         challenges = Challenge.objects.filter(
             solver = self,
+            ctf__visibility = "public"
         )
         return challenges.aggregate(Sum("points"))["points__sum"] or 0
 
@@ -246,7 +262,7 @@ class Member(TimeStampedModel):
             # create the hedgedoc user
             self.hedgedoc_password = get_random_string(64)
             if not register_new_hedgedoc_user(self.hedgedoc_username, self.hedgedoc_password):
-                # password empty == anonymous mode under HedgeMd
+                # password empty == anonymous mode under HedgeDoc
                 self.hedgedoc_password = ""
 
         super(Member, self).save()
@@ -258,6 +274,21 @@ class Member(TimeStampedModel):
             return f"{STATIC_URL}/images/flags/blank-country.png"
         return f"{STATIC_URL}/images/flags/{self.country.lower()}.png"
 
+    @cached_property
+    def jitsi_url(self):
+        return f"{JITSI_URL}/{self.jitsi_id}"
+
+    @cached_property
+    def private_ctfs(self):
+        return Ctf.objects.filter(visibility = "private", created_by = self)
+
+    @cached_property
+    def public_ctfs(self):
+        return Ctf.objects.filter(visibility = "public")
+
+    @cached_property
+    def ctfs(self):
+        return self.private_ctfs | self.public_ctfs
 
 
 
@@ -272,6 +303,9 @@ class ChallengeCategory(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name_plural = "Categories"
 
 
 class Challenge(TimeStampedModel):
@@ -297,6 +331,10 @@ class Challenge(TimeStampedModel):
     @property
     def solved(self) -> bool:
         return self.status == "solved"
+
+    @property
+    def is_public(self) -> bool:
+        return self.ctf.visibility == "public"
 
     @property
     def note_url(self) -> str:

@@ -38,6 +38,7 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         "solver": "",
         "solved_time": "",
         "note_id": None,
+        "jitsi_id": None,
     }
     success_message = "Challenge '%(name)s' successfully created"
 

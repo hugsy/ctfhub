@@ -77,7 +77,7 @@
                                 <i class="fas fa-pen"></i>
                             </span>
                         </div>
-                        <textarea id="{{form.description.id_for_label}}" name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control"></textarea>
+                        <textarea id="{{form.description.id_for_label}}" name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control">{% if form.description %}{{form.description.value}}{%endif%}</textarea>
                     </div>
 
                     {% if form.is_update %}
@@ -108,7 +108,7 @@
                     {% endif %}
                     {% endif %}
 
-                    {% if form.note_id.value %}
+                    {% if form.is_update %}
                     <label class="label"><strong>HedgeDoc ID </strong></label>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
@@ -116,14 +116,14 @@
                                 <i class="fab fa-markdown"></i>
                             </span>
                         </div>
-                        <input placeholder="{{form.note_id.label}}" value="{{form.note_id.value}}" class="form-control" type="text" readonly>
+                        <input id="{{form.note_id.id_for_label}}" name="{{form.note_id.html_name}}" placeholder="{{form.note_id.label}}" value="{{form.note_id.value}}" class="form-control" type="text" readonly>
                     </div>
                     {% endif %}
                 </div>
 
                 <div class="card-footer text-muted">
                     <div class="control card-footer-item">
-                        {% if form.name.value %}
+                        {% if form.is_update %}
                         <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">Update Challenge</button>
                         {% else %}
                         <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">Create Challenge</button>

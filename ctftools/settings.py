@@ -177,3 +177,5 @@ EMAIL_USE_TLS = os.getenv("CTFPAD_EMAIL_SERVER_USE_TLS") or True
 EMAIL_HOST_USER = os.getenv("CTFPAD_EMAIL_USERNAME") or None
 EMAIL_HOST_PASSWORD = os.getenv("CTFPAD_EMAIL_PASSWORD") or None
 EMAIL_SUBJECT_PREFIX = "[CTFPad] "
+
+JITSI_URL = "https://meet.jit.si"

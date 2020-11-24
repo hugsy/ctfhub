@@ -17,7 +17,6 @@ class TeamCreateUpdateForm(forms.ModelForm):
             "youtube_url",
             "blog_url",
             "avatar",
-            "api_key",
             "ctftime_id",
         ]
 
@@ -78,6 +77,8 @@ class CtfCreateUpdateForm(forms.ModelForm):
             "team_login",
             "team_password",
             "ctftime_id",
+            "weight",
+            "visibility",
         ]
 
 

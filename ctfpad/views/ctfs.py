@@ -1,8 +1,6 @@
-from datetime import datetime
-from urllib.parse import quote, urlencode
-
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -47,6 +45,7 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         "flag_prefix": "",
         "team_login": "",
         "team_password": "",
+        "jitsi_id": "",
     }
     success_message = "CTF '%(name)s' created"
 
@@ -56,7 +55,7 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
 
     def form_valid(self, form):
-        if Ctf.objects.filter(name=form.instance.name).count() > 0:
+        if Ctf.objects.filter(name=form.instance.name, visibility="public").count() > 0:
             form.errors["name"] = "CtfAlreadyExistError"
             return render(self.request, self.template_name, {'form': form})
 
@@ -68,7 +67,9 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             form.instance.description = ctf["description"]
             form.instance.start_date = ctftime_parse_date(ctf["start"])
             form.instance.end_date = ctftime_parse_date(ctf["finish"])
+            form.instance.weight = ctf["weight"] or 1
 
+        form.instance.created_by = self.request.user.member
         return super().form_valid(form)
 
 
@@ -94,6 +95,7 @@ class CtfImportView(CtfCreateView):
             initial["description"] = ctf["description"]
             initial["start_date"] = ctftime_parse_date(ctf["start"])
             initial["end_date"] = ctftime_parse_date(ctf["finish"])
+            initial["weight"] = ctf["weight"] or 1
 
         form = self.form_class(initial=initial)
         return render(request, self.template_name, {'form': form})
@@ -119,6 +121,12 @@ class CtfUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_url(self):
         return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        if "visibility" in form.changed_data and self.request.user.member != form.instance.created_by:
+            messages.error(self.request, f"Visibility can only by updated by {form.instance.created_by}")
+            return render(self.request, self.template_name, {'form': form})
+        return super().form_valid(form)
 
 
 class CtfDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):

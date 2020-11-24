@@ -38,7 +38,13 @@
 					<tr>
 						<td><a class="btn btn-sm btn-info" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
 						<td>{{member.username}}</td>
-						<td>{{member.selected_ctf}}</td>
+						<td>
+							{% if member.selected_ctf.is_public %}
+							{{member.selected_ctf}}
+							{% else %}
+							<i>(private)</i>
+							{% endif %}
+						</td>
 					</tr>
 					{% endif %}
 					{% endif %}

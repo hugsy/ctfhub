@@ -49,21 +49,20 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         HttpResponse: [description]
     """
     members = Member.objects.all()
-    latest_ctfs = Ctf.objects.all().order_by("-last_modification_time")
     user = Member.objects.filter(user__username=request.user).first()
+    latest_ctfs = user.ctfs.order_by("-last_modification_time")
     now = datetime.datetime.now()
-    nb_ctf_played = Ctf.objects.all().count()
-    current_ctfs = Ctf.objects.filter(
+    nb_ctf_played = user.ctfs.count()
+    current_ctfs = user.public_ctfs.filter(
         end_date__isnull=False,
         start_date__lte = now,
         end_date__gt = now,
     )
-    next_ctf = Ctf.objects.filter(
+    next_ctf = user.public_ctfs.filter(
         end_date__isnull=False,
         start_date__gt=now,
     ).order_by("start_date").first()
     context = {
-        "user": user,
         "members": members,
         "latest_ctfs": latest_ctfs[:10],
         "current_ctfs": current_ctfs,

@@ -98,6 +98,21 @@
                     </strong>
                 </li>
                 {% endif %}
+
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Weight:</strong>
+                    {{ctf.weight}}
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <strong>Created by:</strong>
+                    <a href="{% url 'ctfpad:users-detail' ctf.created_by.id %}">{{ctf.created_by}}</a>
+                </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <a href="{{ctf.jitsi_url}}" target="_blank"><strong>Jitsi Channel</strong> <i class="fas fa-external-link-alt"></i></a>
+                </li>
             </ul>
         </div>
     </div>

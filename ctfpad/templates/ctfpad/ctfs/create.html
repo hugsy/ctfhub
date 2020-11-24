@@ -66,6 +66,20 @@
                         <input id="{{form.flag_prefix.id_for_label}}" name="{{form.flag_prefix.html_name }}" placeholder="{{form.flag_prefix.label}}" value="{{form.flag_prefix.value}}" class="form-control" type="text">
                     </div>
 
+                    <label class="label"><strong>Visibility</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-eye-slash"></i>
+                            </span>
+                        </div>
+                        <select class="form-control" id="{{ form.visibility.id_for_label }}" name="{{ form.visibility.html_name }}">
+                        {% for choice in form.visibility %}
+                          {{choice}}
+                        {% endfor %}
+                        </select>
+                    </div>
+
                     <label class="label"><strong>Start Date</strong>(leave empty for permanent CTFs)</label>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
@@ -112,7 +126,7 @@
                                 <i class="fas fa-key"></i>
                             </span>
                         </div>
-                        <input id="{{form.team_password.id_for_label}}" name="{{form.team_password.html_name }}" placeholder="{{form.team_password.label}}"  class="form-control" type="text" value="{{form.team_login.value}}" >
+                        <input id="{{form.team_password.id_for_label}}" name="{{form.team_password.html_name }}" placeholder="{{form.team_password.label}}"  class="form-control" type="password" value="{{form.team_password.value}}" >
 
                         <button class="form-control btn btn-info" onclick="document.getElementById('{{form.team_password.id_for_label}}').value=generate_random_string(16); return false;">
                             Generate
@@ -127,6 +141,17 @@
                             </span>
                         </div>
                         <input id="{{form.ctftime_id.id_for_label}}" name="{{form.ctftime_id.html_name }}" placeholder="{{form.ctftime_id.label}}"  class="form-control" type="text" value="{{form.ctftime_id.value}}" >
+                    </div>
+
+
+                    <label class="label"><strong>Weight</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fas fa-random"></i>
+                            </span>
+                        </div>
+                        <input id="{{form.weight.id_for_label}}" name="{{form.weight.html_name }}" placeholder="{{form.weight.label}}"  class="form-control" type="int" min="1" value="{{form.weight.value}}" >
                     </div>
 
                 </div>

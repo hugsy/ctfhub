@@ -7,3 +7,4 @@ class RequireSuperPowersMixin(AccessMixin):
         if not request.user.member.has_superpowers:
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
+

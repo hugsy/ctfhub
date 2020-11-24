@@ -1,5 +1,6 @@
 from datetime import datetime
 from time import time
+from django.utils.crypto import get_random_string
 import magic
 import os
 import pathlib
@@ -210,3 +211,12 @@ def send_mail(recipients: list, subject: str, body: str) -> bool:
         except smtplib.SMTPException:
             pass
     return False
+
+
+
+def get_random_string_64() -> str:
+    return get_random_string(64)
+
+
+def get_random_string_128() -> str:
+    return get_random_string(128)
