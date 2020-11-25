@@ -90,9 +90,8 @@
                 {% for member in team.members %}
                 <tr>
                     <th scope="row">
-                        <a href="mailto:{{member.email}}">
-                            {{member.username}}
-                        </a>
+                        <img height="30px" width="35px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle">
+                        <a href="mailto:{{member.email}}">{{member.username}}</a>
                     </td>
                     <td>{{member.best_category}}</td>
                     <td>{{member.joined_time | date:'Y'}}</td>

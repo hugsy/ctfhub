@@ -60,3 +60,7 @@ I was fed up of not finding a tool to my liking to manage CTFs for teams playing
 I discovered [HedgeDoc](https://demo.hedgedoc.org/features?both) (aka. old CodiMD), an awesome platform, 100% Markdown, easily integrable. This project is just an eye-candy around using HedgeDoc as a central platform when doing a challenge collaboratively.
 
 It's a toy project, so there's a lot of TODOs, features will be added (slowly).
+
+### Notes
+
+Flag images are downloaded from https://flagpedia.net/
