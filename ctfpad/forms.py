@@ -1,10 +1,23 @@
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 
 from django import forms
 from django.forms import widgets
 
 from ctfpad.models import Challenge, ChallengeCategory, ChallengeFile, Ctf, Member, Team
+
+
+class UserUpdateForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "email",
+        ]
+    current_password = forms.CharField(label="Current password", widget=forms.PasswordInput, required=True)
+
+
 
 class TeamCreateUpdateForm(forms.ModelForm):
     class Meta:

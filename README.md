@@ -2,7 +2,7 @@
 
 ## What
 
-A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki/Wargame_(hacking)). If you're looking for a platform for hosting CTFs use [CTFd](https://ctfd.io).
+A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki/Wargame_(hacking)). If you're looking for a platform for hosting CTFs use [CTFd](https://github.com/ctfd/ctfd).
 
 
 
@@ -13,9 +13,10 @@ A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki
 For most people, this will suffice:
 
 ```
-$ git clone https://github.com/hugsy/ctfpad
-$ cd ctfpad
-### CHANGE THE CREDENTIALS IN docker-compose.yml, Dockerfile, ctftools/settings.py ###
+$ git clone https://github.com/hugsy/ctfpad-docker
+$ cd ctfpad-docker
+$ nano docker-compose.yml
+### CHANGE THE CREDENTIALS IN docker-compose.yml ###
 $ docker-compose up -d --build
 ```
 
@@ -24,19 +25,30 @@ $ docker-compose up -d --build
 
 ### Dashboard
 
-![dashboard](https://i.imgur.com/4vnCKPo.png)
+![dashboard](https://i.imgur.com/vWvgjQ1.png)
 
 ### View CTF
 
-![ctf](https://i.imgur.com/3XPxnwB.png)
+![ctf](https://i.imgur.com/kEJo9Jj.png)
+![ctf2](https://i.imgur.com/fe3vvfC.png)
 
 ### Import CTFs from CTFtime
 
-![ctftime](https://i.imgur.com/DFzD5lA.png)
+![ctftime](https://i.imgur.com/TnOupMe.png)
+
 
 ### Challenge
 
-![challenge](https://i.imgur.com/nz2ob76.png)
+![challenge1](https://i.imgur.com/YRvXs3u.png)
+
+
+### Statistics
+
+![stats](https://i.imgur.com/PGsPztU.png)
+
+
+
+
 
 ## Why
 

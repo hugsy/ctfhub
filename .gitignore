@@ -5,3 +5,4 @@ env/
 *.pyo
 debug.log
 uploads/media/
+uploads/files/

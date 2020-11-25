@@ -22,6 +22,8 @@ urlpatterns = [
     path("users/add/", views.users.MemberCreateView.as_view(), name="users-register"),
     path("users/delete/<int:pk>/", views.users.MemberDeleteView.as_view(), name="users-delete"),
     path("users/edit/<int:pk>/", views.users.MemberUpdateView.as_view(), name="users-update"),
+    path("users/edit/advanced/<int:pk>/", views.users.UserUpdateView.as_view(), name="users-update-advanced"),
+    path("users/edit/change-password/", views.users.UserPasswordUpdateView.as_view(), name="users-update-password"),
     path("users/<int:pk>/", views.users.MemberDetailView.as_view(), name="users-detail"),
     path("users/<int:pk>/select-ctf/", views.users.MemberMarkAsSelectedView.as_view(), name="users-select"),
 

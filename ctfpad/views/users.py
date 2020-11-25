@@ -3,6 +3,7 @@ from django.contrib import auth, messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin
+from django.forms.models import BaseModelForm
 from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse
 from django.shortcuts import redirect, render
@@ -15,16 +16,17 @@ from django.views.generic import (
     DetailView,
 )
 from django.contrib.auth.views import (
-    LoginView,
+    LoginView, PasswordChangeView,
     PasswordResetConfirmView,
     PasswordResetView,
 )
 
 from ctfpad.models import Challenge, Member, Team
-from ctfpad.forms import MemberCreateForm, MemberMarkAsSelectedForm, MemberUpdateForm
+from ctfpad.forms import MemberCreateForm, MemberMarkAsSelectedForm, MemberUpdateForm, UserUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
 from ctfpad.mixins import RequireSuperPowersMixin
 from ctftools.settings import HEDGEDOC_URL
+
 
 class CtfpadLogin(LoginView):
     template_name = "users/login.html"
@@ -44,6 +46,39 @@ def logout(request: HttpRequest) -> HttpResponse:
     """
     auth.logout(request)
     return redirect("ctfpad:home")
+
+
+class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = User
+    success_url = reverse_lazy('ctfpad:dashboard')
+    template_name = "users/edit_advanced.html"
+    login_url = "/users/login/"
+    redirect_field_name = "redirect_to"
+    success_message = "User settings successfully updated"
+    form_class = UserUpdateForm
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not request.user.member.has_superpowers and self.object.pk != request.user.id:
+            raise Http404()
+        return super().get(request, *args, **kwargs)
+
+    def form_valid(self, form: BaseModelForm) -> HttpResponse:
+        password = form.cleaned_data["current_password"]
+        if not self.request.user.check_password(password):
+            messages.error(self.request, "Incorrect password")
+            return redirect("ctfpad:users-update-advanced", self.request.user.member.id)
+        return super().form_valid(form)
+
+
+class UserPasswordUpdateView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
+    model = User
+    success_url = reverse_lazy('ctfpad:user-logout')
+    template_name = "users/edit_advanced_change_password.html"
+    login_url = "/users/login/"
+    redirect_field_name = "redirect_to"
+    success_message = "Password successfully updated, please log back in."
+
 
 
 class MemberCreateView(SuccessMessageMixin, CreateView):
