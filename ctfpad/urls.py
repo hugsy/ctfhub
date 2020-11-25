@@ -1,15 +1,18 @@
-from ctfpad.views import generate_stats
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic.base import RedirectView
+from django.contrib.staticfiles.storage import staticfiles_storage
 
-from . import views
+from ctfpad import views
+
 
 app_name = "ctfpad"
 
 urlpatterns = [
     # /
     path("", views.index, name="home"),
+    path("favicon.ico", RedirectView.as_view(url=staticfiles_storage.url('static/images/favicon.ico'))),
 
     # team
     ## create
