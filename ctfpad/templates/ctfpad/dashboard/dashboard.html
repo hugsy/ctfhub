@@ -70,7 +70,7 @@
 				</tr>
 
 				{% for ctf in latest_ctfs %}
-					<tr>
+					<tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}">
 						<td>{{ctf.name}}</td>
 						<td>{% if ctf.is_permanent %}✔{% else %}❌{% endif %}</td>
 						<td>{% if ctf.is_permanent %}✔{% elif ctf.is_running %}✔{% else %}❌{% endif %}</td>

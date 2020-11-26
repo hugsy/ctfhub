@@ -23,7 +23,7 @@
             {% if challenge.status == "solved" %}
             <tr class="ctf-completed-challenge-row">
             {% else %}
-            <tr>
+            <tr class="table-row" data-href="{% url 'ctfpad:challenges-detail' challenge.id %}">
             {% endif %}
                 <td>
                     <span class="badge badge-primary">{{challenge.category.name}}</span>
