@@ -35,7 +35,7 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         "description": "",
         "category": "",
         "flag": "",
-        "solver": "",
+        "solvers": "",
         "solved_time": "",
         "note_id": None,
         "jitsi_id": None,

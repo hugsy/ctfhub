@@ -27,7 +27,6 @@
 			</div>
 			<table class="table table-sm table-hover">
 				<tr>
-					<th></th>
 					<th>Nickname</th>
 					<th>Working On</th>
 				</tr>
@@ -35,8 +34,7 @@
 				{% for member in members %}
 					{% if member.selected_ctf %}
 					{% if member.selected_ctf.is_permanent or member.selected_ctf.is_running %}
-					<tr>
-						<td><a class="btn btn-sm btn-info" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
+					<tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
 						<td>{{member.username}}</td>
 						<td>
 							{% if member.selected_ctf.is_public %}

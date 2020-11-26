@@ -1,6 +1,9 @@
+{% load ctfpad_filters %}
+
 <div class="row">
     <div class="col">
     {% if object_list %}
+        <small>* All times are in UTC (hover for local time)</small>
         <table class="table table-sm table-hover">
             <thead>
             <tr>
@@ -14,10 +17,14 @@
             </thead>
             <tbody>
             {% for ctf in page_obj %}
-            <tr>
+            <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}">
                 <th scope="row">{{ctf.name}}</td>
-                <td>{{ctf.start_date}}</td>
-                <td>{{ctf.end_date}}</td>
+                <td>
+                    <acronym title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start_date | date:"Y/m/d H:i:s"}}</acronym>
+                </td>
+                <td>
+                    <acronym title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</acronym>
+                </td>
                 <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:ctfs-detail' ctf.id %}">View</a></td>
                 <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:ctfs-edit' ctf.id %}">Edit</a></td>
                 <td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:ctfs-delete' ctf.id %}">Delete</a></td>

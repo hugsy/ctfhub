@@ -21,7 +21,7 @@
 
         {% for challenge in ctf.challenges %}
             {% if challenge.status == "solved" %}
-            <tr class="ctf-completed-challenge-row">
+            <tr class="table-row ctf-completed-challenge-row" data-href="{% url 'ctfpad:challenges-detail' challenge.id %}">
             {% else %}
             <tr class="table-row" data-href="{% url 'ctfpad:challenges-detail' challenge.id %}">
             {% endif %}

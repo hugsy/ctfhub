@@ -287,6 +287,14 @@ class Member(TimeStampedModel):
     def ctfs(self):
         return self.private_ctfs | self.public_ctfs
 
+    @property
+    def timezone_offset(self):
+        if not self.timezone:
+            return 0
+        return timedelta(hours = int(self.timezone.replace("UTC", ""), 10))
+
+    def to_local_date(self, utc_date):
+        return utc_date + self.timezone_offset
 
 
 class ChallengeCategory(TimeStampedModel):

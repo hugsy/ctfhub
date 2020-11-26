@@ -88,7 +88,7 @@
                 </thead>
                 <tbody>
                 {% for member in team.members %}
-                <tr>
+                <tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
                     <th scope="row">
                         <img height="30px" width="35px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle">
                         <a href="mailto:{{member.email}}">{{member.username}}</a>

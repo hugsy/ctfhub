@@ -87,7 +87,7 @@ div #current-ctf
 }
 
 .ctf-completed-challenge-row{
-    background-color: lightgrey;
+    background-color: rgba(78, 161, 78, 0.527);
     font-style: italic;
     text-decoration: line-through;
 }

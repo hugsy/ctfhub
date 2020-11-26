@@ -9,6 +9,7 @@
 {% include 'snippets/messages.html' %}
 
 {% load humanize %}
+{% load ctfpad_filters %}
 
 <div class="row">
     <div class="col-md-5">
@@ -64,9 +65,29 @@
 
                 {% if not ctf.is_permanent %}
                 <li class="list-group-item list-group-item-action">
-                    <strong>Date:</strong>
-                    {{ctf.start_date | date:"Y/m/d H:i:s"}}
-                    ↦ {{ctf.end_date | date:"Y/m/d H:i:s"}}
+                    <div class="row">
+                        <div class="col" style="text-align: center;">
+                            <strong>Date</strong>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4"><strong>UTC</strong></div>
+                        <div class="col-sm-8">
+                            {{ctf.start_date | date:"Y/m/d H:i:s"}}
+                            ↦ {{ctf.end_date | date:"Y/m/d H:i:s"}}
+                        </div>
+                    </div>
+
+
+                    {% if request.user.member.timezone %}
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Local</strong></div>
+                        <div class="col-sm-8">
+                            {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}
+                            ↦ {{ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s"}}
+                        </div>
+                    </div>
+                    {% endif %}
                 </li>
                 {% endif %}
 

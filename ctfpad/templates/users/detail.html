@@ -7,7 +7,7 @@
 {% include 'snippets/messages.html' %}
 
 {% load static %}
-{% load bootstrap_tags %}
+
 
 <div class="row">
     <div class="col-md-4">
@@ -97,16 +97,16 @@
 					<th>Challenge</th>
 					<th>Category</th>
 					<th>Points</th>
-					<th></th>
+					<th>Solved Time</th>
 				</tr>
 
-                {% for challenge in solved_challenges %}
-                <tr>
+                {% for challenge in member.solved_challenges.all %}
+                <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}">
                     <td>{{challenge.ctf}}</td>
                     <td>{{challenge.name}}</td>
-					<td>{{challenge.category}}</td>
+					<td><span class="badge badge-primary">{{challenge.category.name}}</span></td>
 					<td>{{challenge.points}}</td>
-					<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}">Jump to CTF</a></td>
+					<td>{{challenge.solved_time}}</td>
 				</tr>
                 {% endfor %}
 			</table>
