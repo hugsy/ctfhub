@@ -65,11 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			<a class="btn btn-warning btn-sm btn-block" href="{% url 'ctfpad:challenges-edit' challenge.id %}"><strong>Edit Challenge</strong></a>
             <ul class="list-group">
                 <li class="list-group-item active">
-                    <strong>Info</strong>
-                </li>
-
-                <li class="list-group-item list-group-item-action">
-                    <strong>Points:</strong> {{challenge.points}}
+                    <strong>{{challenge.name}}</strong> ({{challenge.points}} points)
                 </li>
 
                 <li class="list-group-item list-group-item-action">
@@ -102,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="form-group">
                 {% if challenge.status == "solved" %}
                     <input type="text" class="form-control" style="background-color: lightgreen;" id={{flag_form.flag.id_for_label}} name="{{flag_form.flag.html_name}}" placeholder="{{challenge.ctf.flag_prefix}}" value="{{challenge.flag}}" readonly/>
-                    <small>by <strong>{{challenge.solvers.all|join:", "}}</strong> at <em><abbr title="Local time: {{challenge.solved_time| as_local_datetime_for_member:request.user.member}}">{{challenge.solved_time}} UTC</abbr></em></small>
+                    <small>Solved by <strong>{{challenge.solvers.all|join:", "}}</strong> at <em><abbr title="Local time: {{challenge.solved_time| as_local_datetime_for_member:request.user.member}}">{{challenge.solved_time}} UTC</abbr></em></small>
                 {% else %}
                     <form method="POST" action="{% url 'ctfpad:challenges-score' challenge.id %}">
                         {% csrf_token %}
