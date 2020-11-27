@@ -7,7 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ctfpad.forms import (
     CategoryCreateForm,
-    CtfCreateUpdateForm,
+    CtfCreateUpdateForm, TagCreateForm,
 )
 from ctfpad.models import Ctf
 from ctfpad.helpers import (
@@ -109,6 +109,7 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
     redirect_field_name = "redirect_to"
     extra_context = {
         "add_category_form": CategoryCreateForm(),
+        "add_tag_form": TagCreateForm(),
     }
 
 

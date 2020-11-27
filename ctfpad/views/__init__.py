@@ -16,6 +16,7 @@ from . import (
     challenges,
     categories,
     files,
+    tags,
 )
 
 from ..models import (

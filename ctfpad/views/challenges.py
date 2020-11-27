@@ -73,10 +73,6 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
         "hedgedoc_url": HEDGEDOC_URL,
     }
 
-    # def get_context_data(self, **kwargs):
-    #     ctx = super().get_context_data(**kwargs)
-    #     return ctx
-
 
 class ChallengeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Challenge

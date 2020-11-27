@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import validate_password
 from django import forms
 from django.forms import widgets
 
-from ctfpad.models import Challenge, ChallengeCategory, ChallengeFile, Ctf, Member, Team
+from ctfpad.models import Challenge, ChallengeCategory, ChallengeFile, Ctf, Member, Tag, Team
 
 
 class UserUpdateForm(UserChangeForm):
@@ -121,9 +121,14 @@ class ChallengeUpdateForm(forms.ModelForm):
             "flag",
             "last_update_by",
             "solvers",
+            "tags",
         ]
 
     is_update = True
+
+    def cleaned_tags(self):
+        data = [x.lower() for x in self.cleaned_data['tags'].split()]
+        return data
 
 
 class ChallengeSetFlagForm(forms.ModelForm):
@@ -151,7 +156,12 @@ class CategoryCreateForm(forms.ModelForm):
             "name",
         ]
 
-
+class TagCreateForm(forms.ModelForm):
+    class Meta:
+        model = Tag
+        fields = [
+            "name",
+        ]
 
 class MemberMarkAsSelectedForm(forms.ModelForm):
     class Meta:

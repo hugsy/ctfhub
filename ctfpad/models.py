@@ -389,6 +389,10 @@ class ChallengeFile(TimeStampedModel):
     def size(self):
         return self.file.size
 
+    @property
+    def url(self):
+        return self.file.url
+
     def save(self):
         # save() to commit files to proper location
         super(ChallengeFile, self).save()
@@ -468,15 +472,14 @@ class CtfStats:
 SearchResult = namedtuple("SearchResult", "category name description link" )
 
 class SearchEngine:
-    """[summary]
+    """A very basic^Mbad search engine
     """
     VALID_SEARCH_CATEGORIES = (
         "ctf",
         "challenge",
         "member",
-        "ctftime",
         "category",
-        "file",
+        "tag",
     )
 
     def __init__(self, query, *args, **kwargs):
@@ -490,44 +493,158 @@ class SearchEngine:
                 p = p.replace("cat:", "")
                 if p in SearchEngine.VALID_SEARCH_CATEGORIES:
                     self.selected_category = p
-                    query = query.replace(f"cat:{p}", "")
+                    query = query.replace(f"cat:{p} ", "")
                     break
 
         self.results = []
 
-        # search in ctf name & description
         if self.selected_category in (None, "ctf"):
-            for entry in Ctf.objects.filter(
-                    Q(name__icontains = query) |
-                    Q(description__icontains = query)
-                ):
-                if query.lower() in entry.name:
-                    description = entry.name
-                else:
-                    description = entry.description[50:]
+            self.results.extend( self.__search_in_ctfs(query) )
 
-                self.results.append(
-                    SearchResult(
-                        "ctf",
-                        entry.name,
-                        description,
-                        reverse("ctfpad:ctfs-detail", kwargs={"pk": entry.id})
-                    )
-                )
+        if self.selected_category in (None, "challenge"):
+            self.results.extend( self.__search_in_challenges(query) )
 
-        # search members
         if self.selected_category in (None, "member"):
-            for entry in Member.objects.filter(
+            self.results.extend( self.__search_in_members(query) )
+
+        if self.selected_category in (None, "category"):
+            self.results.extend( self.__search_in_categories(query) )
+
+        if self.selected_category in (None, "tag"):
+            self.results.extend( self.__search_in_tags(query) )
+
+        return
+
+
+    def __search_in_ctfs(self, query: str) -> list:
+        """ search in ctf name & description
+
+        Args:
+            query (str): [description]
+
+        Returns:
+            list: [description]
+        """
+        results = []
+        for entry in Ctf.objects.filter(
+                Q(name__icontains = query) |
+                Q(description__icontains = query)
+            ):
+            if query.lower() in entry.name:
+                description = entry.name
+            else:
+                description = entry.description[50:]
+            results.append(
+                SearchResult(
+                    "ctf",
+                    entry.name,
+                    description,
+                    reverse("ctfpad:ctfs-detail", kwargs={"pk": entry.id})
+                )
+            )
+        return results
+
+
+    def __search_in_challenges(self, query: str) -> list:
+        """ search in challenge name & description
+
+        Args:
+            query (str): [description]
+
+        Returns:
+            list: [description]
+        """
+        results = []
+        for entry in Challenge.objects.filter(
+                Q(name__icontains = query) |
+                Q(description__icontains = query)
+            ):
+            if query.lower() in entry.name:
+                description = entry.name
+            else:
+                description = entry.description[50:]
+            results.append(
+                SearchResult(
+                    "challenge",
+                    entry.name,
+                    description,
+                    reverse("ctfpad:challenges-detail", kwargs={"pk": entry.id})
+                )
+            )
+        return results
+
+
+    def __search_in_members(self, query: str) -> list:
+        """search members
+
+        Args:
+            query (str): [description]
+
+        Returns:
+            list: [description]
+        """
+        results = []
+        for entry in Member.objects.filter(
                     Q(user__username__icontains = query) |
                     Q(user__email__icontains = query) |
                     Q(description__icontains = query)
                 ):
+            results.append(
+                SearchResult(
+                    "member",
+                    entry.username,
+                    entry.description,
+                    reverse("ctfpad:users-detail", kwargs={"pk": entry.id})
+                )
+            )
+        return results
 
-                self.results.append(
+
+    def __search_in_categories(self, query: str) -> list:
+        """search pattern in categories
+
+        Args:
+            query (str): [description]
+
+        Returns:
+            list: [description]
+        """
+        results = []
+        for entry in ChallengeCategory.objects.filter(
+                Q(name__icontains = query)
+            ):
+            for challenge in entry.challenge_set.all():
+                results.append(
                     SearchResult(
-                        "member",
-                        entry.username,
-                        entry.description,
-                        reverse("ctfpad:users-detail", kwargs={"pk": entry.id})
+                        "tag",
+                        challenge.name,
+                        f"{challenge.name} - ({challenge.ctf})",
+                        reverse("ctfpad:challenges-detail", kwargs={"pk": challenge.id})
                     )
                 )
+        return results
+
+
+    def __search_in_tags(self, query: str) -> list:
+        """search tags
+
+        Args:
+            query (str): [description]
+
+        Returns:
+            list: [description]
+        """
+        results = []
+        for entry in Tag.objects.filter(
+                Q(name__icontains = query)
+            ):
+            for challenge in entry.challenges.all():
+                results.append(
+                    SearchResult(
+                        "tag",
+                        challenge.name,
+                        f"{challenge.name} - ({challenge.ctf})",
+                        reverse("ctfpad:challenges-detail", kwargs={"pk": challenge.id})
+                    )
+                )
+        return results

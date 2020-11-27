@@ -100,8 +100,8 @@
                             </span>
                         </div>
                         <select multiple class="form-control" id="{{ form.solvers.id_for_label }}" name="{{ form.solvers.html_name }}">
-                            {% for choice in form.solvers %}
-                              {{choice}}
+                            {% for solver in form.solvers %}
+                              {{solver}}
                             {% endfor %}
                         </select>
                     </div>
@@ -117,6 +117,21 @@
                             </span>
                         </div>
                         <input id="{{form.note_id.id_for_label}}" name="{{form.note_id.html_name}}" placeholder="{{form.note_id.label}}" value="{{form.note_id.value}}" class="form-control" type="text" readonly>
+                    </div>
+
+
+                    <label class="label"><strong>Tags </strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                            <span class="input-group-text">
+                                <i class="fab fa-markdown"></i>
+                            </span>
+                        </div>
+                        <select multiple class="form-control" id="{{ form.tags.id_for_label }}" name="{{ form.tags.html_name }}">
+                            {% for tag in form.tags %}
+                                {{tag}}
+                            {% endfor %}
+                        </select>
                     </div>
                     {% endif %}
                 </div>

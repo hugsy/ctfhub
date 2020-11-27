@@ -68,6 +68,9 @@ urlpatterns = [
 
     # categories
     path("categories/create/", views.categories.CategoryCreateView.as_view(), name="categories-create"),
+
+    # tags
+    path("tags/create/", views.tags.TagCreateView.as_view(), name="tags-create"),
 ]
 
 if settings.DEBUG:
