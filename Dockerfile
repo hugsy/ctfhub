@@ -13,7 +13,7 @@ COPY requirements.txt .
 RUN \
  apt-get update && \
  apt-get upgrade -y && \
- apt-get install -y libpq-dev python3-dev && \
+ apt-get install -y libpq-dev python3-dev postgresql-client && \
  python3 -m pip install --upgrade pip && \
  python3 -m pip install -r requirements.txt --no-cache-dir && \
  apt-get autoclean && \
