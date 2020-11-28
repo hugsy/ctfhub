@@ -616,7 +616,7 @@ class SearchEngine:
             for challenge in entry.challenge_set.all():
                 results.append(
                     SearchResult(
-                        "tag",
+                        "category",
                         challenge.name,
                         f"{challenge.name} - ({challenge.ctf})",
                         reverse("ctfpad:challenges-detail", kwargs={"pk": challenge.id})

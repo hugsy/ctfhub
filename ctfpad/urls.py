@@ -44,6 +44,9 @@ urlpatterns = [
     # stats
     path("stats/", views.generate_stats, name="stats-detail"),
 
+    # toggle dark mode
+    path("toggle-theme/", views.toggle_dark_mode, name="set-dark-mode"),
+
     # ctf
     path("ctfs/", views.ctfs.CtfListView.as_view(), name="ctfs-list"),
     path("ctfs/create/", views.ctfs.CtfCreateView.as_view(), name="ctfs-create"),

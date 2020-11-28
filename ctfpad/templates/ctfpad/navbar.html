@@ -1,3 +1,4 @@
+{% load ctfpad_filters %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -37,12 +38,28 @@
                 </div>
             </li>
 
+            {% if request.user.is_authenticated and request.user.member.selected_ctf %}
             <li>
-                {% if request.user.is_authenticated and request.user.member.selected_ctf %}
                 <a class="btn btn-outline-info my-2 my-sm-0" href="{% url 'ctfpad:ctfs-detail' request.user.member.selected_ctf.id %}">
                     Jump to <strong>{{request.user.member.selected_ctf}}</strong>
                 </a>
-                {% endif %}
+            </li>
+            {% endif %}
+
+            <li>
+                <div class="custom-control custom-switch" style="margin-top: 10px; margin-left: 10px;">
+                    <form action="{% url 'ctfpad:set-dark-mode' %}" method="POST">
+                        {% csrf_token %}
+                        {% theme_cookie as my_theme %}
+                        {% if my_theme == 'dark' %}
+                        <input type="checkbox" class="custom-control-input" id="toggleDarkMode" name="darkModeCookie" checked onchange="this.form.submit();">
+                        <label class="custom-control-label" for="toggleDarkMode"><span class="color: white;">☀</span></label>
+                        {% else %}
+                        <input type="checkbox" class="custom-control-input" id="toggleDarkMode" name="darkModeCookie" onchange="this.form.submit();">
+                        <label class="custom-control-label" for="toggleDarkMode"><span class="color: white;">🌙</span></label>
+                        {% endif %}
+                    </form>
+                </div>
             </li>
         </ul>
     </div>

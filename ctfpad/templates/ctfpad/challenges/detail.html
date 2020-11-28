@@ -28,17 +28,10 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="row">
             <div class="col-sm-2">
                 <span class="btn btn-outline-primary btn-sm" data-toggle="collapse" href="#challenge_info_left_menu" role="button" aria-expanded="false" aria-controls="collapseExample">
-                    <i class="fas fa-expand-alt"></i>
+                    <i class="fas fa-exchange-alt"></i>
                 </span>
             </div>
             <div class="col-sm">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}"><strong>{{challenge.ctf.name | upper | slice:":5" }}[...]</strong></a></li>
-                        <li class="breadcrumb-item active" aria-current="page"><strong>{{challenge.name | upper | slice:":5" }}[...]</strong></li>
-                        <li class="breadcrumb-item" aria-current="page"><strong>INFO</strong></li>
-                    </ol>
-                </nav>
             </div>
         </div>
     </div>

@@ -1,5 +1,7 @@
 from django.contrib import messages
-from django.urls.base import reverse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls.base import reverse, reverse_lazy
 from ctfpad.decorators import only_if_authenticated_user
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
@@ -135,3 +137,23 @@ def search(request: HttpRequest) -> HttpResponse:
         "paginator": paginator,
     }
     return render(request, "search/list.html", context)
+
+
+@only_if_authenticated_user
+def toggle_dark_mode(request: HttpRequest) -> HttpResponse:
+    """Toggle dark mode cookie for user
+
+    Args:
+        request (HttpRequest): [description]
+
+    Returns:
+        HttpResponse: [description]
+    """
+    val = request.POST.get("darkModeCookie")
+    res = redirect("ctfpad:dashboard")
+    if val:
+        res.set_cookie('theme', 'dark')
+    else:
+        res.set_cookie('theme', 'light')
+    return res
+
