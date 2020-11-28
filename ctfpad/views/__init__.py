@@ -150,7 +150,8 @@ def toggle_dark_mode(request: HttpRequest) -> HttpResponse:
         HttpResponse: [description]
     """
     val = request.POST.get("darkModeCookie")
-    res = redirect("ctfpad:dashboard")
+    redirect_to = request.META.get("HTTP_REFERER") or reverse("ctfpad:dashboard")
+    res = redirect(redirect_to)
     if val:
         res.set_cookie('theme', 'dark')
     else:
