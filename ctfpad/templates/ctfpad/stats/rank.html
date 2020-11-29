@@ -1,55 +1,52 @@
 {% load static %}
 {% load humanize %}
 
-<div class="row" id="podium">
+
+<div class="row">
     <div class="col-md-4"></div>
     <div class="col-md-4">
-        <h5>Podium</h5>
-
-
-
-        <div class="row">
-            <div id="podium-box" class="row" style="height: 300px">
-                <div class="col-md-4 step-container m-0 p-0">
-                    <div>
-                        {% if ranked_members.1.avatar %}
-                        <img width="100px" height="100px" src="{{ranked_members.1.avatar.url}}" alt="1st" class="rounded-circle">
-                        {% else %}
-                        <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="2nd" class="rounded-circle">
-                        {% endif %}
-                        {{ranked_members.1}}
+        <div id="podium">
+            <div class="card card-body">
+                <h5>Podium</h5>
+                <div id="podium-box" class="row" style="height: 300px">
+                    <div class="col-md-4 step-container m-0 p-0">
+                        <div>
+                            {% if ranked_members.1.avatar %}
+                            <img width="100px" height="100px" src="{{ranked_members.1.avatar.url}}" alt="1st" class="rounded-circle">
+                            {% else %}
+                            <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="2nd" class="rounded-circle">
+                            {% endif %}
+                            {{ranked_members.1}}
+                        </div>
+                        <div id="second-step" class="bg-blue step centerBoth podium-number">
+                            2
+                        </div>
                     </div>
-                    <div id="second-step" class="bg-blue step centerBoth podium-number">
-                        2
+                    <div class="col-md-4 step-container m-0 p-0">
+                        <div>
+                            {% if ranked_members.0.avatar %}
+                            <img width="100px" height="100px" src="{{ranked_members.0.avatar.url}}" alt="1st" class="rounded-circle">
+                            {% else %}
+                            <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="1st" class="rounded-circle">
+                            {% endif %}
+                            {{ranked_members.0}}
+                        </div>
+                        <div id="first-step" class="bg-blue step centerBoth podium-number">
+                            1
+                        </div>
                     </div>
-                </div>
-
-
-                <div class="col-md-4 step-container m-0 p-0">
-                    <div>
-                        {% if ranked_members.0.avatar %}
-                        <img width="100px" height="100px" src="{{ranked_members.0.avatar.url}}" alt="1st" class="rounded-circle">
-                        {% else %}
-                        <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="1st" class="rounded-circle">
-                        {% endif %}
-                        {{ranked_members.0}}
-                    </div>
-                    <div id="first-step" class="bg-blue step centerBoth podium-number">
-                        1
-                    </div>
-                </div>
-
-                <div class="col-md-4 step-container m-0 p-0">
-                    <div>
-                        {% if ranked_members.2.avatar %}
-                        <img width="100px" height="100px" src="{{ranked_members.2.avatar.url}}" alt="1st" class="rounded-circle">
-                        {% else %}
-                        <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="3rd" class="rounded-circle">
-                        {% endif %}
-                        {{ranked_members.2}}
-                    </div>
-                    <div id="third-step" class="bg-blue step centerBoth podium-number">
-                        3
+                    <div class="col-md-4 step-container m-0 p-0">
+                        <div>
+                            {% if ranked_members.2.avatar %}
+                            <img width="100px" height="100px" src="{{ranked_members.2.avatar.url}}" alt="1st" class="rounded-circle">
+                            {% else %}
+                            <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="3rd" class="rounded-circle">
+                            {% endif %}
+                            {{ranked_members.2}}
+                        </div>
+                        <div id="third-step" class="bg-blue step centerBoth podium-number">
+                            3
+                        </div>
                     </div>
                 </div>
             </div>
@@ -66,27 +63,29 @@
 <div class="row" id="ranking">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-        <h5>Ranking</h5>
-        <table class="table table-hover">
-            <thead>
-              <tr>
-                <th scope="col">Rank</th>
-                <th scope="col">Member</th>
-                <th scope="col">Points scored</th>
-                <th scope="col">Best category</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for member in ranked_members %}
+        <div class="card card-body">
+            <h5>Ranking</h5>
+            <table class="table table-hover">
+                <thead>
                 <tr>
-                    <th scope="row">{{ forloop.counter | ordinal }}</th>
-                    <td>{{ member.username }}</td>
-                    <td>{{ member.total_points_scored }}</td>
-                    <td>{{ member.best_category | upper }}</td>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Member</th>
+                    <th scope="col">Points scored</th>
+                    <th scope="col">Best category</th>
                 </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for member in ranked_members %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter | ordinal }}</th>
+                        <td>{{ member.username }}</td>
+                        <td>{{ member.total_points_scored }}</td>
+                        <td>{{ member.best_category | upper }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
     <div class="col-md-3"></div>
 </div>

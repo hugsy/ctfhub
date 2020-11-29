@@ -174,7 +174,7 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     Returns:
         str: [description]
     """
-    default_logo = f"{STATIC_URL}/images/{CTFPAD_DEFAULT_CTF_LOGO}"
+    default_logo = f"{STATIC_URL}images/{CTFPAD_DEFAULT_CTF_LOGO}"
     try:
         ctf_info = ctftime_get_ctf_info(ctftime_id)
         logo = ctf_info.setdefault("logo", default_logo)

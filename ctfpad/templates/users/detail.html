@@ -7,7 +7,7 @@
 {% include 'snippets/messages.html' %}
 
 {% load static %}
-
+{% load ctfpad_filters %}
 
 <div class="row">
     <div class="col-md-4">
@@ -88,28 +88,69 @@
     </div>
 
     <div class="col-md-8">
+
+
     <h5>Accomplishments</h5>
 		<hr>
 		<div class="card card-body">
-			<table class="table table-sm table-hover">
-				<tr>
-					<th>CTF</th>
-					<th>Challenge</th>
-					<th>Category</th>
-					<th>Points</th>
-					<th>Solved Time</th>
-				</tr>
 
-                {% for challenge in member.solved_challenges.all %}
-                <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}">
-                    <td>{{challenge.ctf}}</td>
-                    <td>{{challenge.name}}</td>
-					<td><span class="badge badge-primary">{{challenge.category.name}}</span></td>
-					<td>{{challenge.points}}</td>
-					<td>{{challenge.solved_time}}</td>
-				</tr>
-                {% endfor %}
-			</table>
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a href="#stats" class="nav-link active" data-toggle="tab">Overview</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#detail" class="nav-link" data-toggle="tab">Detail</a>
+                </li>
+            </ul>
+
+            <div class="tab-content" style="margin-top: 17px;">
+                <div class="tab-pane fade show active" id="stats">
+                    <div id="wrapper-chart-user-stats">
+                        <canvas id="user-stats"></canvas>
+                        <script>
+new Chart(document.getElementById("user-stats"), {
+    "type": "line",
+    "data": {
+        "labels": [
+        {% for solved in member.solved_public_challenges.all|as_time_accumulator_graph %}"{{solved.time}}",{%endfor%}
+        ],
+        "datasets": [{
+            "label": "Scored points",
+            "data": [
+            {% for solved in member.solved_challenges.all|as_time_accumulator_graph %}{{solved.accu}}, {%endfor%}
+            ],
+            "fill": false,
+            "borderColor": "rgb(75, 192, 192)",
+            "lineTension": 0.1
+        }]
+    },
+    "options": {}
+});
+                        </script>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="detail">
+                    <table class="table table-sm table-hover">
+                        <tr>
+                            <th>CTF</th>
+                            <th>Challenge</th>
+                            <th>Category</th>
+                            <th>Points</th>
+                            <th>Solved Time</th>
+                        </tr>
+
+                        {% for challenge in member.solved_challenges.all reversed %}
+                        <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}">
+                            <td>{{challenge.ctf}}</td>
+                            <td>{{challenge.name}}</td>
+                            <td><span class="badge badge-primary">{{challenge.category.name}}</span></td>
+                            <td>{{challenge.points}}</td>
+                            <td>{{challenge.solved_time}}</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>

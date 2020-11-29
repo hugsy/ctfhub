@@ -13,13 +13,12 @@ function generate_random_rgb()
 {
     return `rgb(${get_random_int(256)}, ${get_random_int(256)}, ${get_random_int(256)})`;
 }
-
 </script>
 
 
 <div class="row" id="stats">
 	<div class="col-md-4">
-        <div class="wrapper-chart1">
+        <div class="card card-body">
             <canvas id="chart1" width="33%" height="20%"></canvas>
             <script>
 new Chart(document.getElementById("chart1"),
@@ -65,9 +64,8 @@ new Chart(document.getElementById("chart1"),
     </div>
 
 
-
     <div class="col-md-4">
-		<div id="wrapper-chart2">
+		<div class="card card-body">
             <canvas id="chart2" width="33%" height="20%"></canvas>
             <script>
 new Chart(document.getElementById("chart2"), {
@@ -94,9 +92,8 @@ new Chart(document.getElementById("chart2"), {
     </div>
 
 
-
     <div class="col-md-4">
-		<div id="wrapper-chart3">
+		<div class="card card-body">
             <canvas id="chart3" width="33%" height="20%"></canvas>
             <script>
 new Chart(document.getElementById("chart3"), {

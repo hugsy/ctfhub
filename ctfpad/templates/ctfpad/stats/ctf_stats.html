@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load ctfpad_filters %}
 <div class="card card-body">
     <div class="row">
         <div class="col">
@@ -10,12 +11,12 @@ new Chart(document.getElementById("ctf-stats"), {
     "data": {
         "labels": [
 
-        {% for solved in ctf.solved_challenges_for_graph %}"{{solved.time}}",{%endfor%}
+        {% for solved in ctf.solved_challenges.all|as_time_accumulator_graph %}"{{solved.time}}",{%endfor%}
         ],
         "datasets": [{
             "label": "Scored points",
             "data": [
-            {% for solved in ctf.solved_challenges_for_graph %}{{solved.accu}}, {%endfor%}
+            {% for solved in ctf.solved_challenges.all|as_time_accumulator_graph %}{{solved.accu}}, {%endfor%}
             ],
             "fill": false,
             "borderColor": "rgb(75, 192, 192)",
