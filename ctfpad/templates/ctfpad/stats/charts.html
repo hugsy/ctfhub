@@ -100,7 +100,7 @@ new Chart(document.getElementById("chart3"), {
     "type": "line",
     "data": {
         "labels": [
-        {% for month in last_year_stats %}"{{month}}",{%endfor%}
+        {% for month in last_year_stats reversed %}"{{month}}",{%endfor%}
         ],
         "datasets": [{
             "label": "Number of CTFs played for the last year",
