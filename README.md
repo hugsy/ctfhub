@@ -13,8 +13,8 @@ A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki
 For most people, this will suffice:
 
 ```
-$ git clone https://github.com/hugsy/ctfpad-docker
-$ cd ctfpad-docker
+$ git clone https://github.com/hugsy/ctfpad
+$ cd ctfpad
 $ nano docker-compose.yml
 ### CHANGE THE CREDENTIALS IN docker-compose.yml ###
 $ docker-compose up -d --build
