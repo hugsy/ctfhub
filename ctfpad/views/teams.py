@@ -17,6 +17,16 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
     success_url = reverse_lazy("ctfpad:users-register")
     success_message = "Team successfully created"
 
+    def dispatch(self, request, *args, **kwargs):
+        if Team.objects.all().count():
+            messages.error(self.request, "Only one team can be created")
+            return redirect("ctfpad:home")
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+        else:
+            handler = self.http_method_not_allowed
+        return handler(request, *args, **kwargs)
+
     def form_valid(self, form):
         if Team.objects.count() == 1:
             form.errors["name"] = "TeamAlreadyExistError"
