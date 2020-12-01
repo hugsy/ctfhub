@@ -16,6 +16,8 @@ from django.utils.functional import cached_property
 from model_utils.fields import MonitorField, StatusField
 from model_utils import Choices, FieldTracker
 
+from ctfpad.helpers import ctftime_fetch_next_ctf_data
+
 
 from ctftools.settings import (
     HEDGEDOC_URL,
@@ -471,13 +473,6 @@ SearchResult = namedtuple("SearchResult", "category name description link" )
 class SearchEngine:
     """A very basic^Mbad search engine
     """
-    VALID_SEARCH_CATEGORIES = (
-        "ctf",
-        "challenge",
-        "member",
-        "category",
-        "tag",
-    )
 
     def __init__(self, query, *args, **kwargs):
         query = query.lower()
@@ -488,32 +483,25 @@ class SearchEngine:
         for p in patterns:
             if p.startswith("cat:"):
                 p = p.replace("cat:", "")
-                if p in SearchEngine.VALID_SEARCH_CATEGORIES:
+                if p in VALID_SEARCH_CATEGORIES:
                     self.selected_category = p
-                    query = query.replace(f"cat:{p} ", "")
+                    query = query.replace(f"cat:{p}", "")
                     break
 
         self.results = []
 
-        if self.selected_category in (None, "ctf"):
-            self.results.extend( self.__search_in_ctfs(query) )
-
-        if self.selected_category in (None, "challenge"):
-            self.results.extend( self.__search_in_challenges(query) )
-
-        if self.selected_category in (None, "member"):
-            self.results.extend( self.__search_in_members(query) )
-
-        if self.selected_category in (None, "category"):
-            self.results.extend( self.__search_in_categories(query) )
-
-        if self.selected_category in (None, "tag"):
-            self.results.extend( self.__search_in_tags(query) )
-
+        if self.selected_category is None:
+            for cat in VALID_SEARCH_CATEGORIES:
+                handle = VALID_SEARCH_CATEGORIES[cat]
+                self.results.extend( handle(query) )
+        else:
+            handle = VALID_SEARCH_CATEGORIES[self.selected_category]
+            self.results.extend( handle(query) )
         return
 
 
-    def __search_in_ctfs(self, query: str) -> list:
+    @classmethod
+    def search_in_ctfs(cls, query: str) -> list:
         """ search in ctf name & description
 
         Args:
@@ -542,7 +530,8 @@ class SearchEngine:
         return results
 
 
-    def __search_in_challenges(self, query: str) -> list:
+    @classmethod
+    def search_in_challenges(cls, query: str) -> list:
         """ search in challenge name & description
 
         Args:
@@ -571,7 +560,8 @@ class SearchEngine:
         return results
 
 
-    def __search_in_members(self, query: str) -> list:
+    @classmethod
+    def search_in_members(cls, query: str) -> list:
         """search members
 
         Args:
@@ -597,7 +587,8 @@ class SearchEngine:
         return results
 
 
-    def __search_in_categories(self, query: str) -> list:
+    @classmethod
+    def search_in_categories(cls, query: str) -> list:
         """search pattern in categories
 
         Args:
@@ -622,7 +613,8 @@ class SearchEngine:
         return results
 
 
-    def __search_in_tags(self, query: str) -> list:
+    @classmethod
+    def search_in_tags(cls, query: str) -> list:
         """search tags
 
         Args:
@@ -645,3 +637,37 @@ class SearchEngine:
                     )
                 )
         return results
+
+
+    @classmethod
+    def search_in_ctftime(cls, query: str) -> list:
+        """search ctfs in ctftime
+
+        Args:
+            query (str): [description]
+
+        Returns:
+            list: [description]
+        """
+        results = []
+        for entry in ctftime_fetch_next_ctf_data():
+            if query in entry["title"].lower() or query in entry["description"].lower():
+                results.append(
+                    SearchResult(
+                        "ctftime",
+                        entry["title"][:15] + "...",
+                        entry["description"][:100] + "...",
+                        reverse("ctfpad:ctfs-import") + f"?ctftime_id={entry['id']}"
+                    )
+                )
+        return results
+
+
+VALID_SEARCH_CATEGORIES = {
+    "ctf" :        SearchEngine.search_in_ctfs,
+    "challenge" :  SearchEngine.search_in_challenges,
+    "member" :     SearchEngine.search_in_members,
+    "category" :   SearchEngine.search_in_categories,
+    "tag" :        SearchEngine.search_in_tags,
+    "ctftime" :    SearchEngine.search_in_ctftime,
+}

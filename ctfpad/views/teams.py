@@ -14,7 +14,7 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
     model = Team
     template_name = "team/create.html"
     form_class = TeamCreateUpdateForm
-    success_url = reverse_lazy("ctfpad:users-register")
+    success_url = reverse_lazy("ctfpad:dashboard")
     success_message = "Team successfully created"
 
     def dispatch(self, request, *args, **kwargs):
@@ -27,16 +27,9 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
             handler = self.http_method_not_allowed
         return handler(request, *args, **kwargs)
 
-    def form_valid(self, form):
-        if Team.objects.count() == 1:
-            form.errors["name"] = "TeamAlreadyExistError"
-            messages.error(self.request, "Only one team can be created")
-            return redirect("ctfpad:home")
-        return super().form_valid(form)
-
     def get_success_message(self, cleaned_data):
-        msg = f"Team '{self.object.name}' successfully created!<br>"
-        msg+= f"Use the API key <b>'{self.object.api_key}</b> to register new members."
+        msg = f"Team '{self.object.name}' successfully created!"
+        msg+= f"Use the API key '{self.object.api_key}' to register new members."
         return msg
 
 

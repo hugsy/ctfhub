@@ -113,6 +113,7 @@ def ctftime_fetch_running_ctf_data(limit=100) -> list:
     Returns:
         list: JSON output from CTFTime
     """
+    now = datetime.now()
     try:
         res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*7):.0f}&finish={time()+(3600*24*7):.0f}",
             headers={"user-agent": CTFTIME_USER_AGENT})
@@ -123,21 +124,22 @@ def ctftime_fetch_running_ctf_data(limit=100) -> list:
             start, finish, now = ctftime_parse_date(ctf["start"]), ctftime_parse_date(ctf["finish"]), now
             if start < now and finish > now:
                 result.append(ctf)
-    except Exception:
+    except Exception as e:
+        print(e)
         result = []
     return result
 
 
 
 @lru_cache(maxsize=128)
-def ctftime_fetch_next_ctf_data() -> list:
+def ctftime_fetch_next_ctf_data(limit=100) -> list:
     """Retrieve upcoming CTFs from CTFTime API
 
     Returns:
         list: JSON output from CTFTime
     """
     try:
-        res = requests.get(CTFTIME_API_EVENTS_URL, headers={"user-agent": CTFTIME_USER_AGENT})
+        res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}", headers={"user-agent": CTFTIME_USER_AGENT})
         if res.status_code != requests.codes.ok:
             raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
         result = res.json()
