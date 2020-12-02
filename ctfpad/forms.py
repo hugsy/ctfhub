@@ -76,6 +76,8 @@ class MemberUpdateForm(forms.ModelForm):
             "selected_ctf",
         ]
 
+    has_superpowers = forms.BooleanField(required=False, label="Has Super-Powers?")
+
 
 class CtfCreateUpdateForm(forms.ModelForm):
     class Meta:

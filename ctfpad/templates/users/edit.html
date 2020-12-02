@@ -134,8 +134,26 @@
                                 <i class="fas fa-calendar-week"></i>
                             </span>
                         </div>
-                        <input type="date" id={{form.joined_time.id_for_label}} name="{{form.joined_time.html_name }}" placeholder="{{form.joined_time.label}}" value="{{form.joined_time.value|date:'Y-m-d'}}" class="form-control">
+                        <input type="date" id="{{form.joined_time.id_for_label}}" name="{{form.joined_time.html_name }}" placeholder="{{form.joined_time.label}}" value="{{form.joined_time.value|date:'Y-m-d'}}" class="form-control">
                     </div>
+
+                    {% if request.user.member.has_superpowers %}
+                    <label class="label"><strong>Has Super-Powers?</strong></label>
+                    <div class="input-group mb-3">
+                        <div class="input-group-append">
+                        </div>
+                        <div class="custom-control custom-switch" >
+                            <input type="checkbox" class="custom-control-input"
+                            id="{{form.has_superpowers.id_for_label}}"
+                            name="{{form.has_superpowers.html_name}}"
+                            {% if form.has_superpowers.value %}
+                            &nbsp; checked
+                            {% endif %}
+                            >
+                            <label class="custom-control-label" for="{{form.has_superpowers.id_for_label}}"></label>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
 
                 <div class="card-footer text-muted">
