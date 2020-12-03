@@ -160,7 +160,7 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        if self.request.user.member.has_superpowers:
+        if self.request.user.member.has_superpowers and 'has_superpowers' in form.cleaned_data:
             member = self.get_object()
             if form.cleaned_data['has_superpowers'] == True:
                 # any superuser can make another user become a superuser

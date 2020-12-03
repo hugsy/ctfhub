@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 from ctfpad.forms import (
     CategoryCreateForm,
@@ -23,11 +24,15 @@ class CtfListView(LoginRequiredMixin, ListView):
     template_name = "ctfpad/ctfs/list.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
-    paginate_by = 10
+    paginate_by = 25
     ordering = ["-id"]
     extra_context = {
         "ctftime_ctfs": ctftime_fetch_running_ctf_data() + ctftime_fetch_next_ctf_data(),
     }
+
+    def get_queryset(self):
+        qs = super(CtfListView, self).get_queryset()
+        return qs.filter( Q(visibility = "public" ) | Q(created_by = self.request.user.member ) )
 
 
 class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
