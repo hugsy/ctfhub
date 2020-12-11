@@ -28,38 +28,30 @@
                     <code>{{team.api_key}}</code>
                 </li>
 
-                {% if team.blog_url %}
                 <li class="list-group-item list-group-item-action">
-                    <strong>Blog:</strong>
-                    <a href="{{team.blog_url}}" target="_blank">{{team.blog_url}} <i class="fas fa-external-link-alt"></i></a>
-                </li>
-                {% endif %}
+                    <strong>Links:</strong><br>
+                    ●&nbsp;
+                    {% if team.blog_url %}
+                    <a href="{{team.blog_url}}" target="_blank"><i class="fas fa-blog fa-fw"></i></a>&nbsp;●&nbsp;
+                    {% endif %}
 
-                {% if team.github_url %}
-                <li class="list-group-item list-group-item-action">
-                    <strong>Github:</strong>
-                    <a href="{{team.github_url}}" target="_blank">{{team.github_url}} <i class="fas fa-external-link-alt"></i></a>
-                </li>
-                {% endif %}
+                    {% if team.github_url %}
+                    <a href="{{team.github_url}}" target="_blank"><i class="fab fa-github fa-fw"></i></a>&nbsp;●&nbsp;
+                    {% endif %}
 
-                {% if team.twitter_url %}
-                <li class="list-group-item list-group-item-action">
-                    <strong>Twitter:</strong>
-                    <a href="{{team.twitter_url}}" target="_blank">{{team.twitter_url}} <i class="fas fa-external-link-alt"></i></a>
-                </li>
-                {% endif %}
+                    {% if team.twitter_url %}
+                    <a href="{{team.twitter_url}}" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>&nbsp;●&nbsp;
+                    {% endif %}
 
-                {% if team.youtube_url %}
-                <li class="list-group-item list-group-item-action">
-                    <strong>Youtube:</strong>
-                    <a href="{{team.youtube_url}}" target="_blank">{{team.youtube_url}} <i class="fas fa-external-link-alt"></i></a>
+                    {% if team.youtube_url %}
+                    <a href="{{team.youtube_url}}" target="_blank"><i class="fab fa-youtube fa-fw"></i></i></a>&nbsp;●&nbsp;
+                    {% endif %}
                 </li>
-                {% endif %}
 
                 {% if team.team.ctftime_id > 0 %}
                 <li class="list-group-item list-group-item-action">
                     View team on
-                    <a href="https://ctftime.org/team/{{team.ctftime_id}}"> <strong>CTFTime</strong> <i class="fas fa-external-link-alt"></i></a>
+                    <a href="https://ctftime.org/team/{{team.ctftime_id}}"><strong>CTFTime</strong> <i class="fas fa-external-link-alt"></i></a>
                 </li>
                 {% endif %}
             </ul>
