@@ -72,6 +72,9 @@ services:
       - 8443:443
     depends_on:
       - ctfpad
+    networks:
+      backend:
+    restart: unless-stopped
 
 networks:
   backend:
