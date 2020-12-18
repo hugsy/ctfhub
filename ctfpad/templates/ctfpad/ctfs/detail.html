@@ -137,13 +137,14 @@
         <ul class="nav nav-tabs">
             <li class="nav-item">
                 <a href="#challenges" class="nav-link active" data-toggle="tab">
-                    Challenges <span class="badge badge-light">{{ctf.challenges|length}}</span>
+                    Challenges <span class="badge badge-info">{{ctf.challenges|length}}</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="#stats" class="nav-link" data-toggle="tab">
-                    Stats
-                </a>
+                <a href="#stats" class="nav-link" data-toggle="tab">Stats</a>
+            </li>
+            <li class="nav-item">
+                <a href="#export" class="nav-link" data-toggle="tab">Export</a>
             </li>
         </ul>
 
@@ -154,6 +155,10 @@
             <div class="tab-pane fade" id="stats">
                 {% include 'ctfpad/stats/ctf_stats.html' %}
             </div>
+            <div class="tab-pane fade" id="export">
+                {% include 'ctfpad/ctfs/detail_export.html' %}
+            </div>
+
         </div>
     </div>
 </div>

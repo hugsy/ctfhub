@@ -25,6 +25,8 @@ services:
     image: quay.io/codimd/server:1.6.0
     environment:
       - CMD_DB_URL=postgres://ctfpad:tookahlaiphee2KieTeeg5ooxutang4o@db:5432/ctfpad    # Change here
+      - CMD_DOMAIN=my.domain.com                                                        # Change here
+      - CMD_PORT=3000                                                                   # Change here
       - CMD_COOKIE_POLICY=none
       - CMD_ALLOW_ANONYMOUS=false
       - CMD_ALLOW_FREEURL=true
@@ -69,7 +71,8 @@ services:
       - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./conf/certs:/etc/nginx/certs
     ports:
-      - 8443:443
+      - 8443:8443
+      - 3443:3443
     depends_on:
       - ctfpad
     networks:

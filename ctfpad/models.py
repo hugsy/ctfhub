@@ -4,6 +4,9 @@ import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
 from collections import namedtuple
+import zipfile
+import requests
+import tempfile
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -173,6 +176,35 @@ class Ctf(TimeStampedModel):
     @cached_property
     def jitsi_url(self):
         return f"{JITSI_URL}/{self.id}"
+
+
+    def export_notes_as_zipstream(self, stream, member=None):
+        zip_file = zipfile.ZipFile(stream, 'w')
+        now = datetime.now()
+        ts = (now.year, now.month, now.day, 0, 0, 0)
+
+        session = requests.Session()
+
+        #
+        # try impersonating requesting user on HedgeDoc, this way we're sure anonymous & unauthorized users
+        # can't dump data
+        #
+        if member:
+            t = session.post(f"{HEDGEDOC_URL}/login", data={"email": member.hedgedoc_username, "password": member.hedgedoc_password})
+
+        for challenge in self.challenges:
+            fname = slugify( f"{self.name}-{challenge.name}.md" )
+            with tempfile.TemporaryFile() as fp:
+                result = session.get(f"{HEDGEDOC_URL}{challenge.note_id}/download")
+                if result.status_code != requests.codes.ok:
+                    continue
+                zinfo = zipfile.ZipInfo(filename=fname, date_time=ts)
+                zip_file.writestr(zinfo, result.text)
+
+        if member:
+            session.post(f"{HEDGEDOC_URL}/logout")
+
+        return f"{slugify(self.name)}-notes.zip"
 
 
 

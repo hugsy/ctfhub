@@ -1,5 +1,8 @@
+from ctfpad.decorators import only_if_authenticated_user
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
 from django.urls import reverse, reverse_lazy
@@ -144,3 +147,16 @@ class CtfDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     redirect_field_name = "redirect_to"
     success_message = "CTF deleted"
 
+
+class CtfExportNotesView(LoginRequiredMixin, DetailView):
+    model = Ctf
+    template_name = "ctfpad/ctfs/detail.html"
+    login_url = "/users/login/"
+    redirect_field_name = "redirect_to"
+
+    def get(self, request, *args, **kwargs):
+        self.ctf = self.get_object()
+        response = HttpResponse(content_type="application/zip")
+        zip_filename = self.ctf.export_notes_as_zipstream(response, request.user.member)
+        response["Content-Disposition"] = f"attachment; filename={zip_filename}"
+        return response

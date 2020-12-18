@@ -54,6 +54,7 @@ urlpatterns = [
     path("ctfs/<uuid:pk>/", views.ctfs.CtfDetailView.as_view(), name="ctfs-detail"),
     path("ctfs/<uuid:pk>/edit/", views.ctfs.CtfUpdateView.as_view(), name="ctfs-edit"),
     path("ctfs/<uuid:pk>/delete/", views.ctfs.CtfDeleteView.as_view(), name="ctfs-delete"),
+    path("ctfs/<uuid:pk>/export-notes/", views.ctfs.CtfExportNotesView.as_view(), name="ctfs-export-notes"),
 
     # challenges
     path("challenges/", views.challenges.ChallengeListView.as_view(), name="challenges-list"),
