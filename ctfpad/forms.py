@@ -126,14 +126,21 @@ class ChallengeUpdateForm(forms.ModelForm):
             "tags",
         ]
 
-    is_update = True
-
     def cleaned_tags(self):
         data = [x.lower() for x in self.cleaned_data['tags'].split()]
         return data
 
+    def clean_flag(self):
+        flag = self.cleaned_data.get("flag")
+        prefix = self.instance.ctf.flag_prefix
 
-class ChallengeSetFlagForm(forms.ModelForm):
+        if flag and prefix and not flag.startswith(prefix):
+            self.add_error("flag", f"Unexpected format for flag (missing '{prefix}')")
+
+        return flag
+
+
+class ChallengeSetFlagForm(ChallengeUpdateForm):
     class Meta:
         model = Challenge
         fields = [
@@ -141,12 +148,6 @@ class ChallengeSetFlagForm(forms.ModelForm):
             "last_update_by",
         ]
 
-    def clean_flag(self):
-        flag = self.cleaned_data.get("flag")
-        prefix = self.instance.ctf.flag_prefix
-        if not flag.startswith(prefix):
-            self.add_error("flag", f"Unexpected format for flag (missing '{prefix}')")
-        return flag
 
 class ChallengeFileCreateForm(forms.ModelForm):
     class Meta:

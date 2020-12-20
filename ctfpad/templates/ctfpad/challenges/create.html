@@ -18,7 +18,7 @@
     <div class="card" style="width: 35rem;">
         <div class="card-header">
             <h5 class="card-title">
-                {% if form.instance.creation_time %}
+                {% if form.name.value %}
                 <p class="card-header-title">Updating Challenge {{form.name.value}}</p>
                 {% else %}
                 <p class="card-header-title">New Challenge</p>
@@ -80,7 +80,7 @@
                         <textarea id="{{form.description.id_for_label}}" name="{{form.description.html_name }}" placeholder="{{form.description.label}}" value="{{form.description.value}}" class="form-control">{% if form.description %}{{form.description.value}}{%endif%}</textarea>
                     </div>
 
-                    {% if form.is_update %}
+                    {% if form.instance.creation_time %}
                     <label class="label"><strong>Flag</strong></label>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
@@ -108,7 +108,7 @@
                     {% endif %}
                     {% endif %}
 
-                    {% if form.is_update %}
+                    {% if form.instance.creation_time %}
                     <label class="label"><strong>HedgeDoc ID </strong></label>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
@@ -138,7 +138,7 @@
 
                 <div class="card-footer text-muted">
                     <div class="control card-footer-item">
-                        {% if form.is_update %}
+                        {% if form.instance.creation_time %}
                         <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">Update Challenge</button>
                         {% else %}
                         <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">Create Challenge</button>
