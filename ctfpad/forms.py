@@ -141,6 +141,12 @@ class ChallengeSetFlagForm(forms.ModelForm):
             "last_update_by",
         ]
 
+    def clean_flag(self):
+        flag = self.cleaned_data.get("flag")
+        prefix = self.instance.ctf.flag_prefix
+        if not flag.startswith(prefix):
+            self.add_error("flag", f"Unexpected format for flag (missing '{prefix}')")
+        return flag
 
 class ChallengeFileCreateForm(forms.ModelForm):
     class Meta:

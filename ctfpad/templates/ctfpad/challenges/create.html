@@ -18,7 +18,7 @@
     <div class="card" style="width: 35rem;">
         <div class="card-header">
             <h5 class="card-title">
-                {% if form.name.value %}
+                {% if form.instance.creation_time %}
                 <p class="card-header-title">Updating Challenge {{form.name.value}}</p>
                 {% else %}
                 <p class="card-header-title">New Challenge</p>
