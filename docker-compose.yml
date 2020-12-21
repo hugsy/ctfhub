@@ -30,6 +30,7 @@ services:
       - CMD_COOKIE_POLICY=none
       - CMD_ALLOW_ANONYMOUS=false
       - CMD_ALLOW_FREEURL=true
+      - CMD_PROTOCOL_USESSL=false                                                       # Change here to true if you want to use it behind an HTTPs reverse proxy
     ports:
       - "3000:3000"
     networks:
