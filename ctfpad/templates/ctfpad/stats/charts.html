@@ -105,7 +105,7 @@ new Chart(document.getElementById("chart3"), {
         "datasets": [{
             "label": "Number of CTFs played for the last year",
             "data": [
-            {% for month, count in last_year_stats.items %}{{count}},{%endfor%}
+            {% for month, count in last_year_stats.items reversed %}{{count}},{%endfor%}
             ],
             "fill": false,
             "borderColor": "rgb(75, 192, 192)",
