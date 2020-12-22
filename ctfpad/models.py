@@ -19,7 +19,7 @@ from django.utils.functional import cached_property
 from model_utils.fields import MonitorField, StatusField
 from model_utils import Choices, FieldTracker
 
-from ctfpad.helpers import ctftime_fetch_next_ctf_data
+from ctfpad.helpers import ctftime_ctfs
 
 
 from ctftools.settings import (
@@ -682,7 +682,7 @@ class SearchEngine:
             list: [description]
         """
         results = []
-        for entry in ctftime_fetch_next_ctf_data():
+        for entry in ctftime_ctfs(running=False, future=True):
             if query in entry["title"].lower() or query in entry["description"].lower():
                 results.append(
                     SearchResult(

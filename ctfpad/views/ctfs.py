@@ -15,8 +15,7 @@ from ctfpad.forms import (
 )
 from ctfpad.models import Ctf
 from ctfpad.helpers import (
-    ctftime_fetch_running_ctf_data,
-    ctftime_fetch_next_ctf_data,
+    ctftime_ctfs,
     ctftime_get_ctf_info,
     ctftime_parse_date
 )
@@ -30,7 +29,7 @@ class CtfListView(LoginRequiredMixin, ListView):
     paginate_by = 25
     ordering = ["-id"]
     extra_context = {
-        "ctftime_ctfs": ctftime_fetch_running_ctf_data() + ctftime_fetch_next_ctf_data(),
+        "ctftime_ctfs": ctftime_ctfs(running=True, future=True),
     }
 
     def get_queryset(self):
