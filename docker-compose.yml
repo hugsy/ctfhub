@@ -43,7 +43,7 @@ services:
     build: https://github.com/hugsy/ctfpad.git#master
     command: python manage.py runserver 0.0.0.0:8000
     environment:
-      - HEDGEDOC_URL=http://hedgedoc:3000                   # Change here to your server public IP / FQDN
+      - HEDGEDOC_URL=http://localhost:3000                  # Change here to your server public IP / FQDN
       - CTFPAD_HOSTNAME=localhost                           # Change here to your server public IP / FQDN
       - CTFPAD_DB_NAME=ctfpad                               # (opt.) Change here
       - CTFPAD_DB_USER=ctfpad                               # (opt.) Change here
