@@ -70,7 +70,7 @@
                 <tr>
                     <th scope="col">Rank</th>
                     <th scope="col">Member</th>
-                    <th scope="col">Points scored</th>
+                    <th scope="col">Scored %</th>
                     <th scope="col">Best category</th>
                 </tr>
                 </thead>
@@ -79,8 +79,8 @@
                     <tr>
                         <th scope="row">{{ forloop.counter | ordinal }}</th>
                         <td>{{ member.username }}</td>
-                        <td>{{ member.total_points_scored }}</td>
-                        <td>{{ member.best_category | upper }}</td>
+                        <td>{{ member.total_scored_percent }}</td>
+                        <td>{{ member.best_category | lower }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
