@@ -4,6 +4,7 @@ import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
 from collections import namedtuple
+from statistics import mean
 import zipfile
 import requests
 import tempfile
@@ -267,14 +268,17 @@ class Member(TimeStampedModel):
 
         return best_categories_by_point.first()["category__name"]
 
-
     @property
-    def total_points_scored(self):
-        challenges = self.solved_challenges.filter(
-            ctf__visibility = "public"
-        )
-        return challenges.aggregate(Sum("points"))["points__sum"] or 0
+    def total_scored_percent(self):
+        if not self.solved_public_challenges:
+            return 0
 
+        member_slices = []
+        for ctf in filter(lambda c: c.scored_points > 0, Ctf.objects.filter(visibility = "public")):
+            member_points = self.solved_public_challenges.filter(ctf=ctf).aggregate(Sum("points"))["points__sum"] or 0
+            member_slices.append(member_points / ctf.scored_points)
+
+        return round(100 * mean(member_slices), 2)
 
     @property
     def last_logged_in(self):

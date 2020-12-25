@@ -94,7 +94,7 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     # ranking
     rank = sorted(
         Member.objects.all(),
-        key=lambda x: x.total_points_scored,
+        key=lambda x: x.total_scored_percent,
         reverse=True
     )
 
