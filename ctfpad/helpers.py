@@ -21,6 +21,21 @@ from ctftools.settings import (
 )
 
 
+def which_hedgedoc() -> str:
+    """Returns the docker container hostname if the default URL from the config is not accessible.
+    This is so that people can try ctfpad out locally without making any changes to the config.
+
+    Returns:
+        str: the base HedgeDoc URL
+    """
+    try:
+        requests.get(HEDGEDOC_URL)
+    except:
+        if HEDGEDOC_URL == 'http://localhost:3000':
+            return 'http://hedgedoc:3000'
+    return HEDGEDOC_URL
+
+
 def register_new_hedgedoc_user(username: str, password: str) -> bool:
     """Register the member in hedgedoc. If fail, the member will be
     seen as anonymous.
@@ -33,7 +48,7 @@ def register_new_hedgedoc_user(username: str, password: str) -> bool:
         bool: if the register action succeeded, returns True; False in any other cases
     """
     res = requests.post(
-        f'{HEDGEDOC_URL}/register',
+        which_hedgedoc() + '/register',
         data={'email': username, 'password': password},
         allow_redirects = False
     )
