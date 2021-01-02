@@ -20,6 +20,22 @@ from ctftools.settings import (
     EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
 )
 
+@lru_cache(maxsize=1)
+def which_hedgedoc() -> str:
+    """Returns the docker container hostname if the default URL from the config is not accessible.
+    This is so that ctfpad works out of the box with `docker-compose up` as most people wanting to
+    trial it out won't bother changing the default values with public FQDN/IPs.
+
+    Returns:
+        str: the base HedgeDoc URL
+    """
+    try:
+        requests.get(HEDGEDOC_URL)
+    except:
+        if HEDGEDOC_URL == 'http://localhost:3000':
+            return 'http://hedgedoc:3000'
+    return HEDGEDOC_URL
+
 
 def register_new_hedgedoc_user(username: str, password: str) -> bool:
     """Register the member in hedgedoc. If fail, the member will be
@@ -33,7 +49,7 @@ def register_new_hedgedoc_user(username: str, password: str) -> bool:
         bool: if the register action succeeded, returns True; False in any other cases
     """
     res = requests.post(
-        f'{HEDGEDOC_URL}/register',
+        which_hedgedoc() + '/register',
         data={'email': username, 'password': password},
         allow_redirects = False
     )
