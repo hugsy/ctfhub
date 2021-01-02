@@ -20,10 +20,11 @@ from ctftools.settings import (
     EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
 )
 
-
+@lru_cache(maxsize=1)
 def which_hedgedoc() -> str:
     """Returns the docker container hostname if the default URL from the config is not accessible.
-    This is so that people can try ctfpad out locally without making any changes to the config.
+    This is so that ctfpad works out of the box with `docker-compose up` as most people wanting to
+    trial it out won't bother changing the default values with public FQDN/IPs.
 
     Returns:
         str: the base HedgeDoc URL
