@@ -101,7 +101,7 @@ class Ctf(TimeStampedModel):
     team_password = models.CharField(max_length=128, blank=True)
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
     visibility = StatusField(choices_name="VISIBILITY")
-    weight = models.IntegerField(default=1)
+    weight = models.FloatField(default=1)
 
     def __str__(self) -> str:
         return self.name
