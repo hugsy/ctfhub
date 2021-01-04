@@ -11,8 +11,8 @@ services:
   db:
     image: postgres:9.6-alpine
     environment:
-      - POSTGRES_DB=ctfpad                                   # (opt.) Change here
-      - POSTGRES_USER=ctfpad                                 # (opt.) Change here
+      - POSTGRES_DB=ctfpad
+      - POSTGRES_USER=ctfpad
       - POSTGRES_PASSWORD=tookahlaiphee2KieTeeg5ooxutang4o   # Change here
     volumes:
       - db:/var/lib/postgresql/data
@@ -25,12 +25,15 @@ services:
     image: quay.io/hedgedoc/hedgedoc:1.6.0
     environment:
       - CMD_DB_URL=postgres://ctfpad:tookahlaiphee2KieTeeg5ooxutang4o@db:5432/ctfpad    # Change here
-      - CMD_DOMAIN=localhost                                                            # Change here
-      - CMD_PORT=3000                                                                   # Change here
+      - CMD_DOMAIN=localhost
+      - CMD_PORT=3000
       - CMD_COOKIE_POLICY=none
       - CMD_ALLOW_ANONYMOUS=false
       - CMD_ALLOW_FREEURL=true
-      - CMD_PROTOCOL_USESSL=false                                                       # Change here to true if you want to use it behind an HTTPs reverse proxy
+      # Uncomment to use nginx as a HTTPS reverse proxy
+      #- CMD_DOMAIN=ctfpad.mydomain.com:3443
+      #- CMD_URL_ADDPORT=false
+      #- CMD_PROTOCOL_USESSL=true
     ports:
       - "3000:3000"
     networks:
@@ -44,14 +47,17 @@ services:
     build: https://github.com/hugsy/ctfpad.git#master
     command: python manage.py runserver 0.0.0.0:8000
     environment:
-      - HEDGEDOC_URL=http://localhost:3000                  # Change here to your server public IP / FQDN
-      - CTFPAD_HOSTNAME=localhost                           # Change here to your server public IP / FQDN
-      - CTFPAD_DB_NAME=ctfpad                               # (opt.) Change here
-      - CTFPAD_DB_USER=ctfpad                               # (opt.) Change here
+      - HEDGEDOC_URL=http://localhost:3000
+      - CTFPAD_HOSTNAME=localhost
+      # Or replace with below instead to use nginx as a HTTPS reverse proxy
+      #- HEDGEDOC_URL=https://ctfpad.mydomain.com:3443
+      #- CTFPAD_HOSTNAME=ctfpad.mydomain.com
+      - CTFPAD_DB_NAME=ctfpad
+      - CTFPAD_DB_USER=ctfpad
       - CTFPAD_DB_PASSWORD=tookahlaiphee2KieTeeg5ooxutang4o # Change here
       - CTFPAD_DB_HOST=db
       - CTFPAD_DB_PORT=5432
-      # Uncomment (and customize) below to enable the password recovery feature by email
+      # Uncomment and adjust to enable the password recovery feature by email
       #- CTFPAD_EMAIL_SERVER_HOST=smtp.gmail.com # or mailgun, or sendgrid etc.
       #- CTFPAD_EMAIL_SERVER_PORT=587
       #- CTFPAD_EMAIL_USERNAME=myaccount
@@ -61,6 +67,8 @@ services:
       - hedgedoc
     ports:
       - "8000:8000"
+    volumes:
+      - uploads:/code/uploads
     networks:
       backend:
     restart: unless-stopped
@@ -85,3 +93,4 @@ networks:
 
 volumes:
   db:
+  uploads:
