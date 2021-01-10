@@ -25,12 +25,15 @@ services:
     image: quay.io/hedgedoc/hedgedoc:1.6.0
     environment:
       - CMD_DB_URL=postgres://ctfpad:tookahlaiphee2KieTeeg5ooxutang4o@db:5432/ctfpad    # Change here
-      - CMD_DOMAIN=localhost                                                            # Change here
+      - CMD_DOMAIN=localhost                                                            # Change here to your server public IP / FQDN
       - CMD_PORT=3000                                                                   # Change here
       - CMD_COOKIE_POLICY=none
       - CMD_ALLOW_ANONYMOUS=false
       - CMD_ALLOW_FREEURL=true
-      - CMD_PROTOCOL_USESSL=false                                                       # Change here to true if you want to use it behind an HTTPs reverse proxy
+      # Uncomment to use nginx as a HTTPS reverse proxy
+      #- CMD_DOMAIN=hedgedoc.mydomain.com:8443
+      #- CMD_URL_ADDPORT=false
+      #- CMD_PROTOCOL_USESSL=true
     ports:
       - "3000:3000"
     networks:
@@ -44,7 +47,8 @@ services:
     build: https://github.com/hugsy/ctfpad.git#master
     command: python manage.py runserver 0.0.0.0:8000
     environment:
-      - HEDGEDOC_URL=http://localhost:3000                  # Change here to your server public IP / FQDN
+      - HEDGEDOC_URL=http://localhost:3000                  # Change here to the CMD_DOMAIN and CMD_PORT defined above in the hedgedoc service
+      #- HEDGEDOC_URL=https://hedgedoc.mydomain.com:8443    # or set this to use nginx as a HTTPS reverse proxy
       - CTFPAD_HOSTNAME=localhost                           # Change here to your server public IP / FQDN
       - CTFPAD_DB_NAME=ctfpad                               # (opt.) Change here
       - CTFPAD_DB_USER=ctfpad                               # (opt.) Change here
@@ -73,7 +77,6 @@ services:
       - ./conf/certs:/etc/nginx/certs
     ports:
       - 8443:8443
-      - 3443:3443
     depends_on:
       - ctfpad
     networks:
