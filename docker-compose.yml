@@ -32,7 +32,7 @@ services:
       - CMD_ALLOW_FREEURL=true
       - CMD_PROTOCOL_USESSL=false                                                       # Change here to true if you want to use it behind an HTTPs reverse proxy
     ports:
-      - "3000:3000"
+      - 3000:3000
     networks:
       backend:
     restart: unless-stopped
@@ -44,7 +44,7 @@ services:
     build: https://github.com/hugsy/ctfpad.git#master
     command: python manage.py runserver 0.0.0.0:8000
     environment:
-      - HEDGEDOC_URL=http://localhost:3000                  # Change here to your server public IP / FQDN
+      - HEDGEDOC_URL=http://localhost:3000                  # Change here to your server public IP / FQDN (e.g https://hedgedoc.myserver.com:3443)
       - CTFPAD_HOSTNAME=localhost                           # Change here to your server public IP / FQDN
       - CTFPAD_DB_NAME=ctfpad                               # (opt.) Change here
       - CTFPAD_DB_USER=ctfpad                               # (opt.) Change here
@@ -64,6 +64,8 @@ services:
     networks:
       backend:
     restart: unless-stopped
+    volumes:
+      - uploads:/code/uploads
 
 
   nginx:
@@ -83,5 +85,7 @@ services:
 networks:
   backend:
 
+
 volumes:
   db:
+  uploads:
