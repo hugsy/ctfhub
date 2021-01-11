@@ -4,6 +4,7 @@ import hashlib
 from datetime import datetime, timedelta
 from pathlib import Path
 from collections import namedtuple
+from statistics import mean
 import zipfile
 import requests
 import tempfile
@@ -19,7 +20,7 @@ from django.utils.functional import cached_property
 from model_utils.fields import MonitorField, StatusField
 from model_utils import Choices, FieldTracker
 
-from ctfpad.helpers import ctftime_fetch_next_ctf_data
+from ctfpad.helpers import ctftime_ctfs
 
 
 from ctftools.settings import (
@@ -100,7 +101,7 @@ class Ctf(TimeStampedModel):
     team_password = models.CharField(max_length=128, blank=True)
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
     visibility = StatusField(choices_name="VISIBILITY")
-    weight = models.IntegerField(default=1)
+    weight = models.FloatField(default=1)
 
     def __str__(self) -> str:
         return self.name
@@ -267,14 +268,17 @@ class Member(TimeStampedModel):
 
         return best_categories_by_point.first()["category__name"]
 
-
     @property
-    def total_points_scored(self):
-        challenges = self.solved_challenges.filter(
-            ctf__visibility = "public"
-        )
-        return challenges.aggregate(Sum("points"))["points__sum"] or 0
+    def total_scored_percent(self):
+        if not self.solved_public_challenges:
+            return 0
 
+        member_slices = []
+        for ctf in filter(lambda c: c.scored_points > 0, Ctf.objects.filter(visibility = "public")):
+            member_points = self.solved_public_challenges.filter(ctf=ctf).aggregate(Sum("points"))["points__sum"] or 0
+            member_slices.append(member_points / ctf.scored_points)
+
+        return round(100 * mean(member_slices), 2)
 
     @property
     def last_logged_in(self):
@@ -682,7 +686,7 @@ class SearchEngine:
             list: [description]
         """
         results = []
-        for entry in ctftime_fetch_next_ctf_data():
+        for entry in ctftime_ctfs(running=False, future=True):
             if query in entry["title"].lower() or query in entry["description"].lower():
                 results.append(
                     SearchResult(

@@ -20,6 +20,22 @@ from ctftools.settings import (
     EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
 )
 
+@lru_cache(maxsize=1)
+def which_hedgedoc() -> str:
+    """Returns the docker container hostname if the default URL from the config is not accessible.
+    This is so that ctfpad works out of the box with `docker-compose up` as most people wanting to
+    trial it out won't bother changing the default values with public FQDN/IPs.
+
+    Returns:
+        str: the base HedgeDoc URL
+    """
+    try:
+        requests.get(HEDGEDOC_URL)
+    except:
+        if HEDGEDOC_URL == 'http://localhost:3000':
+            return 'http://hedgedoc:3000'
+    return HEDGEDOC_URL
+
 
 def register_new_hedgedoc_user(username: str, password: str) -> bool:
     """Register the member in hedgedoc. If fail, the member will be
@@ -33,7 +49,7 @@ def register_new_hedgedoc_user(username: str, password: str) -> bool:
         bool: if the register action succeeded, returns True; False in any other cases
     """
     res = requests.post(
-        f'{HEDGEDOC_URL}/register',
+        which_hedgedoc() + '/register',
         data={'email': username, 'password': password},
         allow_redirects = False
     )
@@ -106,40 +122,36 @@ def ctftime_parse_date(date: str) -> datetime:
         return ""
 
 
-@lru_cache(maxsize=128)
-def ctftime_fetch_running_ctf_data(limit=100) -> list:
-    """Retrieve the currently running CTFs from CTFTime API. I couldn't do this by only using the CTFTime API.
+def ctftime_ctfs(running=True, future=True) -> list:
+    """Return CTFs that are currently running and starting in the next 6 months.
 
     Returns:
-        list: JSON output from CTFTime
+        list: current and future CTFs
     """
+    ctfs = ctftime_fetch_ctf_data()
     now = datetime.now()
-    try:
-        res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*7):.0f}&finish={time()+(3600*24*7):.0f}",
-            headers={"user-agent": CTFTIME_USER_AGENT})
-        if res.status_code != requests.codes.ok:
-            raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
-        result = []
-        for ctf in res.json():
-            start, finish, now = ctftime_parse_date(ctf["start"]), ctftime_parse_date(ctf["finish"]), now
-            if start < now and finish > now:
-                result.append(ctf)
-    except Exception as e:
-        print(e)
-        result = []
+
+    result = []
+    for ctf in ctfs:
+        start, finish = ctftime_parse_date(ctf["start"]), ctftime_parse_date(ctf["finish"])
+        if running and start < now < finish:
+            result.append(ctf)
+        if future and now < start < finish:
+            result.append(ctf)
     return result
 
 
-
 @lru_cache(maxsize=128)
-def ctftime_fetch_next_ctf_data(limit=100) -> list:
-    """Retrieve upcoming CTFs from CTFTime API
+def ctftime_fetch_ctf_data(limit=100) -> list:
+    """Retrieve CTFs from CTFTime API with a wide start/finish window (-1/+26 weeks) so we can later run our own filters
+    on the cached results for better performance and accuracy.
 
     Returns:
         list: JSON output from CTFTime
     """
     try:
-        res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}", headers={"user-agent": CTFTIME_USER_AGENT})
+        res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*7):.0f}&finish={time()+(3600*24*7*26):.0f}",
+            headers={"user-agent": CTFTIME_USER_AGENT})
         if res.status_code != requests.codes.ok:
             raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
         result = res.json()

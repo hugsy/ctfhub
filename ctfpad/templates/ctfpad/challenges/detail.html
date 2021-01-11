@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <div class="row">
     <div class="col-md-3" id="challenge_info_left_menu">
-
+        {{ form.errors }}
 		<div class="card card-body">
 			<a class="btn btn-warning btn-sm btn-block" href="{% url 'ctfpad:challenges-edit' challenge.id %}"><strong>Edit Challenge</strong></a>
             <ul class="list-group">
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </li>
 
                 <li class="list-group-item list-group-item-action">
-                    <strong>Note Id:</strong> <code>{{challenge.note_id}}</code>
+                    <strong>Note:</strong> <code><a href="{{challenge.note_url}}" target="_blank">{{challenge.note_id}}</a></code>
                 </li>
 
                 <li class="list-group-item list-group-item-action">
