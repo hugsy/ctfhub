@@ -94,6 +94,7 @@ class CtfCreateUpdateForm(forms.ModelForm):
             "ctftime_id",
             "weight",
             "visibility",
+            "whiteboard_access_token",
         ]
 
 
@@ -119,6 +120,7 @@ class ChallengeUpdateForm(forms.ModelForm):
             "description",
             "category",
             "note_id",
+            "whiteboard_id",
             "ctf",
             "flag",
             "last_update_by",

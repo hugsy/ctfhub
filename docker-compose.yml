@@ -43,6 +43,15 @@ services:
       - db
 
 
+  whiteboard:
+    image: rofl256/whiteboard:latest
+    ports:
+      - 3001:8080
+    networks:
+      backend:
+    restart: unless-stopped
+
+
   ctfpad:
     build: https://github.com/hugsy/ctfpad.git#master
     command: python manage.py runserver 0.0.0.0:8000
@@ -63,8 +72,9 @@ services:
     depends_on:
       - db
       - hedgedoc
+      - whiteboard
     ports:
-      - "8000:8000"
+      - 8000:8000
     networks:
       backend:
     restart: unless-stopped
@@ -84,6 +94,7 @@ services:
     networks:
       backend:
     restart: unless-stopped
+
 
 networks:
   backend:

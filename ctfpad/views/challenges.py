@@ -67,11 +67,16 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
     template_name = "ctfpad/challenges/detail.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
-    extra_context = {
-        "flag_form": ChallengeSetFlagForm(),
-        "file_upload_form": ChallengeFileCreateForm(),
-        "hedgedoc_url": HEDGEDOC_URL,
-    }
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx |= {
+            "flag_form": ChallengeSetFlagForm(),
+            "file_upload_form": ChallengeFileCreateForm(),
+            "hedgedoc_url": HEDGEDOC_URL,
+            "whiteboard_url": self.object.get_whiteboard_url(self.request.user.member),
+        }
+        return ctx
 
 
 class ChallengeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

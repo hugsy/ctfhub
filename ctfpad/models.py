@@ -25,6 +25,7 @@ from ctfpad.helpers import ctftime_ctfs
 
 from ctftools.settings import (
     HEDGEDOC_URL,
+    WHITEBOARD_URL,
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT, STATIC_URL,
     USERS_FILE_PATH,
@@ -101,7 +102,8 @@ class Ctf(TimeStampedModel):
     team_password = models.CharField(max_length=128, blank=True)
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
     visibility = StatusField(choices_name="VISIBILITY")
-    weight = models.FloatField(default=1)
+    weight = models.FloatField(default=1.0)
+    whiteboard_access_token = models.CharField(default=get_random_string_64, max_length=64)
 
     def __str__(self) -> str:
         return self.name
@@ -359,7 +361,8 @@ class Challenge(TimeStampedModel):
     points = models.IntegerField(default=0)
     description = models.TextField(blank=True)
     category = models.ForeignKey(ChallengeCategory, on_delete=models.DO_NOTHING, null=True)
-    note_id = models.CharField(max_length=80, blank=True)
+    note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
+    whiteboard_id = models.UUIDField(default=uuid.uuid4)
     ctf = models.ForeignKey(Ctf, on_delete=models.CASCADE)
     last_update_by = models.ForeignKey(Member, on_delete=models.DO_NOTHING, null=True, related_name='last_updater')
     flag = models.CharField(max_length=128, blank=True)
@@ -383,6 +386,14 @@ class Challenge(TimeStampedModel):
         note_id = self.note_id or "/"
         return f"{HEDGEDOC_URL}{note_id}"
 
+    def get_whiteboard_url(self, member=None) -> str:
+        url = WHITEBOARD_URL
+        url+= f"?accesstoken={self.ctf.whiteboard_access_token}"
+        url+= f"&whiteboardid={self.whiteboard_id}"
+        if member:
+            url += f"&username={member.username}"
+        return url
+
     @cached_property
     def files(self):
         return self.challengefile_set.all()
@@ -392,8 +403,8 @@ class Challenge(TimeStampedModel):
         return f"{JITSI_URL}/{self.ctf.id}--{self.id}"
 
     def save(self):
-        if not self.note_id:
-            self.note_id = create_new_note()
+        # if not self.note_id:
+        #     self.note_id = create_new_note()
 
         if self.flag_tracker.has_changed("flag"):
             self.status = "solved"

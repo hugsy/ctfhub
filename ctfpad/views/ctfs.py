@@ -75,7 +75,7 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             form.instance.description = ctf["description"]
             form.instance.start_date = ctftime_parse_date(ctf["start"])
             form.instance.end_date = ctftime_parse_date(ctf["finish"])
-            form.instance.weight = ctf["weight"] or 1
+            form.instance.weight = ctf["weight"]
 
         form.instance.created_by = self.request.user.member
         return super().form_valid(form)
@@ -103,7 +103,7 @@ class CtfImportView(CtfCreateView):
             initial["description"] = ctf["description"]
             initial["start_date"] = ctftime_parse_date(ctf["start"])
             initial["end_date"] = ctftime_parse_date(ctf["finish"])
-            initial["weight"] = ctf["weight"] or 1
+            initial["weight"] = ctf["weight"] or 1.0
 
         form = self.form_class(initial=initial)
         return render(request, self.template_name, {'form': form})

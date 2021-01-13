@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'ow#8y081ih3nunjqh)u^ug)ln_$xri3-upt^e)7h)&l$05-7tf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') or True
+DEBUG = os.getenv('DEBUG') or False
 
 # SECURITY WARNING: harden for production!
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", os.getenv("CTFPAD_HOSTNAME")]
@@ -91,7 +91,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME':     os.getenv("CTFPAD_DB_NAME") or 'ctfpad',
         'USER':     os.getenv("CTFPAD_DB_USER") or 'ctfpad',
-        'PASSWORD': os.getenv("CTFPAD_DB_PASSWORD") or 'tookahlaiphee2KieTeeg5ooxutang4o',
+        'PASSWORD': os.getenv("CTFPAD_DB_PASSWORD"),
         'HOST':     os.getenv("CTFPAD_DB_HOST") or 'localhost',
         'PORT':     os.getenv("CTFPAD_DB_PORT") or '5432',
     }
@@ -151,6 +151,7 @@ USERS_FILE_PATH = "media/"
 USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
 HEDGEDOC_URL = os.getenv("HEDGEDOC_URL") or 'http://localhost:3000'
+WHITEBOARD_URL = os.getenv("WHITEBOARD_URL") or 'http://localhost:3000'
 
 CTFTIME_URL = "https://ctftime.org"
 CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
