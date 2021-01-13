@@ -141,6 +141,9 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a href="#notes" class="nav-link" data-toggle="tab">Notes</a>
+            </li>
+            <li class="nav-item">
                 <a href="#stats" class="nav-link" data-toggle="tab">Stats</a>
             </li>
             <li class="nav-item">
@@ -151,6 +154,9 @@
         <div class="tab-content" style="margin-top: 17px;">
             <div class="tab-pane fade show active" id="challenges">
                 {% include 'ctfpad/ctfs/detail_challenges.html' %}
+            </div>
+            <div class="tab-pane fade" id="notes">
+                {% include 'ctfpad/ctfs/detail_notes.html'  %}
             </div>
             <div class="tab-pane fade" id="stats">
                 {% include 'ctfpad/stats/ctf_stats.html' %}

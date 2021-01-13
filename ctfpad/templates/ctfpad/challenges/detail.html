@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
       body: "email={{request.user.member.hedgedoc_username}}&password={{request.user.member.hedgedoc_password}}"
     }).then(data => { document.getElementById("note_frame").src = "{{ challenge.note_url }}"; });
 });
-
 </script>
 {% endif %}
 

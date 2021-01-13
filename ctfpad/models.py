@@ -103,6 +103,7 @@ class Ctf(TimeStampedModel):
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
     visibility = StatusField(choices_name="VISIBILITY")
     weight = models.FloatField(default=1.0)
+    note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
     whiteboard_access_token = models.CharField(default=get_random_string_64, max_length=64)
 
     def __str__(self) -> str:
@@ -208,6 +209,12 @@ class Ctf(TimeStampedModel):
             session.post(f"{HEDGEDOC_URL}/logout")
 
         return f"{slugify(self.name)}-notes.zip"
+
+
+    @property
+    def note_url(self) -> str:
+        note_id = self.note_id or "/"
+        return f"{HEDGEDOC_URL}{note_id}"
 
 
 
@@ -403,9 +410,6 @@ class Challenge(TimeStampedModel):
         return f"{JITSI_URL}/{self.ctf.id}--{self.id}"
 
     def save(self):
-        # if not self.note_id:
-        #     self.note_id = create_new_note()
-
         if self.flag_tracker.has_changed("flag"):
             self.status = "solved"
             self.solvers.add( self.last_update_by )

@@ -9,6 +9,10 @@ from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
 
+from ctftools.settings import (
+    HEDGEDOC_URL,
+)
+
 from ctfpad.forms import (
     CategoryCreateForm,
     CtfCreateUpdateForm, TagCreateForm,
@@ -75,7 +79,6 @@ class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             form.instance.description = ctf["description"]
             form.instance.start_date = ctftime_parse_date(ctf["start"])
             form.instance.end_date = ctftime_parse_date(ctf["finish"])
-            form.instance.weight = ctf["weight"]
 
         form.instance.created_by = self.request.user.member
         return super().form_valid(form)
@@ -117,6 +120,7 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
     extra_context = {
         "add_category_form": CategoryCreateForm(),
         "add_tag_form": TagCreateForm(),
+        "hedgedoc_url": HEDGEDOC_URL,
     }
 
 
