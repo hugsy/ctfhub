@@ -20,7 +20,24 @@ $ nano docker-compose.yml
 $ docker-compose up -d --build
 ```
 
+## Features
 
+A non-exhaustive list of features:
+
+ - Full Django + Python 3 code
+ - Clean (Bootstrap) interface 
+ - Key-in-hands setup via [`docker-compose`](https://docs.docker.com/compose)
+ - Fully built on top of [HedgeDoc](https://github.com/hedgedoc/hedgedoc): smart markdown note mechanism, with [tons of features](https://demo.hedgedoc.org/features)
+ - Possibility to create and play private CTFs
+ - Internal statistic system to track members' involment + basic ranking system
+ - [Jitsi](https://meet.jit.si) integration: instantly jump on video chat with your team mate
+ - CTFTime integration: import CTF (+ data) from CTFTime in 2 clicks
+ - Dark mode (duh!)
+ - Basic search engine
+ - [Whiteboard](https://github.com/cracker0dks/whiteboard) integration: draw & share ideas with your team mates
+ - ...and more to come...
+ 
+ 
 ## Gallery
 
 ### Dashboard
