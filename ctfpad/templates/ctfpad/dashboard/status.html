@@ -5,7 +5,7 @@
 		<div class="col-md">
 			<div class="card text-center text-white  mb-3" id="total-player-registered">
 			  	<div class="card-header">
-			  		<h5 class="card-title">Registered Players</h5>
+			  		<h5 class="card-title">Members</h5>
 			  	</div>
 			  	<div class="card-body">
 			    	<h3 class="card-title">{{members | length}}</h3>
@@ -31,7 +31,7 @@
 		<div class="col-md">
 			<div class="card text-center text-white  mb-3" id="current-ctf">
 			  	<div class="card-header">
-			  		<h5 class="card-title">Currently running CTF(s): {{current_ctfs | length}}</h5>
+			  		<h5 class="card-title">Currently running CTF(s): {{current_ctfs | length}} {% if current_ctfs|length == 0 %}😴{% endif %}</h5>
 			  	</div>
 			  	<div class="card-body">
 				  	<ul>

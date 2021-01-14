@@ -66,11 +66,10 @@
                 <thead>
                 <tr>
                     <th scope="col">Name</th>
-                    <th scope="col">Best category</th>
+                    <th scope="col">Country</th>
+                    <th scope="col">Master Skill</th>
                     <th scope="col">Member Since</th>
-                    <th scope="col">Blog</th>
-                    <th scope="col">Twitter</th>
-                    <th scope="col">Github</th>
+                    <th scope="col">Social Media</th>
                     <th scope="col"></th>
                     <th scope="col"></th>
                     {% if request.user.member.has_superpowers %}
@@ -82,14 +81,23 @@
                 {% for member in team.members %}
                 <tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
                     <th scope="row">
-                        <img height="30px" width="35px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle">
                         <a href="mailto:{{member.email}}">{{member.username}}</a>
                     </td>
+                    <td style="text-align: center;"><img height="20px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
                     <td>{{member.best_category}}</td>
                     <td>{{member.joined_time | date:'Y'}}</td>
-                    <td>{% if member.blog_url%}<a href="{{member.blog_url}}" target="_blank"><i class="fas fa-blog"></i></i></a>{% endif %}</td>
-                    <td>{% if member.twitter_url%}<a href="{{member.twitter_url}}" target="_blank"><i class="fab fa-twitter"></i></a>{% endif %}</td>
-                    <td>{% if member.github_url%}<a href="{{member.github_url}}" target="_blank"><i class="fab fa-github"></i></a>{% endif %}</td>
+                    <td>
+                    {% if member.blog_url%}
+                        &nbsp;●&nbsp;<a href="{{member.blog_url}}" target="_blank"><i class="fas fa-blog"></i></i></a>
+                    {% endif %}
+                    {% if member.twitter_url%}
+                        &nbsp;●&nbsp;<a href="{{member.twitter_url}}" target="_blank"><i class="fab fa-twitter"></i></a>
+                    {% endif %}
+                    {% if member.github_url%}
+                        &nbsp;●&nbsp;<a href="{{member.github_url}}" target="_blank"><i class="fab fa-github"></i></a>
+                    {% endif %}
+                    &nbsp;●
+                    </td>
                     <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
                     {% if request.user.member.has_superpowers or request.user.id == member.user.id %}
                     <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:users-update' member.user.id %}">Edit</a></td>
