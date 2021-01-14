@@ -151,7 +151,7 @@ USERS_FILE_PATH = "media/"
 USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
 HEDGEDOC_URL = os.getenv("HEDGEDOC_URL") or 'http://localhost:3000'
-WHITEBOARD_URL = os.getenv("WHITEBOARD_URL") or 'http://localhost:3000'
+WHITEBOARD_URL = os.getenv("WHITEBOARD_URL") or 'http://localhost:3001'
 
 CTFTIME_URL = "https://ctftime.org"
 CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
