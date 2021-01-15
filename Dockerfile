@@ -4,8 +4,9 @@ FROM python:3.9-buster
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV DEBUG 1
-ENV CTFPAD_HOSTNAME localhost
-ENV HEDGEDOC_URL http://hedgedoc:3000
+ENV CTFPAD_HOSTNAME localhost                # change here if publicly exposed
+ENV HEDGEDOC_URL http://hedgedoc:3000        # change here if publicly exposed
+ENV WHITEBOARD_URL http://whiteboard:8080    # change here if publicly exposed
 RUN mkdir /code
 WORKDIR /code
 COPY requirements.txt .
