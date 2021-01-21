@@ -116,10 +116,8 @@ def ctftime_parse_date(date: str) -> datetime:
     Returns:
         datetime: the date object or "" if there was a parsing error
     """
-    try:
-        return datetime.strptime(date[:19], "%Y-%m-%dT%H:%M:%S")
-    except:
-        return ""
+    return datetime.strptime(date[:19], "%Y-%m-%dT%H:%M:%S")
+
 
 
 def ctftime_ctfs(running=True, future=True) -> list:
@@ -147,7 +145,6 @@ def ctftime_ctfs(running=True, future=True) -> list:
     return result
 
 
-@lru_cache(maxsize=128)
 def ctftime_fetch_ctf_data(limit=100) -> list:
     """Retrieve CTFs from CTFTime API with a wide start/finish window (-1/+26 weeks) so we can later run our own filters
     on the cached results for better performance and accuracy.
