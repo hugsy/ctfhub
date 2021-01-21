@@ -133,11 +133,17 @@ def ctftime_ctfs(running=True, future=True) -> list:
 
     result = []
     for ctf in ctfs:
-        start, finish = ctftime_parse_date(ctf["start"]), ctftime_parse_date(ctf["finish"])
+        start = ctftime_parse_date(ctf["start"])
+        finish = ctftime_parse_date(ctf["finish"])
+
         if running and start < now < finish:
             result.append(ctf)
         if future and now < start < finish:
             result.append(ctf)
+
+        ctf["start"] = start
+        ctf["finish"] = finish
+        ctf["duration"] = finish-start
     return result
 
 
