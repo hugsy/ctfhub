@@ -706,8 +706,8 @@ class SearchEngine:
                 results.append(
                     SearchResult(
                         "ctftime",
-                        entry["title"][:15] + "...",
-                        entry["description"][:100] + "...",
+                        entry["title"],
+                        entry["description"],
                         reverse("ctfpad:ctfs-import") + f"?ctftime_id={entry['id']}"
                     )
                 )

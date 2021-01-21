@@ -2,7 +2,6 @@
 	<div class="col-md-2"></div>
 	<div class="col-md-8">
 		{% for message in messages %}
-
         {% if message.level == 20 %}
 		<div class="alert alert-info alert-dismissible fade show">
             <strong>INFO</strong>&nbsp;&nbsp;
@@ -38,8 +37,16 @@
 			<button type="button" class="close" data-dismiss="alert">&times;</button>
 		</div>
         {% endif %}
-
         {% endfor %}
 	</div>
 	<div class="col-md-2"></div>
 </div>
+
+<script type="text/javascript">
+	window.setTimeout(function() {
+		var alertList = document.querySelectorAll('.alert');
+		alertList.forEach(function(alert) {
+			alert.hidden = true;
+		});
+	}, 4000);
+</script>

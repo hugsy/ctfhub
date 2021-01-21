@@ -58,35 +58,71 @@ document.addEventListener('DOMContentLoaded', function() {
             <ul class="list-group">
                 <li class="list-group-item active">
                     <strong>{{challenge.name}}</strong> ({{challenge.points}} points)
-                </li>
-
-                <li class="list-group-item list-group-item-action">
-                    <strong>Category:</strong>
+                    &nbsp;
                     <a href="{% url 'ctfpad:search' %}?q=cat:category+{{challenge.category|urlencode}}">
-                        <span class="badge badge-danger">{{challenge.category}}</span></a>
+                        <span class="badge badge-danger">{{challenge.category}}</span>
+                    </a>
 
                     {% for tag in challenge.tags.all %}
+                    &nbsp;
                     <a href="{% url 'ctfpad:search' %}?q=cat:tag+{{tag|urlencode}}">
-                        <span class="badge badge-info">&nbsp;#{{tag}}</span></a>
+                        <span class="badge badge-info">&nbsp;#{{tag}}</span>
+                    </a>
                     {% endfor %}
                 </li>
 
                 <li class="list-group-item list-group-item-action">
-                    <strong>Description:</strong> <code>{{challenge.description}}</code>
+                    <a href="#" onclick="new bootstrap.Modal(document.getElementById('ChallengeDescriptionModal')).toggle();"><strong>Description</strong></a><br/>
+                    {{challenge.description|safe|truncatewords:15}}
                 </li>
 
                 <li class="list-group-item list-group-item-action">
-                    Pop-Out <a href="{{challenge.note_url}}" target="_blank"><strong>Challenge Note <i class="fas fa-external-link-alt"></i></strong></a>
-                </li>
 
-                <li class="list-group-item list-group-item-action">
-                    Pop-Out <a href="{{whiteboard_url}}" target="_blank"><strong>Whiteboard <i class="fas fa-external-link-alt"></i></strong></a>
-                </li>
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Features</strong>
+                        </div>
 
-                <li class="list-group-item list-group-item-action">
-                    Open <a href="{{challenge.jitsi_url}}" target="_blank"><strong>Jitsi Channel</strong> <i class="fas fa-external-link-alt"></i></a>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col">
+                                    <a href="{{challenge.note_url}}" target="_blank" style="color: black;" title="Open the challenge note in a pop-up">
+                                        <strong><i class="fas fa-clipboard"></i></strong>
+                                    </a>
+                                </div>
+
+                                <div class="col">
+                                    <a href="{{whiteboard_url}}" target="_blank" style="color: black;" title="Open the challenge whiteboard in a pop-up">
+                                        <strong><i class="fas fa-paint-brush"></i></strong>
+                                    </a>
+                                </div>
+
+                                <div class="col">
+                                    <a href="{{challenge.jitsi_url}}" target="_blank" style="color: black;" title="Open a Jitsi channel">
+                                        <strong><i class="far fa-comments"></i></strong>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </li>
             </ul>
+
+
+            <div class="modal fade" id="ChallengeDescriptionModal" tabindex="-1" aria-labelledby="ChallengeDescriptionModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ChallengeDescriptionModalLabel">Description of {{challenge.name}}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {{challenge.description|safe}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
 
             <br>
 
