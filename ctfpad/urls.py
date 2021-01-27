@@ -74,7 +74,9 @@ urlpatterns = [
     path("categories/create/", views.categories.CategoryCreateView.as_view(), name="categories-create"),
 
     # tags
+    path("tags/", views.tags.TagListView.as_view(), name="tags-list"),
     path("tags/create/", views.tags.TagCreateView.as_view(), name="tags-create"),
+    path("tags/delete/<int:pk>", views.tags.TagDeleteView.as_view(), name="tags-delete"),
 ]
 
 if settings.DEBUG:
