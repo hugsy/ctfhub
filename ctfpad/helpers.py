@@ -11,6 +11,7 @@ from functools import lru_cache
 from uuid import uuid4
 
 from ctftools.settings import (
+    CTFPAD_HOSTNAME, CTFPAD_PORT, CTFPAD_USE_SSL,
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
     CTFPAD_DEFAULT_CTF_LOGO,
     HEDGEDOC_URL,
@@ -18,7 +19,16 @@ from ctftools.settings import (
     CTFTIME_API_EVENTS_URL,
     CTFTIME_USER_AGENT,
     EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
+    DISCORD_WEBHOOK_URL,
 )
+
+
+@lru_cache(maxsize=128)
+def get_current_site() -> str:
+    r = "https://" if CTFPAD_USE_SSL else "http://"
+    r+= f"{CTFPAD_HOSTNAME}:{CTFPAD_PORT}"
+    return r
+
 
 @lru_cache(maxsize=1)
 def which_hedgedoc() -> str:
@@ -237,3 +247,30 @@ def get_random_string_64() -> str:
 
 def get_random_string_128() -> str:
     return get_random_string(128)
+
+
+
+def discord_send_message(js: dict) -> bool:
+    """Send a notification on a Discord channel
+
+    Args:
+        js (dict): The JSON data to pass to the webhook. See https://discord.com/developers/docs/resources/channel for details
+
+    Raises:
+        Exception: [description]
+
+    Returns:
+        bool: True if a message was successfully sent, False in any other cases
+    """
+    if not DISCORD_WEBHOOK_URL:
+        return False
+
+    try:
+        h = requests.post(DISCORD_WEBHOOK_URL, json=js)
+        if h.status_code not in (200, 204):
+            raise Exception(f"Incorrect response, got {h.status_code}")
+
+    except Exception as e:
+        return False
+
+    return True

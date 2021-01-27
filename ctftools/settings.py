@@ -27,8 +27,14 @@ SECRET_KEY = 'ow#8y081ih3nunjqh)u^ug)ln_$xri3-upt^e)7h)&l$05-7tf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') or False
 
+
+CTFPAD_HOSTNAME = os.getenv("CTFPAD_HOSTNAME") or "localhost"
+CTFPAD_PORT = os.getenv("CTFPAD_PORT") or "8000"
+CTFPAD_USE_SSL = os.getenv("CTFPAD_USE_SSL")=="1" or False
+
+
 # SECURITY WARNING: harden for production!
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", os.getenv("CTFPAD_HOSTNAME")]
+ALLOWED_HOSTS = [CTFPAD_HOSTNAME, "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -41,9 +47,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django.contrib.sites',
     'model_utils',
     'ctfpad',
 ]
+
+SITE_ID = 1
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -150,6 +160,7 @@ USERS_FILE_URL  = "/uploads/media/"
 USERS_FILE_PATH = "media/"
 USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
+CTFPAD_URL = os.getenv("CTFPAD_URL") or 'http://localhost:8000'
 HEDGEDOC_URL = os.getenv("HEDGEDOC_URL") or 'http://localhost:3000'
 WHITEBOARD_URL = os.getenv("WHITEBOARD_URL") or 'http://localhost:3001'
 
@@ -179,4 +190,13 @@ EMAIL_HOST_USER = os.getenv("CTFPAD_EMAIL_USERNAME") or None
 EMAIL_HOST_PASSWORD = os.getenv("CTFPAD_EMAIL_PASSWORD") or None
 EMAIL_SUBJECT_PREFIX = "[CTFPad] "
 
+
+# Jistsi integration
+
 JITSI_URL = "https://meet.jit.si"
+
+
+# Discord integration
+
+DISCORD_WEBHOOK_URL = os.getenv("CTFPAD_DISCORD_WEBHOOK_URL") or None
+DISCORD_BOT_NAME = os.getenv("CTFPAD_DISCORD_BOT_NAME") or "SpiderBot"

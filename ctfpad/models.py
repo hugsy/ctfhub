@@ -9,6 +9,7 @@ import zipfile
 import requests
 import tempfile
 
+from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum, Count, Q
@@ -16,14 +17,13 @@ from django.urls.base import reverse
 from django.utils.text import slugify
 from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
-
 from model_utils.fields import MonitorField, StatusField
 from model_utils import Choices, FieldTracker
 
 from ctfpad.helpers import ctftime_ctfs
 
-
 from ctftools.settings import (
+    CTFPAD_URL,
     HEDGEDOC_URL,
     WHITEBOARD_URL,
     CTF_CHALLENGE_FILE_PATH,
@@ -216,6 +216,9 @@ class Ctf(TimeStampedModel):
         note_id = self.note_id or "/"
         return f"{HEDGEDOC_URL}{note_id}"
 
+
+    def get_absolute_url(self):
+        return reverse('ctfpad:ctfs-detail', args=[str(self.id), ])
 
 
 
@@ -533,12 +536,13 @@ class SearchEngine:
         # if a specific category was selected, use it
         for p in patterns:
             if p.startswith("cat:"):
-                p = p.replace("cat:", "")
+                patterns.remove("cat:")
+                category = p.split(":", 1)[1]
                 if p in VALID_SEARCH_CATEGORIES:
-                    self.selected_category = p
-                    query = query.replace(f"cat:{p} ", "")
+                    self.selected_category = category
                     break
 
+        query = " ".join(patterns)
         self.results = []
 
         if self.selected_category is None:
