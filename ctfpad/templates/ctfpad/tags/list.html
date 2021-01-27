@@ -33,7 +33,7 @@
             <div class="card-body">
                 {% for tag in object_list %}
                 <button type="button" class="btn btn-primary btn-info">
-                    <a href="{% url 'ctfpad:search' %}?q=tag:{{tag.name}}" title="Search tag" style="color:white; ">
+                    <a href="{% url 'ctfpad:search' %}?q=cat:tag+{{tag.name}}" title="Search tag" style="color:white; ">
                         {{tag.name}}
                     </a>
 

@@ -536,7 +536,7 @@ class SearchEngine:
                 p = p.replace("cat:", "")
                 if p in VALID_SEARCH_CATEGORIES:
                     self.selected_category = p
-                    query = query.replace(f"cat:{p}", "")
+                    query = query.replace(f"cat:{p} ", "")
                     break
 
         self.results = []
