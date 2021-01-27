@@ -1,3 +1,4 @@
+from ctfpad.helpers import get_random_string_128
 import os
 from django.contrib import auth, messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -197,7 +198,15 @@ class MemberDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessa
             messages.error(request, "Refusing to delete super-user")
             return redirect("ctfpad:home")
 
+        # rotate the team api key
+        t = Team.objects.first()
+        t.api_key = get_random_string_128()
+        t.save()
+
+        # delete the associated django user
         member.user.delete()
+
+        # delete the member entry
         return self.delete(request, *args, **kwargs)
 
 
