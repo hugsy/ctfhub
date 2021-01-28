@@ -56,6 +56,7 @@ services:
     build: https://github.com/hugsy/ctfpad.git#master
     command: python manage.py runserver 0.0.0.0:8000
     environment:
+      - DEBUG=0
       - HEDGEDOC_URL=http://localhost:3000                     # Change here to the CMD_DOMAIN and CMD_PORT defined above in the hedgedoc service
       #- HEDGEDOC_URL=https://hedgedoc.mydomain.com:8443       # or set this to use nginx as a HTTPS reverse proxy
       - WHITEBOARD_URL=http://localhost:3001                   # Change here
@@ -69,6 +70,7 @@ services:
       - CTFPAD_DB_PASSWORD=tookahlaiphee2KieTeeg5ooxutang4o    # Change here
       - CTFPAD_DB_HOST=db
       - CTFPAD_DB_PORT=5432
+      - CTFPAD_SECRET_KEY=74320c04549af3a5f9fd9bc007b2e20ced8  # Change here
       # Uncomment (and customize) below to enable the password recovery feature by email
       #- CTFPAD_EMAIL_SERVER_HOST=smtp.gmail.com # or mailgun, or sendgrid etc.
       #- CTFPAD_EMAIL_SERVER_PORT=587

@@ -25,7 +25,7 @@ $ docker-compose up -d --build
 A non-exhaustive list of features:
 
  - Full Django + Python 3 code
- - Clean (Bootstrap) interface 
+ - Clean (Bootstrap) interface
  - Key-in-hands setup via [`docker-compose`](https://docs.docker.com/compose)
  - Fully built on top of [HedgeDoc](https://github.com/hedgedoc/hedgedoc): smart markdown note mechanism, with [tons of features](https://demo.hedgedoc.org/features)
  - Possibility to create and play private CTFs
@@ -35,9 +35,10 @@ A non-exhaustive list of features:
  - Dark mode (duh!)
  - Basic search engine
  - [Whiteboard](https://github.com/cracker0dks/whiteboard) integration: draw & share ideas with your team mates
+ - Discord notifications
  - ...and more to come...
- 
- 
+
+
 ## Gallery
 
 ### Dashboard

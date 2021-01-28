@@ -536,10 +536,10 @@ class SearchEngine:
         # if a specific category was selected, use it
         for p in patterns:
             if p.startswith("cat:"):
-                patterns.remove("cat:")
                 category = p.split(":", 1)[1]
-                if p in VALID_SEARCH_CATEGORIES:
+                if category in VALID_SEARCH_CATEGORIES:
                     self.selected_category = category
+                    patterns.remove(p)
                     break
 
         query = " ".join(patterns)
