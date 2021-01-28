@@ -422,6 +422,10 @@ class Challenge(TimeStampedModel):
         return
 
 
+    def get_absolute_url(self):
+        return reverse('ctfpad:challenges-detail', args=[str(self.id), ])
+
+
 
 class ChallengeFile(TimeStampedModel):
     """
