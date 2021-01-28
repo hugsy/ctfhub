@@ -10,10 +10,21 @@ from ctftools.settings import (
 )
 
 
+# formatted with the ctf name
 NEW_CTF_MESSAGES = [
-    f"New CTF added ! 💻 ",
-    f"New CTF 🏳  ! Warm your keyboards ⌨ ",
-    f"Yay another CTF ! Book your weekends, stock up beers and junk food... Let's do this 🤓",
+    "New CTF added ! `{}` 💻 ",
+    "CTF `{}`  added 🏳  ! Warm your keyboards ⌨ ",
+    "Yay another CTF ! `{}` is on ! Book your weekends, stock up beers and junk food... Let's do this 🤓",
+    "Alright stop, collaborate on `{}` and listen... 🎶",
+]
+
+
+# formatted with the challenge name
+SCORED_FLAG_MESSAGES = [
+    "Flag scored for `{}`! 🎺",
+    "Jackpot on `{}`! Another flag 🏳",
+    "You get a flag, you get a flag, everybody gets a flag ! `{}` was just scored...",
+    "RIP `{}` 🎃, we own you!",
 ]
 
 
@@ -25,9 +36,10 @@ def discord_notify_ctf_creation(sender, instance: Ctf, created: bool, **kwargs: 
 
     root = get_current_site()
     url = f"{root}{instance.get_absolute_url()}"
+    msg = random.choice(NEW_CTF_MESSAGES).format(instance.name)
     defaults = {
         "username": DISCORD_BOT_NAME,
-        "content": random.choice(NEW_CTF_MESSAGES),
+        "content": msg,
         "embeds": [{
             "url": url,
             "description": f"""
@@ -40,12 +52,6 @@ Link: [{url}]({url})
     return discord_send_message(data)
 
 
-
-SCORED_FLAG_MESSAGES = [
-    "Flag scored! 🎺",
-    "Jackpot! Another flag 🏳",
-    "You get a flag, you get a flag, everybody gets a flag !",
-]
 
 @receiver(post_save, sender=Challenge, dispatch_uid="discord_notify_scored_challenge")
 def discord_notify_scored_challenge(sender, instance: Challenge, created: bool, **kwargs: dict) -> bool:
@@ -65,11 +71,12 @@ def discord_notify_scored_challenge(sender, instance: Challenge, created: bool, 
     root = get_current_site()
     ctf_url = f"{root}{instance.ctf.get_absolute_url()}"
     challenge_url = f"{root}{instance.get_absolute_url()}"
+    msg = random.choice(SCORED_FLAG_MESSAGES).format(instance.name)
     points = f"{instance.points} "
     points += "points" if instance.points > 1 else "point"
     js = {
         "username": DISCORD_BOT_NAME,
-        "content": random.choice(SCORED_FLAG_MESSAGES),
+        "content": msg,
         "embeds": [{
             "url": challenge_url,
             "description": f"""
