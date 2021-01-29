@@ -102,6 +102,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <strong><i class="far fa-comments"></i></strong>
                                     </a>
                                 </div>
+
+                                <div class="col">
+                                    <a href="{% url 'ctfpad:challenges-export' challenge.id %}" target="_blank" style="color: black;" title="Generate a GithubPage-ready file">
+                                        <strong><i class="fas fa-rss"></i></strong>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

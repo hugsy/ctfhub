@@ -1,3 +1,8 @@
+
+
+from django.http.request import HttpRequest
+from django.http.response import HttpResponse
+from ctfpad.decorators import only_if_authenticated_user
 from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
@@ -14,6 +19,10 @@ from ctfpad.forms import (
 from ctfpad.models import Challenge, Ctf
 from ctftools.settings import HEDGEDOC_URL
 
+from ctfpad.helpers import (
+    generate_github_page_header,
+    export_challenge_note,
+)
 
 
 class ChallengeListView(LoginRequiredMixin, ListView):
@@ -115,3 +124,26 @@ class ChallengeDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
 
     def get_success_url(self):
         return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.ctf.id})
+
+
+
+class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
+    model = Challenge
+    template_name = "ctfpad/challenges/detail.html"
+    login_url = "/users/login/"
+    redirect_field_name = "redirect_to"
+
+    def get(self, request, *args, **kwargs):
+        c = self.get_object()
+        u = request.user.member
+        tags = "[" + c.category.name + ","
+        for t in c.tags.all(): tags += t.name + ","
+        tags += "]"
+        content = generate_github_page_header(title=c.name, author=u.username, tags=tags)
+        if c.description:
+            content+= f"Description:\n> {c.description}\n\n"
+        content+= export_challenge_note(u, c.note_id)
+        response = HttpResponse(content, content_type="text/markdown; charset=utf-8")
+        response["Content-Length"] = len(content)
+        return response
+

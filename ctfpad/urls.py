@@ -64,6 +64,7 @@ urlpatterns = [
     path("challenges/<uuid:pk>/edit/", views.challenges.ChallengeUpdateView.as_view(), name="challenges-edit"),
     path("challenges/<uuid:pk>/delete/", views.challenges.ChallengeDeleteView.as_view(), name="challenges-delete"),
     path("challenges/<uuid:pk>/score/", views.challenges.ChallengeSetFlagView.as_view(), name="challenges-score"),
+    path("challenges/<uuid:pk>/export/", views.challenges.ChallengeExportAsGithubPageView.as_view(), name="challenges-export"),
 
     # files
     path("challenges/<uuid:challenge_id>/files/add/", views.files.ChallengeFileCreateView.as_view(), name="challenge-files-add"),

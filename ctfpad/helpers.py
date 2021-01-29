@@ -23,6 +23,7 @@ from ctftools.settings import (
 )
 
 
+
 @lru_cache(maxsize=128)
 def get_current_site() -> str:
     r = "https://" if CTFPAD_USE_SSL else "http://"
@@ -274,3 +275,50 @@ def discord_send_message(js: dict) -> bool:
         return False
 
     return True
+
+
+
+def generate_github_page_header(**kwargs) -> str:
+    """Create a default GithubPages header.
+
+    Args:
+        kwargs (dict): [description]
+
+    Returns:
+        str: A default header to be used in GithubPages
+    """
+    title = kwargs.setdefault("title", "Exported note")
+    author = kwargs.setdefault("author", "Anonymous")
+    tags = kwargs.setdefault("tags", "[]")
+    date = kwargs.setdefault("date", datetime.now()).strftime("%Y-%m-%d %H:%M %Z")
+    content = f"""---
+layout: post
+title: {title}
+author: {author}
+tags: {tags}
+date: {date}
+---
+
+"""
+    return content
+
+
+def export_challenge_note(member, note_id: uuid4) -> str:
+    """Export a challenge note. `member` is required for privilege requirements
+
+    Args:
+        member (Member): [description]
+        note_id (uuid.uuid4): [description]
+
+    Returns:
+        str: The body of the note if successful; an empty string otherwise
+    """
+    result = ""
+    with requests.Session() as session:
+        h = session.post(f"{HEDGEDOC_URL}/login", data={"email": member.hedgedoc_username, "password": member.hedgedoc_password})
+        if h.status_code == requests.codes.ok:
+            h2 = session.get(f"{HEDGEDOC_URL}{note_id}/download")
+            if h2.status_code == requests.codes.ok:
+                result = h2.text
+            session.post(f"{HEDGEDOC_URL}/logout")
+    return result
