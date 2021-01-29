@@ -97,6 +97,23 @@
                         </div>
                     </div>
 
+                    <label class="label"><strong><abbr title="You can use them to login on the pad directly">Pad Credentials*</abbr></strong></label>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                          <label for="inputHedgedocLogin">Login</label>
+                          <input type="text" class="form-control" id="inputHedgedocLogin" value="{{member.hedgedoc_username}}" class="form-control" readonly/>
+                        </div>
+                        <div class="form-group col-md-6">
+                          <label for="inputHedgedocPassword">Password</label>
+                          <div class="input-group">
+                            <input type="password" class="form-control reveal" id="inputHedgedocPassword" value="{{member.hedgedoc_password}}" class="form-control" readonly/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" onclick="toggle_input_password_visibility();" type="button"><i class="far fa-eye-slash"></i></button>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
                     <label class="label"><strong>Blog URL</strong></label>
                     <div class="input-group mb-3">
                         <div class="input-group-append">
@@ -166,6 +183,7 @@
         </div>
     </div>
 </div>
+
 
 
 {% endblock %}

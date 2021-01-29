@@ -7,3 +7,16 @@ function generate_random_string(length = 12)
 
     return str;
 }
+
+
+function toggle_input_password_visibility()
+{
+    for(let r of document.getElementsByClassName("reveal") )
+    {
+        if (r.type === "password")
+            r.type = "text";
+
+        else if (r.type === "text")
+            r.type = "password";
+    }
+}
