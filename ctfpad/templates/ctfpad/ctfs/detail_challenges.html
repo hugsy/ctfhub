@@ -45,9 +45,9 @@
                 <td>{{challenge.name}}</td>
                 <td>{{challenge.points}}</td>
                 <td>{{challenge.last_modification_time|naturaltime}}</td>
-                <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:challenges-detail' challenge.id %}">Goto</a></td>
-                <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:challenges-edit' challenge.id %}">Update</a></td>
-                <td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:challenges-delete' challenge.id %}">Delete</a></td>
+                <td><a href="{% url 'ctfpad:challenges-detail' challenge.id %}" title='Goto'><i class="fas fa-play"></i></a></td>
+                <td><a href="{% url 'ctfpad:challenges-edit' challenge.id %}" title='Update'><i class="fas fa-edit"></i></a></td>
+                <td><a href="{% url 'ctfpad:challenges-delete' challenge.id %}" title='Delete'><i class="fas fa-trash"></i></a></td>
             </tr>
         {% endfor %}
     </table>
