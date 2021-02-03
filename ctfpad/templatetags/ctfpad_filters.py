@@ -46,8 +46,9 @@ def html_sanitize(html):
     return bleach.linkify(
         bleach.clean(
             html,
-            tags=['a', ],
+            tags=['a', 'br', 'hr'],
             protocols=['http', 'https'],
+            strip=True,
         )
     )
 
