@@ -46,7 +46,9 @@
                 {% if member.description %}
                 <li class="list-group-item list-group-item-action">
                     <strong>Description:</strong>
-                    {{member.description|safe}}
+                    {% autoescape on %}
+                    {{member.description|html_sanitize}}
+                    {% endautoescape %}
                 </li>
                 {% endif %}
 

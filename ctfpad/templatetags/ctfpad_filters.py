@@ -1,7 +1,10 @@
 from datetime import datetime, timedelta
+from bleach.sanitizer import BleachSanitizerFilter
 from django import template
 from django.contrib import messages
 from collections import namedtuple
+
+import bleach
 
 register = template.Library()
 
@@ -28,3 +31,23 @@ def theme_cookie(context):
     if value not in ('light', 'dark'):
         value = 'light'
     return value
+
+
+@register.filter
+def html_sanitize(html):
+    """Only authorize links (a tags) html. Escape the rest
+
+    Args:
+        html ([type]): [description]
+
+    Returns:
+        [type]: [description]
+    """
+    return bleach.linkify(
+        bleach.clean(
+            html,
+            tags=['a', ],
+            protocols=['http', 'https'],
+        )
+    )
+

@@ -73,7 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 <li class="list-group-item list-group-item-action">
                     <a href="#" onclick="new bootstrap.Modal(document.getElementById('ChallengeDescriptionModal')).toggle();"><strong>Description</strong></a><br/>
-                    {{challenge.description|safe|truncatewords:15}}
+                    {% autoescape off %}
+                    {{challenge.description|html_sanitize|truncatewords:15}}
+                    {% endautoescape %}
                 </li>
 
                 <li class="list-group-item list-group-item-action">
@@ -123,7 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            {{challenge.description|safe}}
+                            {% autoescape off %}
+                            {{challenge.description|html_sanitize}}
+                            {% endautoescape %}
                         </div>
                     </div>
                 </div>
