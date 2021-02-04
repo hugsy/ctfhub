@@ -46,48 +46,83 @@
             </div>
 
             <ul class="list-group">
-                <li class="list-group-item list-group-item-action" style="text-align: center;">
-                    <img width="75px" height="75px" src="{{ctf.ctftime_logo_url}}" alt="{{ctf.name|lower}} avatar" class="rounded-circle">
-                </li>
                 <li class="list-group-item list-group-item-action">
-                    <strong>Description:</strong>
-                    {% autoescape off %}
-                    {{ctf.description|html_sanitize}}
-                    {% endautoescape %}
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <img width="75px" height="75px" src="{{ctf.ctftime_logo_url}}" alt="{{ctf.name|lower}} avatar" class="rounded-circle">
+                        </div>
+
+                        <div class="col" style="text-align: justify;"
+                            onclick="new bootstrap.Modal(document.getElementById('CtfDescriptionModal')).toggle();"
+                            title="Click to view the complete description">
+                            {% autoescape off %}
+                            {{ctf.description|html_sanitize|truncatewords:25}}
+                            {% endautoescape %}
+                        </div>
+                    </div>
                 </li>
+
+                {% if ctf.team|length > 0 %}
+                <li class="list-group-item list-group-item-action">
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <strong><i class="fas fa-gamepad" title="Player(s)" style="font-size: x-large;"></i></strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ ctf.team|join:", " }}
+                        </div>
+                </li>
+                {% endif %}
 
                 {% if ctf.team_login %}
                 <li class="list-group-item list-group-item-action">
-                    <strong>Team Credentials:</strong>
-                    <code>{{ctf.team_login}}</code>
-                    &nbsp;/&nbsp;
-                    <code>{{ctf.team_password}}</code>
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <strong><i class="fas fa-address-card" title="CTF credentials" style="font-size: x-large;"></i></i></strong>
+                        </div>
+                        <div class="col-sm-8">
+                            <code>{{ctf.team_login}}</code>&nbsp;/&nbsp;<code>{{ctf.team_password}}</code>
+                        </div>
+                    </div>
                 </li>
                 {% endif %}
 
                 {% if not ctf.is_permanent %}
                 <li class="list-group-item list-group-item-action">
-                    <strong>Date (<abbr title='Hover for local time'>UTC</abbr>):&nbsp;</strong>
-                    <abbr title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start_date | date:"Y/m/d H:i:s"}}</abbr>
-                    ↦
-                    <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <strong><abbr title='Time in UTC, Hover for local time'><i class="fas fa-calendar-day" style="font-size: x-large;"></i></abbr>&nbsp;</strong>
+                        </div>
+
+                        <div class="col-sm-8">
+                            <abbr title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i" }}'>{{ctf.start_date | date:"Y/m/d H:i"}}</abbr>
+                            &nbsp;<i class="fas fa-chevron-right"></i>&nbsp;
+                            <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i" }}'>{{ctf.end_date | date:"Y/m/d H:i"}}</abbr>
+                        </div>
                 </li>
                 {% endif %}
 
 
                 {% if ctf.flag_prefix %}
                 <li class="list-group-item list-group-item-action">
-                    <strong>Flag Prefix:</strong>
-                    <code>{{ctf.flag_prefix}}</code>
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <strong><i class="fas fa-flag" title="CTF Flag Prefix" style="font-size: x-large;"></i></strong>
+                        </div>
+
+                        <div class="col-sm-8">
+                            <code>{{ctf.flag_prefix}}</code>
+                        </div>
+                    </div>
                 </li>
                 {% endif %}
 
                 <li class="list-group-item list-group-item-action">
                     <div class="row">
-                        <div class="col-sm-3">
-                            <strong>Weight:</strong>
+                        <div class="col-sm-2" style="text-align: center;">
+                            <strong><i class="fas fa-weight-hanging" title="CTF weight" style="font-size: x-large;"></i></strong>
                         </div>
-                        <div class="col-sm-7">
+                        <div class="col-sm-8">
                             {{ctf.weight}}&nbsp;&nbsp;
                             {% if ctf.weight <= 10 %}
                             <span class="badge badge-pill badge-light">Casual CTF</span>
@@ -106,11 +141,11 @@
 
                  <li class="list-group-item list-group-item-action">
                     <div class="row">
-                        <div class="col-sm-3">
-                            <strong>Links</strong>
+                        <div class="col-sm-2" style="text-align: center;">
+                            <strong><i class="fas fa-link" title="Links" style="font-size: x-large;"></i></strong>
                         </div>
 
-                        <div class="col-sm-7">
+                        <div class="col-sm-8">
                             {% if ctf.url %}
                             <a href="{{ctf.url}}" target="_blank"><strong>Website</strong>&nbsp;<i class="fas fa-external-link-alt"></i></a>&nbsp;|&nbsp;
                             {% endif %}
@@ -166,6 +201,21 @@
 </div>
 
 
+<div class="modal fade" id="CtfDescriptionModal" tabindex="-1" aria-labelledby="CtfDescriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CtfDescriptionModalLabel">Description of {{ctf.name}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {% autoescape off %}
+                {{ctf.description|html_sanitize}}
+                {% endautoescape %}
+            </div>
+        </div>
+    </div>
+</div>
 
 
 {% endblock %}

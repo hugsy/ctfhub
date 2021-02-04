@@ -1,3 +1,4 @@
+from ctfpad.mixins import MembersOnlyMixin
 from ctfpad.decorators import only_if_authenticated_user
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -25,7 +26,7 @@ from ctfpad.helpers import (
 )
 
 
-class CtfListView(LoginRequiredMixin, ListView):
+class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
     model = Ctf
     template_name = "ctfpad/ctfs/list.html"
     login_url = "/users/login/"
@@ -41,7 +42,7 @@ class CtfListView(LoginRequiredMixin, ListView):
         return qs.filter( Q(visibility = "public" ) | Q(created_by = self.request.user.member ) )
 
 
-class CtfCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class CtfCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, CreateView):
     model = Ctf
     template_name = "ctfpad/ctfs/create.html"
     login_url = "/users/login/"
@@ -124,7 +125,7 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
     }
 
 
-class CtfUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class CtfUpdateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, UpdateView):
     model = Ctf
     form_class = CtfCreateUpdateForm
     template_name = "ctfpad/ctfs/create.html"
@@ -142,7 +143,7 @@ class CtfUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().form_valid(form)
 
 
-class CtfDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class CtfDeleteView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, DeleteView):
     model = Ctf
     success_url = reverse_lazy('ctfpad:dashboard')
     template_name = "ctfpad/ctfs/confirm_delete.html"

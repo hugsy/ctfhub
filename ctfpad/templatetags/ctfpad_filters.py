@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta
-from bleach.sanitizer import BleachSanitizerFilter
+from collections import namedtuple
 from django import template
 from django.contrib import messages
-from collections import namedtuple
+from django.utils.safestring import mark_safe
 
 import bleach
+
 
 register = template.Library()
 
@@ -52,3 +53,10 @@ def html_sanitize(html):
         )
     )
 
+
+@register.filter(is_safe=True, needs_autoescape=False)
+def as_tick_or_cross(b):
+    if b:
+        return mark_safe("""<strong><i class="fas fa-check" style="color: green;"></i><strong>""")
+    else:
+        return mark_safe("""<strong><i class="fas fa-times" style="color: red;"></i><strong>""")

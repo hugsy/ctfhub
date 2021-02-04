@@ -23,10 +23,12 @@
                     <a href="mailto:{{team.email}}" target="_blank">{{team.email}} <i class="fas fa-external-link-alt"></i></a>
                 </li>
 
+                {% if request.user.member.has_superpowers %}
                 <li class="list-group-item list-group-item-action">
                     <strong>API Key:</strong>
                     <code>{{team.api_key}}</code>
                 </li>
+                {% endif %}
 
                 <li class="list-group-item list-group-item-action">
                     <strong>Links:</strong><br>
@@ -67,6 +69,7 @@
                 <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Country</th>
+                    <th scope="col">Status</th>
                     <th scope="col">Master Skill</th>
                     <th scope="col">Member Since</th>
                     <th scope="col">Social Media</th>
@@ -83,6 +86,7 @@
                         <a href="mailto:{{member.email}}">{{member.username}}</a>
                     </td>
                     <td style="text-align: center;"><img height="20px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
+                    <td>{{member.status | title}}</td>
                     <td>{{member.best_category}}</td>
                     <td>{{member.joined_time | date:'Y'}}</td>
                     <td>

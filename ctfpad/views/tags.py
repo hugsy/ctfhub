@@ -1,3 +1,4 @@
+from ctfpad.mixins import MembersOnlyMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render
@@ -32,7 +33,7 @@ class TagCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return redirect_to
 
 
-class TagListView(LoginRequiredMixin, ListView):
+class TagListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
     model = Tag
     template_name = "ctfpad/tags/list.html"
     login_url = "/users/login/"
@@ -46,7 +47,7 @@ class TagListView(LoginRequiredMixin, ListView):
         return ctx
 
 
-class TagDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+class TagDeleteView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, DeleteView):
     model = Tag
     template_name = "ctfpad/tags/confirm_delete.html"
     login_url = "/users/login/"

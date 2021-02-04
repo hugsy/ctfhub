@@ -51,17 +51,21 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    members = Member.objects.all()
-    user = Member.objects.filter(user__username=request.user).first()
-    latest_ctfs = user.ctfs.order_by("-last_modification_time")
+    user = request.user
+    member = user.member
+    if member.is_guest:
+        members = Member.objects.filter( selected_ctf = member.selected_ctf )
+    else:
+        members = Member.objects.all()
+    latest_ctfs = member.ctfs.order_by("-last_modification_time")
     now = datetime.datetime.now()
-    nb_ctf_played = user.ctfs.count()
-    current_ctfs = user.public_ctfs.filter(
+    nb_ctf_played = member.ctfs.count()
+    current_ctfs = member.public_ctfs.filter(
         end_date__isnull=False,
         start_date__lte = now,
         end_date__gt = now,
     )
-    next_ctf = user.public_ctfs.filter(
+    next_ctf = member.public_ctfs.filter(
         end_date__isnull=False,
         start_date__gt=now,
     ).order_by("start_date").first()
@@ -93,7 +97,7 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
 
     # ranking
     rank = sorted(
-        Member.objects.all(),
+        Member.objects.filter(solved_challenges__isnull = False),
         key=lambda x: x.total_scored_percent,
         reverse=True
     )

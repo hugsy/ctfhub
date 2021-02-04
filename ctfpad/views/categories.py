@@ -1,3 +1,4 @@
+from ctfpad.mixins import MembersOnlyMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render
@@ -8,7 +9,7 @@ from ctfpad.forms import CategoryCreateForm
 from ctfpad.models import ChallengeCategory
 
 
-class CategoryCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
+class CategoryCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, CreateView):
     model = ChallengeCategory
     template_name = "ctfpad/categories/create.html"
     login_url = "/users/login/"

@@ -1,8 +1,8 @@
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
-from django.contrib.auth.password_validation import validate_password
 
 from django import forms
+from django.core.exceptions import ValidationError
 from django.forms import widgets
 
 from ctfpad.models import Challenge, ChallengeCategory, ChallengeFile, Ctf, Member, Tag, Team
@@ -52,6 +52,7 @@ class MemberCreateForm(forms.ModelForm):
             "github_url",
             "blog_url",
             "selected_ctf",
+            "status",
         ]
 
     username = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
@@ -74,9 +75,16 @@ class MemberUpdateForm(forms.ModelForm):
             "github_url",
             "blog_url",
             "selected_ctf",
+            "status",
         ]
 
     has_superpowers = forms.BooleanField(required=False, label="Has Super-Powers?")
+
+    def clean(self):
+        status = self.cleaned_data['status'].strip().lower()
+        if status == "guest" and not self.cleaned_data['selected_ctf']:
+            raise ValidationError("Guests MUST have a selected_ctf")
+        return super(MemberUpdateForm, self).clean()
 
 
 class CtfCreateUpdateForm(forms.ModelForm):

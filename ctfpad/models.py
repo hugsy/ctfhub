@@ -1,3 +1,4 @@
+from typing import OrderedDict
 import uuid
 import os
 import hashlib
@@ -23,7 +24,6 @@ from model_utils import Choices, FieldTracker
 from ctfpad.helpers import ctftime_ctfs
 
 from ctftools.settings import (
-    CTFPAD_URL,
     HEDGEDOC_URL,
     WHITEBOARD_URL,
     CTF_CHALLENGE_FILE_PATH,
@@ -220,12 +220,18 @@ class Ctf(TimeStampedModel):
     def get_absolute_url(self):
         return reverse('ctfpad:ctfs-detail', args=[str(self.id), ])
 
+    @property
+    def team(self):
+        return self.players.all()
+
+
 
 
 class Member(TimeStampedModel):
     """
     CTF team member model
     """
+    STATUS = Choices('member', 'guest', )
     COUNTRIES= Choices("Afghanistan", "Alabama", "Alaska", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina", "Arizona", "Arkansas", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "California", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Caribbean Netherlands", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands", "Colombia", "Colorado", "Comoros", "Connecticut", "Cook Islands", "Costa Rica", "Croatia", "Cuba", "Curaçao", "Cyprus", "Czechia", "Côte d\'Ivoire (Ivory Coast)", "DR Congo", "Delaware", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "England", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini (Swaziland)", "Ethiopia", "European Union", "Falkland Islands", "Faroe Islands", "Fiji", "Finland", "Florida", "France", "French Guiana", "French Polynesia", "French Southern and Antarctic Lands", "Gabon", "Gambia", "Georgia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Hawaii", "Heard Island and McDonald Islands", "Honduras", "Hong Kong", "Hungary", "Iceland", "Idaho", "Illinois", "India", "Indiana", "Indonesia", "Iowa", "Iran", "Iraq", "Ireland", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kansas", "Kazakhstan", "Kentucky", "Kenya", "Kiribati", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Louisiana", "Luxembourg", "Macau", "Madagascar", "Maine", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Martinique", "Maryland", "Massachusetts", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Michigan", "Micronesia", "Minnesota", "Mississippi", "Missouri", "Moldova", "Monaco", "Mongolia", "Montana", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nebraska", "Nepal", "Netherlands", "Nevada", "New Caledonia", "New Hampshire", "New Jersey", "New Mexico", "New York", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "North Carolina", "North Dakota", "North Korea", "North Macedonia", "Northern Ireland", "Northern Mariana Islands", "Norway", "Ohio", "Oklahoma", "Oman", "Oregon", "Pakistan", "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Pennsylvania", "Peru", "Philippines", "Pitcairn Islands", "Poland", "Portugal", "Puerto Rico", "Qatar", "Republic of the Congo", "Rhode Island", "Romania", "Russia", "Rwanda", "Réunion", "Saint Barthélemy", "Saint Helena, Ascension and Tristan da Cunha", "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Saudi Arabia", "Scotland", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Carolina", "South Dakota", "South Georgia", "South Korea", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen", "Sweden", "Switzerland", "Syria", "São Tomé and Príncipe", "Taiwan", "Tajikistan", "Tanzania", "Tennessee", "Texas", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "United Nations", "United States", "United States Minor Outlying Islands", "United States Virgin Islands", "Uruguay", "Utah", "Uzbekistan", "Vanuatu", "Vatican City (Holy See)", "Venezuela", "Vermont", "Vietnam", "Virginia", "Wales", "Wallis and Futuna", "Washington", "West Virginia", "Western Sahara", "Wisconsin", "Wyoming", "Yemen", "Zambia", "Zimbabwe")
     TIMEZONES = Choices("UTC+0", "UTC-12", "UTC-11", "UTC-10", "UTC-9", "UTC-8", "UTC-7", "UTC-6", "UTC-5", "UTC-4", "UTC-3", "UTC-2", "UTC-1", "UTC+1", "UTC+2", "UTC+3", "UTC+4", "UTC+5", "UTC+6", "UTC+7", "UTC+8", "UTC+9", "UTC+10", "UTC+11", "UTC+12")
 
@@ -243,7 +249,8 @@ class Member(TimeStampedModel):
     twitter_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
-    selected_ctf = models.ForeignKey(Ctf, on_delete=models.SET_NULL, null=True, blank=True)
+    selected_ctf = models.ForeignKey(Ctf, on_delete=models.SET_NULL, null=True, blank=True, related_name="players", related_query_name="player")
+    status = StatusField()
 
     @property
     def username(self):
@@ -317,16 +324,24 @@ class Member(TimeStampedModel):
             return f"{STATIC_URL}/images/blank-country.png"
         return f"{STATIC_URL}/images/flags/{slugify(self.country)}.png"
 
+    @property
+    def is_guest(self):
+        return self.status == "guest"
+
     @cached_property
     def jitsi_url(self):
         return f"{JITSI_URL}/{self.id}"
 
     @cached_property
     def private_ctfs(self):
+        if self.is_guest:
+            return Ctf.objects.none()
         return Ctf.objects.filter(visibility = "private", created_by = self)
 
     @cached_property
     def public_ctfs(self):
+        if self.is_guest:
+            return Ctf.objects.filter(id=self.selected_ctf.id)
         return Ctf.objects.filter(visibility = "public")
 
     @cached_property

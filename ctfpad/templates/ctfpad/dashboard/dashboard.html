@@ -5,13 +5,14 @@
 {% include 'ctfpad/dashboard/status.html' %}
 
 {% load humanize %}
+{% load ctfpad_filters %}
 
 <br/>
 
 {% include 'snippets/messages.html' %}
 
 <div class="row">
-	<div class="col-md-5">
+	<div class="col-md-4">
 		<h5>Team Activity</h5>
 		<hr>
 		<div class="card card-body">
@@ -33,8 +34,7 @@
 
 				{% for member in members %}
 					{% if member.selected_ctf %}
-					{% if member.selected_ctf.is_permanent or member.selected_ctf.is_running %}
-					<tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
+					<tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' member.selected_ctf.id %}">
 						<td>{{member.username}}</td>
 						<td>
 							{% if member.selected_ctf.is_public %}
@@ -45,13 +45,12 @@
 						</td>
 					</tr>
 					{% endif %}
-					{% endif %}
 				{% endfor %}
 			</table>
 		</div>
 	</div>
 
-	<div class="col-md-7">
+	<div class="col-md-8">
 		<h5>Latest CTFs</h5>
 		<hr>
 		<div class="card card-body">
@@ -66,23 +65,22 @@
 			<table class="table table-sm table-hover">
 				<tr>
 					<th>Name</th>
-					<th>Is Permanent</th>
-					<th>Is Running Now</th>
+					<th>Permanent?</th>
+					<th>Running Now?</th>
 					<th>Duration</th>
-					<th></th>
-					<th></th>
 					<th></th>
 				</tr>
 
 				{% for ctf in latest_ctfs %}
 					<tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}">
 						<td>{{ctf.name}}</td>
-						<td>{% if ctf.is_permanent %}✔{% else %}❌{% endif %}</td>
-						<td>{% if ctf.is_permanent %}✔{% elif ctf.is_running %}✔{% else %}❌{% endif %}</td>
+						<td>{{ ctf.is_permanent | as_tick_or_cross }}</td>
+						<td>{{ ctf.is_permanent | as_tick_or_cross }}</td>
 						<td>{% if ctf.duration == 0 %}♾{% else %}{{ ctf.duration | naturaltime}}{% endif %}</td>
-						<td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:ctfs-detail' ctf.id %}">View</a></td>
-						<td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:ctfs-edit' ctf.id %}">Update</a></td>
-						<td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:ctfs-delete' ctf.id %}">Delete</a></td>
+						<td>
+							<a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Update"><strong><i class="fas fa-edit"></i></strong></a>
+							<a href="{% url 'ctfpad:ctfs-delete' ctf.id %}" title="Delete"><i class="fas fa-trash"></i></strong></a>
+						</td>
 					</tr>
 				{% endfor %}
 			</table>
