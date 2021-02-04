@@ -13,9 +13,12 @@ from ctftools.settings import (
 # formatted with the ctf name
 NEW_CTF_MESSAGES = [
     "New CTF added ! `{}` 💻 ",
-    "CTF `{}`  added 🏳  ! Warm your keyboards ⌨ ",
+    "CTF `{}` added 🏳  ! Warm your keyboards ⌨ ",
     "Yay another CTF ! `{}` is on ! Book your weekends, stock up beers and junk food... Let's do this 🤓",
     "Alright stop, collaborate on `{}` and listen... 🎶",
+    "99 CTF on the wall, 99 CTF. Take `{}` down, pass it around, 98 CTF on the wall... 🍺",
+    "Brace yourselves, `{}` is coming... 🐺",
+    "`$ sudo apt-get install '{}'` 💻",
 ]
 
 

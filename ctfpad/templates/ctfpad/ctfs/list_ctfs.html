@@ -3,14 +3,20 @@
 <div class="row">
     <div class="col">
     {% if object_list %}
-        <small>* All times are in UTC (hover for local time)</small>
+        <div class="row">
+            <div class="col">
+                <small>* All times are in UTC (hover for local time)</small>
+            </div>
+            <div class="col" style="text-align: right;">
+                <a href="{% url 'ctfpad:ctfs-create'%}" title="Add a CTF"><strong><i class="fas fa-plus"></i></strong></a>
+            </div>
+        </div>
         <table class="table table-sm table-hover">
             <thead>
             <tr>
                 <th scope="col">CTF</th>
                 <th scope="col">Start</th>
                 <th scope="col">End</th>
-                <th scope="col"></th>
                 <th scope="col"></th>
                 <th scope="col"></th>
             </tr>
@@ -30,9 +36,8 @@
                     <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
                 </td>
                 {% endif %}
-                <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:ctfs-detail' ctf.id %}">View</a></td>
-                <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:ctfs-edit' ctf.id %}">Edit</a></td>
-                <td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:ctfs-delete' ctf.id %}">Delete</a></td>
+                <td><a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Edit"><i class="fas fa-edit"></i></a></td>
+                <td><a href="{% url 'ctfpad:ctfs-delete' ctf.id %}" title="Delete"><i class="fas fa-trash"></i></a></td>
             </tr>
             {% endfor %}
             </tbody>

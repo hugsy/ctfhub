@@ -71,7 +71,6 @@
                     <th scope="col">Member Since</th>
                     <th scope="col">Social Media</th>
                     <th scope="col"></th>
-                    <th scope="col"></th>
                     {% if request.user.member.has_superpowers %}
                     <th scope="col"></th>
                     {% endif %}
@@ -98,12 +97,11 @@
                     {% endif %}
                     &nbsp;●
                     </td>
-                    <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
                     {% if request.user.member.has_superpowers or request.user.id == member.user.id %}
-                    <td><a class="btn btn-sm btn-warning" href="{% url 'ctfpad:users-update' member.user.id %}">Edit</a></td>
+                    <td><a href="{% url 'ctfpad:users-update' member.user.id %}" title="Edit"><strong><i class="fas fa-edit"></i></strong></a></td>
                     {% endif %}
                     {% if request.user.member.has_superpowers %}
-                    <td><a class="btn btn-sm btn-danger" href="{% url 'ctfpad:users-delete' member.user.id %}">Delete</a></td>
+                    <td><a href="{% url 'ctfpad:users-delete' member.user.id %}" title="Delete"><strong><i class="fas fa-trash"></i></strong></a></td>
                     {% endif %}
                 </tr>
                 {% endfor %}

@@ -2,19 +2,34 @@
 
 {% block content %}
 
-<br/>
-
-
 
 {% for message in messages %}
     <p id="messages">{{message}}</p>
 {% endfor %}
 
 
+<br>
 <div class="row">
-    <div class="col-md-2"></div>
-    <div class="col-md-8">
-        <div style="margin: 20px;">
+    <div class="col-2"></div>
+    <div class="col-8">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">CTFs</h4>
+                <p class="card-text">
+                    Manage your CTF from here.
+                </p>
+            </div>
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
+
+<br>
+
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+        <div>
             <ul class="nav nav-tabs">
                 <li class="nav-item">
                     <a href="#list_ctfs" class="nav-link active" data-toggle="tab">Registered CTFs</a>
@@ -38,6 +53,6 @@
             </div>
         </div>
     </div>
-    <div class="col-md-2"></div>
+    <div class="col-md-1"></div>
 </div>
 {% endblock %}
