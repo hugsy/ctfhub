@@ -33,7 +33,7 @@
                         <input type="hidden" name="selected_ctf" value="{{ctf.id}}">
                         <button class="btn btn-success btn-sm btn-block" onclick="this.form.submit();">
                             <strong>Work on this CTF</strong>
-                        </a>
+                        </button>
                     </form>
                     {% endif %}
                     {% endif %}
@@ -69,7 +69,9 @@
                             <strong><i class="fas fa-gamepad" title="Player(s)" style="font-size: x-large;"></i></strong>
                         </div>
                         <div class="col-sm-8">
-                            {{ ctf.team|join:", " }}
+                            {% for member in ctf.team %}
+                            <a href="{{member.get_absolute_url}}">{{member.username}}</a>,&nbsp;
+                            {% endfor %}
                         </div>
                 </li>
                 {% endif %}

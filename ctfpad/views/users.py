@@ -22,7 +22,7 @@ from django.contrib.auth.views import (
     PasswordResetView,
 )
 
-from ctfpad.models import Challenge, Member, Team
+from ctfpad.models import Challenge, Ctf, Member, Team
 from ctfpad.forms import MemberCreateForm, MemberMarkAsSelectedForm, MemberUpdateForm, UserUpdateForm
 from ctfpad.decorators import only_if_authenticated_user
 from ctfpad.mixins import RequireSuperPowersMixin

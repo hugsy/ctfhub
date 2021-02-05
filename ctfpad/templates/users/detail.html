@@ -15,13 +15,6 @@
 		<hr>
 		<div class="card card-body">
             <ul class="list-group">
-                <li class="list-group-item list-group-item-action" style="text-align: center;">
-                    {% if member.avatar %}
-                    <img width="75px" height="75px" src="{{member.avatar.url}}" alt="{{member.username|lower}}_avatar" class="rounded-circle">
-                    {% else %}
-                    <img width="75px" height="75px" src="{% static 'images/blank-avatar.png' %}" alt="default_avatar" class="rounded-circle">
-                    {% endif %}
-                </li>
 
                 <li class="list-group-item list-group-item-action" style="text-align: center;">
                     <div class="row">
@@ -38,52 +31,87 @@
                     </div>
                 </li>
 
-                <li class="list-group-item list-group-item-action">
-                    <strong>Email:</strong>
-                    <a href="mailto:{{member.email}}">{{member.email}}</a>
+                <li class="list-group-item list-group-item-action" style="text-align: center;">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            {% if member.avatar %}
+                            <img width="75px" height="75px" src="{{member.avatar.url}}" alt="{{member.username|lower}}_avatar" class="rounded-circle">
+                            {% else %}
+                            <img width="75px" height="75px" src="{% static 'images/blank-avatar.png' %}" alt="default_avatar" class="rounded-circle">
+                            {% endif %}
+                        </div>
+                        <div class="col-sm" style="text-align: justify;">
+                            {% autoescape on %}
+                            {{member.description|html_sanitize}}
+                            {% endautoescape %}
+                        </div>
+                    </div>
                 </li>
 
-                {% if member.description %}
                 <li class="list-group-item list-group-item-action">
-                    <strong>Description:</strong>
-                    {% autoescape on %}
-                    {{member.description|html_sanitize}}
-                    {% endautoescape %}
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <i class="fas fa-envelope" style="font-size: x-large;" title="Email"></i>
+                        </div>
+                        <div class="col-sm" style="text-align: justify;">
+                            <a href="mailto:{{member.email}}">{{member.email}}</a>
+                        </div>
+                </li>
+
+                {% if member.selected_ctf %}
+                <li class="list-group-item list-group-item-action">
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <i class="fas fa-trophy" style="font-size: x-large;" title="Selected CTF"></i>
+                        </div>
+                        <div class="col-sm" style="text-align: justify;">
+                            <a href="{{member.selected_ctf.get_absolute_url}}">{{member.selected_ctf}}</a>
+                        </div>
+                    </div>
                 </li>
                 {% endif %}
 
-                {% if member.country %}
                 <li class="list-group-item list-group-item-action">
-                    <strong>Country:</strong>
-                    {{member.country}}
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <i class="fas fa-globe-europe" style="font-size: x-large;" title="Country"></i>
+                        </div>
+                        <div class="col-sm" style="text-align: justify;">
+                            {{member.country}} (<a href="https://24timezones.com/time-zone/{{member.timezone|lower}}" target="_blank">{{member.timezone}}</a>)
+                        </div>
+                    </div>
                 </li>
-                {% endif %}
-
-                {% if member.timezone %}
-                <li class="list-group-item list-group-item-action">
-                    <strong>Timezone:</strong>
-                    {{member.timezone}}
-                </li>
-                {% endif %}
 
                 {% if member.joined_time %}
                 <li class="list-group-item list-group-item-action">
-                    <strong>Member Since:</strong>
-                    {{member.joined_time|date:'F Y'}}
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <i class="fas fa-user-secret" style="font-size: x-large;" title="Member Since"></i>
+                        </div>
+                        <div class="col-sm" style="text-align: justify;">
+                            {{member.joined_time|date:'F Y'}}
+                        </div>
+                    </div>
                 </li>
                 {% endif %}
 
                 <li class="list-group-item list-group-item-action">
-                    <strong>Social Media:</strong>
-                    {% if member.blog_url %}
-                    <a target="_blank" href="{{member.blog_url}}"><i class="fas fa-blog"></i></i></a>&nbsp;
-                    {% endif %}
-                    {% if member.twitter_url %}
-                    <a target="_blank" href="{{member.twitter_url}}"><i class="fab fa-twitter"></i></a>&nbsp;
-                    {% endif %}
-                    {% if member.github_url %}
-                    <a target="_blank" href="{{member.github_url}}"><i class="fab fa-github"></i></a>&nbsp;
-                    {% endif %}
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <i class="fas fa-rss-square" style="font-size: x-large;" title="Social Media"></i>
+                        </div>
+                        <div class="col-sm" style="text-align: justify;">
+                            {% if member.blog_url %}
+                            <a target="_blank" href="{{member.blog_url}}"><i class="fas fa-blog"></i></i></a>&nbsp;
+                            {% endif %}
+                            {% if member.twitter_url %}
+                            <a target="_blank" href="{{member.twitter_url}}"><i class="fab fa-twitter"></i></a>&nbsp;
+                            {% endif %}
+                            {% if member.github_url %}
+                            <a target="_blank" href="{{member.github_url}}"><i class="fab fa-github"></i></a>&nbsp;
+                            {% endif %}
+                        </div>
+                    </div>
                 </li>
             </ul>
         </div>

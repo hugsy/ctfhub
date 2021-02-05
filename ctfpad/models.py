@@ -357,6 +357,8 @@ class Member(TimeStampedModel):
     def to_local_date(self, utc_date):
         return utc_date + self.timezone_offset
 
+    def get_absolute_url(self):
+        return reverse('ctfpad:users-detail', args=[str(self.id), ])
 
 
 class ChallengeCategory(TimeStampedModel):
