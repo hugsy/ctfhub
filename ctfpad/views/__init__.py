@@ -89,25 +89,14 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    # team info
-    team = Team.objects.first()
-
-    # stats
     stats = CtfStats()
 
-    # ranking
-    rank = sorted(
-        Member.objects.filter(solved_challenges__isnull = False),
-        key=lambda x: x.total_scored_percent,
-        reverse=True
-    )
-
     context = {
-        "team": team,
+        "team": Team.objects.first(),
         "player_ctf_count": stats.players_activity(),
         "most_solved": stats.solved_categories(),
         "last_year_stats": stats.last_year_stats(),
-        "ranked_members": rank,
+        "ranked_members": stats.get_ranking(),
     }
     return render(request, "ctfpad/stats/detail.html", context)
 

@@ -86,7 +86,13 @@
                         <a href="mailto:{{member.email}}">{{member.username}}</a>
                     </td>
                     <td style="text-align: center;"><img height="20px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
-                    <td>{{member.status | title}}</td>
+                    <td>
+                        {% if not member.is_active %}
+                        Inactive
+                        {% else %}
+                        {{member.status | title}}
+                        {% endif %}
+                    </td>
                     <td>{{member.best_category}}</td>
                     <td>{{member.joined_time | date:'Y'}}</td>
                     <td>

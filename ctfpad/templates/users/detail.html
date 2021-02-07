@@ -56,6 +56,7 @@
                         <div class="col-sm" style="text-align: justify;">
                             <a href="mailto:{{member.email}}">{{member.email}}</a>
                         </div>
+                    </div>
                 </li>
 
                 {% if member.selected_ctf %}
@@ -70,6 +71,26 @@
                     </div>
                 </li>
                 {% endif %}
+
+                <li class="list-group-item list-group-item-action">
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <i class="fas fa-battery-three-quarters" style="font-size: x-large;" title="Status"></i>
+                        </div>
+                        <div class="col-sm" style="text-align: justify;">
+                            {% if member.is_active %}
+                            {{member.status | title}}
+                            {% else %}
+                            Inactive
+                            {% endif %}
+                            {% if member.last_solved_challenge %}
+                            (Last solved: {{member.last_solved_challenge.solved_time | date:"Y/m/d" }})
+                            {% else %}
+                            (No challenge solved)
+                            {% endif %}
+                        </div>
+                    </div>
+                </li>
 
                 <li class="list-group-item list-group-item-action">
                     <div class="row">
@@ -166,16 +187,18 @@ new Chart(document.getElementById("user-stats"), {
                             <th>Challenge</th>
                             <th>Category</th>
                             <th>Points</th>
-                            <th>Solved Time</th>
+                            <th><abbr title='Hover for local time'>Solved Time(UTC)</abbr></th>
                         </tr>
 
                         {% for challenge in member.solved_challenges.all reversed %}
-                        <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}">
-                            <td>{{challenge.ctf}}</td>
-                            <td>{{challenge.name}}</td>
+                        <tr>
+                            <td><a href="{{challenge.ctf.get_absolute_url}}">{{challenge.ctf}}</a></td>
+                            <td><a href="{{challenge.get_absolute_url}}">{{challenge.name}}</a></td>
                             <td><span class="badge badge-primary">{{challenge.category.name}}</span></td>
                             <td>{{challenge.points}}</td>
-                            <td>{{challenge.solved_time}}</td>
+                            <td>
+                                <abbr title='Local time: {{challenge.solved_time| as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{challenge.solved_time | date:"Y/m/d H:i:s"}}</abbr>
+                            </td>
                         </tr>
                         {% endfor %}
                     </table>

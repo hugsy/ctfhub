@@ -2,7 +2,7 @@ from typing import OrderedDict
 import uuid
 import os
 import hashlib
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from collections import namedtuple
 from statistics import mean
@@ -24,7 +24,7 @@ from model_utils import Choices, FieldTracker
 from ctfpad.helpers import ctftime_ctfs
 
 from ctftools.settings import (
-    HEDGEDOC_URL,
+    HEDGEDOC_URL, SHORT_DATETIME_FORMAT,
     WHITEBOARD_URL,
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT, STATIC_URL,
@@ -79,7 +79,9 @@ class Team(TimeStampedModel):
 
     @property
     def members(self):
-        return self.member_set.all()
+        members = sorted(self.member_set.filter(status = "member"), key=lambda x: x.username)
+        members+= sorted(self.member_set.filter(status = "guest"), key=lambda x: x.username)
+        return members
 
 
 
@@ -196,6 +198,13 @@ class Ctf(TimeStampedModel):
         if member:
             t = session.post(f"{HEDGEDOC_URL}/login", data={"email": member.hedgedoc_username, "password": member.hedgedoc_password})
 
+        # add ctf notes
+        fname = slugify( f"{self.name}.md")
+        with tempfile.TemporaryFile() as fp:
+            result = session.get(f"{HEDGEDOC_URL}{self.note_id}/download")
+            zip_file.writestr(zipfile.ZipInfo(filename=fname, date_time=ts), result.text)
+
+        # add challenge notes
         for challenge in self.challenges:
             fname = slugify( f"{self.name}-{challenge.name}.md" )
             with tempfile.TemporaryFile() as fp:
@@ -267,11 +276,30 @@ class Member(TimeStampedModel):
     def __str__(self):
         return self.username
 
+    @property
+    def is_active(self):
+        if self.status == "guest":
+            return True
+
+        last = self.last_solved_challenge
+        if not last:
+            return False
+
+        now = datetime.now()
+        return last.solved_time - now < timedelta(days=365)
+
     @cached_property
     def solved_public_challenges(self):
-        return  self.solved_challenges.filter(
+        return self.solved_challenges.filter(
             ctf__visibility = "public"
         ).order_by("solved_time")
+
+    @cached_property
+    def last_solved_challenge(self):
+        solved = self.solved_public_challenges
+        if len(solved) == 0:
+            return None
+        return solved.first()
 
     @cached_property
     def best_category(self) -> str:
@@ -541,6 +569,21 @@ class CtfStats:
             res[start_cur_month.strftime("%Y/%m")] = ctf_by_month
             cur_month = start_cur_month - timedelta(days=1)
         return res
+
+
+    def get_ranking(self) -> list:
+        """[summary]
+
+        Returns:
+            list: [description]
+        """
+        members = Member.objects.filter(solved_challenges__isnull=False).distinct()
+        return sorted(
+            members,
+            key=lambda x: x.total_scored_percent,
+            reverse=True
+        )
+
 
 
 SearchResult = namedtuple("SearchResult", "category name description link" )
