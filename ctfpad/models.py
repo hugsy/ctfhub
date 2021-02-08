@@ -299,7 +299,7 @@ class Member(TimeStampedModel):
         solved = self.solved_public_challenges
         if len(solved) == 0:
             return None
-        return solved.first()
+        return solved.last()
 
     @cached_property
     def best_category(self) -> str:
