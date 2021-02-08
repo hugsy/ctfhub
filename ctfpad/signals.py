@@ -37,9 +37,13 @@ def discord_notify_ctf_creation(sender, instance: Ctf, created: bool, **kwargs: 
     if not created:
         return False
 
+    if instance.visibility != "public":
+        return False
+
     root = get_current_site()
     url = f"{root}{instance.get_absolute_url()}"
     msg = random.choice(NEW_CTF_MESSAGES).format(instance.name)
+    date_and_time = f"Permanent CTF" if instance.is_permanent else f"Date: {instance.start_date} - {instance.end_date}"
     defaults = {
         "username": DISCORD_BOT_NAME,
         "content": msg,
@@ -47,7 +51,7 @@ def discord_notify_ctf_creation(sender, instance: Ctf, created: bool, **kwargs: 
             "url": url,
             "description": f"""
 `{instance.created_by.username}` added the team for `{instance.name}`!
-Date: {instance.start_date} - {instance.end_date}
+{date_and_time}
 Link: [{url}]({url})
 """,
     }]}
@@ -59,6 +63,9 @@ Link: [{url}]({url})
 @receiver(post_save, sender=Challenge, dispatch_uid="discord_notify_scored_challenge")
 def discord_notify_scored_challenge(sender, instance: Challenge, created: bool, **kwargs: dict) -> bool:
     if created:
+        return False
+
+    if instance.ctf.visibility != "public":
         return False
 
     if not instance.flag:
