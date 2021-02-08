@@ -322,7 +322,9 @@ class Member(TimeStampedModel):
 
         member_slices = []
         for ctf in filter(lambda c: c.scored_points > 0, Ctf.objects.filter(visibility = "public")):
-            member_points = self.solved_public_challenges.filter(ctf=ctf).aggregate(Sum("points"))["points__sum"] or 0
+            member_points = 0
+            for challenge in self.solved_public_challenges.filter(ctf=ctf):
+                member_points += challenge.points / challenge.solvers.count()
             member_slices.append(member_points / ctf.scored_points)
 
         return round(100 * mean(member_slices), 2)
