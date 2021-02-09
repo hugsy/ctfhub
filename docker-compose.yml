@@ -64,7 +64,6 @@ services:
       - CTFPAD_HOSTNAME=localhost                              # Change here to your server public IP / FQDN
       - CTFPAD_PORT=8000                                       # Change here to your server public port for CTFPad
       - CTFPAD_USE_SSL=0                                       # Change here to 1 if your public server uses https
-      - CTFPAD_HOSTNAME=localhost                              # Change here to your server public IP / FQDN
       - CTFPAD_DB_NAME=ctfpad                                  # (opt.) Change here
       - CTFPAD_DB_USER=ctfpad                                  # (opt.) Change here
       - CTFPAD_DB_PASSWORD=tookahlaiphee2KieTeeg5ooxutang4o    # Change here
