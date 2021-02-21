@@ -39,7 +39,7 @@ class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
 
     def get_queryset(self):
         qs = super(CtfListView, self).get_queryset()
-        return qs.filter( Q(visibility = "public" ) | Q(created_by = self.request.user.member ) )
+        return qs.filter( Q(visibility = "public" ) | Q(created_by = self.request.user.member ) ).order_by('-start_date')
 
 
 class CtfCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, CreateView):

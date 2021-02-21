@@ -57,7 +57,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         members = Member.objects.filter( selected_ctf = member.selected_ctf )
     else:
         members = Member.objects.all()
-    latest_ctfs = member.ctfs.order_by("-last_modification_time")
+    latest_ctfs = member.ctfs.order_by("-start_date")
     now = datetime.datetime.now()
     nb_ctf_played = member.ctfs.count()
     current_ctfs = member.public_ctfs.filter(
