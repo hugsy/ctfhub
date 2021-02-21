@@ -129,7 +129,7 @@ class Ctf(TimeStampedModel):
 
     @property
     def solved_challenges(self):
-        return self.challenge_set.filter(status = "solved")
+        return self.challenge_set.filter(status = "solved").order_by("-solved_time")
 
     @property
     def unsolved_challenges(self):
