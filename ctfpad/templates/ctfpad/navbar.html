@@ -1,5 +1,8 @@
 {% load ctfpad_filters %}
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="navbar-nav">
+        <a class="nav-link" href="{% url 'ctfpad:home' %}"><i class="fas fa-home"></i></a>
+    </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -21,7 +24,6 @@
                 <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                     <h5 class="dropdown-header">Hi, {{request.user}} ({{request.user.member.team.name}})!</h5>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'ctfpad:home' %}"><i class="fas fa-home"></i>&nbsp;Home</a>
                     {% if not request.user.member.is_guest %}
                     <a class="dropdown-item" href="{% url 'ctfpad:stats-detail'%}"><i class="fas fa-signal"></i>&nbsp;Team Info</a>
                     <a class="dropdown-item" href="{% url 'ctfpad:ctfs-list' %}"><i class="fas fa-flag"></i>&nbsp;CTFs</a>
