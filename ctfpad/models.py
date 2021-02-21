@@ -161,6 +161,8 @@ class Ctf(TimeStampedModel):
 
     @property
     def is_running(self):
+        if self.is_permanent:
+            return True        
         now = datetime.now()
         return self.start_date <= now < self.end_date
 
