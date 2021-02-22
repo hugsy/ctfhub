@@ -74,10 +74,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 </li>
 
                 <li class="list-group-item list-group-item-action">
-                    <a href="#" onclick="new bootstrap.Modal(document.getElementById('ChallengeDescriptionModal')).toggle();"><strong>Description</strong></a><br/>
-                    {% autoescape off %}
-                    {{challenge.description|html_sanitize|truncatewords:15}}
-                    {% endautoescape %}
+                    <div class="col" style="text-align: justify;"
+                        onclick="new bootstrap.Modal(document.getElementById('ChallengeDescriptionModal')).toggle();"
+                        title="Click to view the complete description">
+                        {% autoescape off %}
+                        {{challenge.description|html_sanitize|truncatewords:15}}
+                        {% endautoescape %}
+                    </div>
                 </li>
 
                 <li class="list-group-item list-group-item-action">
@@ -134,7 +137,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     </div>
                 </div>
             </div>
-
 
             <br>
 
@@ -204,12 +206,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 {% endfor %}
             </table>
         </div>
-
     </div>
 
     <div class="col-md">
         <div class="row">
-
             <div class="embed-responsive embed-responsive-16by9">
                 <iframe
                 id="note_frame"

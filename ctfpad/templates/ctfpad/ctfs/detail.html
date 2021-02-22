@@ -73,6 +73,7 @@
                             <a href="{{member.get_absolute_url}}">{{member.username}}</a>,&nbsp;
                             {% endfor %}
                         </div>
+                    </div>
                 </li>
                 {% endif %}
 
@@ -101,6 +102,7 @@
                             &nbsp;<i class="fas fa-chevron-right"></i>&nbsp;
                             <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i" }}'>{{ctf.end_date | date:"Y/m/d H:i"}}</abbr>
                         </div>
+                    </div>
                 </li>
                 {% endif %}
 
