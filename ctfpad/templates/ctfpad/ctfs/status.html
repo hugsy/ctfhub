@@ -19,6 +19,8 @@
 						({{ ctf.end_date | timeuntil }} left)
 						{% elif ctf.is_finished %}
 						(ended {{ ctf.end_date | timesince }} ago)
+						{% else %}
+						(starts in {{ ctf.start_date | timeuntil }})
 						{% endif %}
 					{% endif %}
 					</h5>
