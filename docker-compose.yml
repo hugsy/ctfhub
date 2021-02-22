@@ -22,7 +22,7 @@ services:
 
 
   hedgedoc:
-    image: quay.io/hedgedoc/hedgedoc:1.6.0
+    image: quay.io/hedgedoc/hedgedoc:1.7.2-alpine
     environment:
       - CMD_DB_URL=postgres://ctfpad:tookahlaiphee2KieTeeg5ooxutang4o@db:5432/ctfpad    # Change here
       - CMD_DOMAIN=localhost                                                            # Change here to your server public IP / FQDN
