@@ -30,6 +30,7 @@ services:
       - CMD_COOKIE_POLICY=none
       - CMD_ALLOW_ANONYMOUS=false
       - CMD_ALLOW_FREEURL=true
+      - CMD_IMAGE_UPLOAD_TYPE=filesystem
       # Uncomment to use nginx as a HTTPS reverse proxy
       #- CMD_DOMAIN=hedgedoc.mydomain.com:8443
       #- CMD_URL_ADDPORT=false
@@ -41,6 +42,8 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+    volumes:
+      - hedgedoc-public-uploads:/hedgedoc/public/uploads
 
 
   whiteboard:
@@ -111,3 +114,4 @@ networks:
 volumes:
   db:
   uploads:
+  hedgedoc-public-uploads:
