@@ -7,7 +7,7 @@ ENV DEBUG 0
 ENV CTFPAD_HOSTNAME localhost                # change here if publicly exposed
 ENV HEDGEDOC_URL http://hedgedoc:3000        # change here if publicly exposed
 ENV WHITEBOARD_URL http://whiteboard:8080    # change here if publicly exposed
-RUN mkdir /code
+
 WORKDIR /code
 COPY requirements.txt .
 
