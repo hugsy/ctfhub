@@ -112,8 +112,9 @@ class ChallengeSetFlagView(ChallengeUpdateView):
             messages.error(self.request, f"Cannot score when CTF is over")
             return redirect("ctfpad:challenges-detail", self.object.id)
 
-        if form.instance.ctf.flag_prefix and form.cleaned_data.flag and not form.cleaned_data.flag.startswith(form.instance.ctf.flag_prefix):
-            messages.warning(self.request, f"Unexpected flag format: missing pattern '{form.instance.ctf.flag_prefix}'")
+        if form.instance.ctf.flag_prefix and "flag" in form.cleaned_data:
+            if not form.cleaned_data["flag"].startswith(form.instance.ctf.flag_prefix):
+                messages.warning(self.request, f"Unexpected flag format: missing pattern '{form.instance.ctf.flag_prefix}'")
 
         return super().form_valid(form)
 
