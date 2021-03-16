@@ -7,22 +7,36 @@
 <div class="card card-body">
     <div class="row">
         <div class="col-sm-6">
-            <a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:challenges-create' ctf=ctf.id %}">
-                <strong>Add a challenge</strong>
-            </a>
+            <div class="row">
+                <div class="col-6">
+                    <a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:challenges-create' ctf=ctf.id %}">
+                        <strong>New challenge</strong>
+                    </a>
+                </div>
+
+                <div class="col-3">
+                    <a class="btn btn-primary btn-sm btn-block" title="Add a category" data-toggle="modal" data-target="#QuickAddCategoryModal" href="#">
+                        <strong><i class="fas fa-folder-open" ></i></strong>
+                    </a>
+                </div>
+
+                <div class="col-lg-3">
+                    <a  class="btn btn-primary btn-sm btn-block" title="Add a tag"   data-toggle="modal" data-target="#QuickAddTagModal" href="#">
+                        <strong><i class="fas fa-tag"></i></strong>
+                    </a>
+                </div>
+            </div>
         </div>
-        <div class="col-sm-3">
-            <a class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#QuickAddCategoryModal" href="#">
-                <strong>Add a category</strong>
-            </a>
-        </div>
-        <div class="col-sm-3">
-            <a class="btn btn-primary btn-sm btn-block" data-toggle="modal" data-target="#QuickAddTagModal" href="#">
-                <strong>Add a tag</strong>
-            </a>
+        <div class="col-sm-6">
+            <form id="gotoFilteredChallengeFormId" onsubmit="gotoFilteredChallenge()">
+                <div class="input-group">
+                    <span class="input-group-text" id="ChallengeFilter"><b><i class="fas fa-filter"></i></b></span>
+                    <input id="ChallengeFilterPattern" onkeyup="filterChallenges()" type="text" class="form-control" placeholder="Filter challenges (name, category, points)..." aria-label="ChallengeFilter" aria-describedby="ChallengeFilter">
+                </div>
+            </form>
         </div>
     </div>
-    <table class="table table-sm table-hover">
+    <table class="table table-sm table-hover" id="CtfChallengeTable">
         <tr>
             <th></th>
             <th>Name</th>
@@ -52,3 +66,64 @@
         {% endfor %}
     </table>
 </div>
+
+
+<script>
+    function filterChallenges()
+    {
+        let pattern = document.getElementById("ChallengeFilterPattern").value.toUpperCase();
+        let table = document.getElementById("CtfChallengeTable");
+        let rows = table.getElementsByTagName("tr");
+
+        for (let i=0; i<rows.length; i++)
+        {
+            let bMatchedPattern = false;
+            for (let j=0; j<3; j++)
+            {
+                col = rows[i].getElementsByTagName("td")[j];
+                if (col)
+                {
+                    txtValue = col.textContent || col.innerText;
+                    if (txtValue.toUpperCase().indexOf(pattern) > -1)
+                    {
+                        bMatchedPattern = true;
+                        break;
+                    }
+                }
+            }
+            if(bMatchedPattern)
+            {
+                rows[i].style.display = "";
+            }
+            else
+            {
+                rows[i].style.display = "none";
+            }
+        }
+    }
+
+
+    function gotoFilteredChallenge()
+    {
+        let table = document.getElementById("CtfChallengeTable");
+        let rows = table.getElementsByTagName("tr");
+
+        let visible_rows = 0;
+        let visible_row_index = -1;
+        for (let i=0; i<rows.length; i++)
+        {
+            if (rows[i].style.display == "")
+            {
+                visible_rows += 1;
+                visible_row_index = i;
+            }
+        }
+
+        if (visible_rows>1)
+            return;
+
+        let link_col = rows[visible_row_index].getElementsByTagName("td")[4];
+        let challenge_link = link_col.getElementsByTagName("a")[0]["href"];
+        document.getElementById("gotoFilteredChallengeFormId").action = challenge_link;
+    }
+</script>
