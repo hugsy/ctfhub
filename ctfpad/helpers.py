@@ -130,47 +130,48 @@ def ctftime_parse_date(date: str) -> datetime:
     return datetime.strptime(date[:19], "%Y-%m-%dT%H:%M:%S")
 
 
-
 def ctftime_ctfs(running=True, future=True) -> list:
     """Return CTFs that are currently running and starting in the next 6 months.
 
     Returns:
         list: current and future CTFs
     """
-    ctfs = ctftime_fetch_ctf_data()
+    ctfs = ctftime_fetch_ctfs()
     now = datetime.now()
 
     result = []
     for ctf in ctfs:
-        start = ctftime_parse_date(ctf["start"])
-        finish = ctftime_parse_date(ctf["finish"])
+        start = ctf['start']
+        finish = ctf['finish']
 
         if running and start < now < finish:
             result.append(ctf)
         if future and now < start < finish:
             result.append(ctf)
 
-        ctf["start"] = start
-        ctf["finish"] = finish
-        ctf["duration"] = finish-start
     return result
 
 
-def ctftime_fetch_ctf_data(limit=100) -> list:
+@lru_cache(maxsize=128)
+def ctftime_fetch_ctfs(limit=100) -> list:
     """Retrieve CTFs from CTFTime API with a wide start/finish window (-1/+26 weeks) so we can later run our own filters
     on the cached results for better performance and accuracy.
 
     Returns:
         list: JSON output from CTFTime
     """
-    try:
-        res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*7):.0f}&finish={time()+(3600*24*7*26):.0f}",
-            headers={"user-agent": CTFTIME_USER_AGENT})
-        if res.status_code != requests.codes.ok:
-            raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
-        result = res.json()
-    except Exception:
-        result = []
+    res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*60):.0f}&finish={time()+(3600*24*7*26):.0f}",
+        headers={"user-agent": CTFTIME_USER_AGENT})
+    if res.status_code != requests.codes.ok:
+        raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
+
+    result = []
+    for ctf in res.json():
+        ctf["start"] = ctftime_parse_date(ctf["start"])
+        ctf["finish"] = ctftime_parse_date(ctf["finish"])
+        ctf["duration"] = ctf["finish"] - ctf["start"]
+        result.append(ctf)
+
     return result
 
 

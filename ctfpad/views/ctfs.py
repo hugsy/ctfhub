@@ -33,9 +33,13 @@ class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
     redirect_field_name = "redirect_to"
     paginate_by = 25
     ordering = ["-id"]
-    extra_context = {
-        "ctftime_ctfs": ctftime_ctfs(running=True, future=True),
-    }
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx |= {
+            "ctftime_ctfs": ctftime_ctfs(running=True, future=True)
+        }
+        return ctx
 
     def get_queryset(self):
         qs = super(CtfListView, self).get_queryset()
