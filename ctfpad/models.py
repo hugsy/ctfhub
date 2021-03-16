@@ -308,9 +308,9 @@ class Member(TimeStampedModel):
         best_categories_by_point = self.solved_public_challenges.values(
             "category__name"
         ).annotate(
-            dcount=Sum("points")
+            total_points=Sum("points")
         ).order_by(
-            "-points"
+            "-total_points"
         )
         if best_categories_by_point.count() == 0:
             return ""
@@ -465,15 +465,12 @@ class Challenge(TimeStampedModel):
         if self.flag_tracker.has_changed("flag"):
             self.status = "solved"
             self.solvers.add( self.last_update_by )
-            self.solved_time = datetime.now()
 
         super(Challenge, self).save()
         return
 
-
     def get_absolute_url(self):
         return reverse('ctfpad:challenges-detail', args=[str(self.id), ])
-
 
 
 class ChallengeFile(TimeStampedModel):
