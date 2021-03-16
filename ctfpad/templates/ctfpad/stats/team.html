@@ -46,7 +46,7 @@
                     {% endif %}
 
                     {% if team.youtube_url %}
-                    <a href="{{team.youtube_url}}" target="_blank"><i class="fab fa-youtube fa-fw"></i></i></a>&nbsp;●&nbsp;
+                    <a href="{{team.youtube_url}}" target="_blank"><i class="fab fa-youtube fa-fw"></i></a>&nbsp;●&nbsp;
                     {% endif %}
                 </li>
 
@@ -82,8 +82,8 @@
                 <tbody>
                 {% for member in team.members %}
                 <tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
-                    <th scope="row">
-                        <a href="mailto:{{member.email}}">{{member.username}}</a>
+                    <td>
+                        <a href="{% url 'ctfpad:users-detail' member.id %}">{{member.username}}</a>
                     </td>
                     <td style="text-align: center;"><img height="20px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
                     <td>
@@ -96,8 +96,9 @@
                     <td>{{member.best_category}}</td>
                     <td>{{member.joined_time | date:'Y'}}</td>
                     <td>
+                        &nbsp;●&nbsp;<a href="mailto:{{member.email}}" target="_blank"><i class="fas fa-envelope"></i></a>
                     {% if member.blog_url%}
-                        &nbsp;●&nbsp;<a href="{{member.blog_url}}" target="_blank"><i class="fas fa-blog"></i></i></a>
+                        &nbsp;●&nbsp;<a href="{{member.blog_url}}" target="_blank"><i class="fas fa-blog"></i></a>
                     {% endif %}
                     {% if member.twitter_url%}
                         &nbsp;●&nbsp;<a href="{{member.twitter_url}}" target="_blank"><i class="fab fa-twitter"></i></a>
