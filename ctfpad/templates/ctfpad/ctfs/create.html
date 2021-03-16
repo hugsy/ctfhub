@@ -126,7 +126,7 @@
                                 <i class="fas fa-key"></i>
                             </span>
                         </div>
-                        <input id="{{form.team_password.id_for_label}}" name="{{form.team_password.html_name }}" placeholder="{{form.team_password.label}}"  class="form-control" type="password" value="{{form.team_password.value}}" >
+                        <input id="{{form.team_password.id_for_label}}" name="{{form.team_password.html_name }}" placeholder="{{form.team_password.label}}"  class="form-control" type="text" value="{{form.team_password.value}}" >
 
                         <button class="form-control btn btn-info" onclick="document.getElementById('{{form.team_password.id_for_label}}').value=generate_random_string(16); return false;">
                             Generate
