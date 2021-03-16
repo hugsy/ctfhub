@@ -4,7 +4,7 @@ import os
 import hashlib
 from datetime import date, datetime, timedelta
 from pathlib import Path
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from statistics import mean
 import zipfile
 import requests
@@ -463,7 +463,7 @@ class Challenge(TimeStampedModel):
 
     def save(self):
         if self.flag_tracker.has_changed("flag"):
-            self.status = "solved"
+            self.status = "solved" if self.flag else "unsolved"
             self.solvers.add( self.last_update_by )
 
         super(Challenge, self).save()
@@ -573,10 +573,7 @@ class CtfStats:
 
 
     def get_ranking(self) -> list:
-        """[summary]
-
-        Returns:
-            list: [description]
+        """Return the all time player ranking
         """
         members = Member.objects.filter(solved_challenges__isnull=False).distinct()
         return sorted(
@@ -585,6 +582,22 @@ class CtfStats:
             reverse=True
         )
 
+    def get_ranking_history(self) -> list:
+        """Return the top scoring players for the latest CTFs
+        """
+        stats = []
+        for ctf in [c for c in Ctf.objects.filter(visibility='public').order_by('-start_date') if c.is_finished and c.scored_points > 0][:15]:
+            members = defaultdict(lambda: 0)
+            for challenge in ctf.solved_challenges:
+                for member in challenge.solvers.all():
+                    members[member] += challenge.points / challenge.solvers.count()
+
+            ranked = [''] * 4
+            for i, (member, points) in enumerate(sorted(members.items(), key=lambda x: x[1], reverse=True)[:4]):
+                ranked[i] = '{} - {}%'.format(member.username, int(100 * points / ctf.scored_points))
+
+            stats.append((ctf.name, ranked))
+        return stats
 
 
 SearchResult = namedtuple("SearchResult", "category name description link" )
