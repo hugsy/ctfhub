@@ -7,11 +7,11 @@
         <div id="podium">
             <div class="card card-body">
                 <h5>Podium</h5>
-                <div id="podium-box" class="row" style="height: 300px">
+                <div id="podium-box" class="row" style="height: 250px">
                     <div class="col-md-4 step-container m-0 p-0">
                         <div>
                             {% if ranked_members.1.avatar %}
-                            <img width="100px" height="100px" src="{{ranked_members.1.avatar.url}}" alt="1st" class="rounded-circle">
+                            <img width="100px" height="100px" src="{{ranked_members.1.avatar.url}}" alt="2nd" class="rounded-circle">
                             {% else %}
                             <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="2nd" class="rounded-circle">
                             {% endif %}
@@ -37,7 +37,7 @@
                     <div class="col-md-4 step-container m-0 p-0">
                         <div>
                             {% if ranked_members.2.avatar %}
-                            <img width="100px" height="100px" src="{{ranked_members.2.avatar.url}}" alt="1st" class="rounded-circle">
+                            <img width="100px" height="100px" src="{{ranked_members.2.avatar.url}}" alt="3rd" class="rounded-circle">
                             {% else %}
                             <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="3rd" class="rounded-circle">
                             {% endif %}
@@ -50,9 +50,6 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <div class="col-sm">
         <div class="card card-body">
             <h5>Ranking</h5>
             <table class="table table-hover">
@@ -71,6 +68,34 @@
                         <td>{{ member.username }}</td>
                         <td>{{ member.total_scored_percent }}</td>
                         <td>{{ member.best_category | lower }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="col-sm">
+
+        <div class="card card-body">
+            <h5>Last CTFs</h5>
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">1st</th>
+                    <th scope="col">2nd</th>
+                    <th scope="col">3rd</th>
+                    <th scope="col">4th</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for ctf, ranked in ranked_history %}
+                    <tr>
+                        <th scope="row">{{ ctf }}</th>
+                        {% for score in ranked %}
+                        <td>{{ score }}</td>
+                        {% endfor %}
                     </tr>
                     {% endfor %}
                 </tbody>
