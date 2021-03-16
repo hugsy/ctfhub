@@ -59,13 +59,11 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {'form': form})
 
-
     def form_valid(self, form):
         if Challenge.objects.filter(name=form.instance.name, ctf=form.instance.ctf).count() > 0:
             form.errors["name"] = "ChallengeNameAlreadyExistError"
             return render(self.request, self.template_name, {'form': form})
         return super().form_valid(form)
-
 
     def get_success_url(self):
         return reverse("ctfpad:challenges-detail", kwargs={'pk': self.object.pk})
@@ -99,6 +97,17 @@ class ChallengeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse("ctfpad:challenges-detail", kwargs={'pk': self.object.pk})
 
+    def form_valid(self, form):
+        if "solvers" in form.cleaned_data:
+
+            if (len(form.cleaned_data["solvers"]) > 0 and not form.cleaned_data["flag"]) or \
+               (len(form.cleaned_data["solvers"]) == 0 and form.cleaned_data["flag"]):
+                messages.error(
+                    self.request, "Cannot set flag without solver(s)")
+                return redirect("ctfpad:challenges-detail", self.object.id)
+
+        return super().form_valid(form)
+
 
 class ChallengeSetFlagView(ChallengeUpdateView):
     form_class = ChallengeSetFlagForm
@@ -114,7 +123,8 @@ class ChallengeSetFlagView(ChallengeUpdateView):
 
         if form.instance.ctf.flag_prefix and "flag" in form.cleaned_data:
             if not form.cleaned_data["flag"].startswith(form.instance.ctf.flag_prefix):
-                messages.warning(self.request, f"Unexpected flag format: missing pattern '{form.instance.ctf.flag_prefix}'")
+                messages.warning(
+                    self.request, f"Unexpected flag format: missing pattern '{form.instance.ctf.flag_prefix}'")
 
         return super().form_valid(form)
 
@@ -130,7 +140,6 @@ class ChallengeDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
         return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.ctf.id})
 
 
-
 class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
     model = Challenge
     template_name = "ctfpad/challenges/detail.html"
@@ -141,13 +150,15 @@ class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
         c = self.get_object()
         u = request.user.member
         tags = "[" + c.category.name + ","
-        for t in c.tags.all(): tags += t.name + ","
+        for t in c.tags.all():
+            tags += t.name + ","
         tags += "]"
-        content = generate_github_page_header(title=c.name, author=u.username, tags=tags)
+        content = generate_github_page_header(
+            title=c.name, author=u.username, tags=tags)
         if c.description:
-            content+= f"Description:\n> {c.description}\n\n"
-        content+= export_challenge_note(u, c.note_id)
-        response = HttpResponse(content, content_type="text/markdown; charset=utf-8")
+            content += f"Description:\n> {c.description}\n\n"
+        content += export_challenge_note(u, c.note_id)
+        response = HttpResponse(
+            content, content_type="text/markdown; charset=utf-8")
         response["Content-Length"] = len(content)
         return response
-
