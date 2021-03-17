@@ -15,9 +15,7 @@
                     {% if request.user.is_authenticated %}
                     &nbsp;
                     <strong>{{request.user.member.username}}</strong>
-                    {% if request.user.member.avatar %}
-                    &nbsp;<img src="{{request.user.member.avatar.url}}" alt="avatar" class="rounded-circle" width="25px" height="25">
-                    {% endif %}
+                    &nbsp;<img src="{{request.user.member.avatar_url}}" alt="avatar" class="rounded-circle" width="25px" height="25">
                     {% if request.user.member.is_guest %}<strong>(guest)</strong>{% endif %}
                     {% endif %}
                 </a>

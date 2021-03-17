@@ -2,6 +2,7 @@ from typing import OrderedDict
 import uuid
 import os
 import hashlib
+from urllib.parse import quote
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from collections import namedtuple, defaultdict
@@ -339,6 +340,16 @@ class Member(TimeStampedModel):
     def hedgedoc_username(self):
         return f"{self.username}@ctfpad.localdomain"
 
+    @property
+    def avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        url = 'https://www.gravatar.com/avatar/{}?d={}'.format(
+            hashlib.md5(self.email.encode()).hexdigest(),
+            quote(f'https://eu.ui-avatars.com/api/{self.username}/64/random/', safe='')
+        )
+        return url
+
     def save(self):
         if not self.hedgedoc_password:
             # create the hedgedoc user
@@ -592,11 +603,12 @@ class CtfStats:
                 for member in challenge.solvers.all():
                     members[member] += challenge.points / challenge.solvers.count()
 
-            ranked = [''] * 4
-            for i, (member, points) in enumerate(sorted(members.items(), key=lambda x: x[1], reverse=True)[:4]):
-                ranked[i] = '{} - {}%'.format(member.username, int(100 * points / ctf.scored_points))
+            ranked = [None] * 4 # columns
+            for i, (member, points) in enumerate(sorted(members.items(), key=lambda x: x[1], reverse=True)[:len(ranked)]):
+                member.scored_percent = int(100 * points / ctf.scored_points)
+                ranked[i] = member
 
-            stats.append((ctf.name, ranked))
+            stats.append((ctf, ranked))
         return stats
 
 
