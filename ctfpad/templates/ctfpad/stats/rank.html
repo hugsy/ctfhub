@@ -78,7 +78,7 @@
                         {% for member in ranked %}
                         <td style="vertical-align: middle;">
                             {% if member %}
-                                <img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" class="rounded-circle">
+                                <img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
                                 &nbsp;{{member.scored_percent}}&#x25;
                             {% else %}
                                 &nbsp;

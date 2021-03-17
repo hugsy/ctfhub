@@ -84,7 +84,7 @@
                 {% for member in team.members %}
                 <tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
                     <td>
-                        <img width="25px" height="25px" src="{{member.avatar_url}}" title="{{member.username}}" class="rounded-circle">
+                        <img width="25px" height="25px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
                     </td>
                     <td>
                         <a href="{% url 'ctfpad:users-detail' member.id %}">{{member.username}}</a>
