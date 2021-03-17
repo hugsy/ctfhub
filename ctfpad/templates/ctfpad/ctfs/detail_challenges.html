@@ -6,7 +6,7 @@
 
 <div class="card card-body">
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-6">
             <div class="row">
                 <div class="col-6">
                     <a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:challenges-create' ctf=ctf.id %}">
@@ -20,19 +20,19 @@
                     </a>
                 </div>
 
-                <div class="col-lg-3">
+                <div class="col-3">
                     <a  class="btn btn-primary btn-sm btn-block" title="Add a tag"   data-toggle="modal" data-target="#QuickAddTagModal" href="#">
                         <strong><i class="fas fa-tag"></i></strong>
                     </a>
                 </div>
             </div>
         </div>
-        <div class="col-sm-6">
-            <form id="gotoFilteredChallengeFormId" onsubmit="gotoFilteredChallenge()">
-                <div class="input-group">
-                    <span class="input-group-text" id="ChallengeFilter"><b><i class="fas fa-filter"></i></b></span>
-                    <input id="ChallengeFilterPattern" onkeyup="filterChallenges()" type="text" class="form-control" placeholder="Filter challenges (name, category, points)..." aria-label="ChallengeFilter" aria-describedby="ChallengeFilter">
+        <div class="col-6">
+            <form id="gotoFilteredChallengeFormId" onsubmit="gotoFilteredChallenge()" class="input-group input-group-sm">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="ChallengeFilter"><i class="fas fa-filter"></i></span>
                 </div>
+                <input id="ChallengeFilterPattern" onkeyup="filterChallenges()" type="text" class="form-control" placeholder="Filter challenges (name, category, points)..." aria-label="ChallengeFilter" aria-describedby="ChallengeFilter">
             </form>
         </div>
     </div>
