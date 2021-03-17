@@ -6,16 +6,11 @@
     <div class="col-sm">
         <div id="podium">
             <div class="card card-body">
-                <h5>Podium</h5>
+                <h5>All Time Ranking</h5>
                 <div id="podium-box" class="row" style="height: 250px">
                     <div class="col-md-4 step-container m-0 p-0">
                         <div>
-                            {% if ranked_members.1.avatar %}
-                            <img width="100px" height="100px" src="{{ranked_members.1.avatar.url}}" alt="2nd" class="rounded-circle">
-                            {% else %}
-                            <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="2nd" class="rounded-circle">
-                            {% endif %}
-                            {{ranked_members.1}}
+                            <img width="100px" height="100px" src="{{ranked_members.1.avatar_url}}" title="{{ranked_members.1.username}}" alt="2nd" class="rounded-circle">
                         </div>
                         <div id="second-step" class="bg-blue step centerBoth podium-number">
                             2
@@ -23,12 +18,7 @@
                     </div>
                     <div class="col-md-4 step-container m-0 p-0">
                         <div>
-                            {% if ranked_members.0.avatar %}
-                            <img width="100px" height="100px" src="{{ranked_members.0.avatar.url}}" alt="1st" class="rounded-circle">
-                            {% else %}
-                            <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="1st" class="rounded-circle">
-                            {% endif %}
-                            {{ranked_members.0}}
+                            <img width="100px" height="100px" src="{{ranked_members.0.avatar_url}}" title="{{ranked_members.0.username}}" alt="1st" class="rounded-circle">
                         </div>
                         <div id="first-step" class="bg-blue step centerBoth podium-number">
                             1
@@ -36,42 +26,34 @@
                     </div>
                     <div class="col-md-4 step-container m-0 p-0">
                         <div>
-                            {% if ranked_members.2.avatar %}
-                            <img width="100px" height="100px" src="{{ranked_members.2.avatar.url}}" alt="3rd" class="rounded-circle">
-                            {% else %}
-                            <img width="100px" height="100px" src="{% static '/images/blank-avatar.png' %}" alt="3rd" class="rounded-circle">
-                            {% endif %}
-                            {{ranked_members.2}}
+                            <img width="100px" height="100px" src="{{ranked_members.2.avatar_url}}" title="{{ranked_members.2.username}}" alt="3rd" class="rounded-circle">
                         </div>
                         <div id="third-step" class="bg-blue step centerBoth podium-number">
                             3
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="card card-body">
-            <h5>Ranking</h5>
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th scope="col">Rank</th>
-                    <th scope="col">Member</th>
-                    <th scope="col">Scored %</th>
-                    <th scope="col">Best category</th>
-                </tr>
-                </thead>
-                <tbody>
-                    {% for member in ranked_members %}
+                <table class="table table-hover">
+                    <thead>
                     <tr>
-                        <th scope="row">{{ forloop.counter | ordinal }}</th>
-                        <td>{{ member.username }}</td>
-                        <td>{{ member.total_scored_percent }}</td>
-                        <td>{{ member.best_category | lower }}</td>
+                        <th scope="col">Rank</th>
+                        <th scope="col">Member</th>
+                        <th scope="col">Scored %</th>
+                        <th scope="col">Best category</th>
                     </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% for member in ranked_members %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter | ordinal }}</th>
+                            <td>{{ member.username }}</td>
+                            <td>{{ member.total_scored_percent }}</td>
+                            <td>{{ member.best_category | lower }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -92,9 +74,16 @@
                 <tbody>
                     {% for ctf, ranked in ranked_history %}
                     <tr>
-                        <th scope="row">{{ ctf }}</th>
-                        {% for score in ranked %}
-                        <td>{{ score }}</td>
+                        <th scope="row" style="vertical-align: middle;">{{ctf.name}}</th>
+                        {% for member in ranked %}
+                        <td style="vertical-align: middle;">
+                            {% if member %}
+                                <img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
+                                &nbsp;{{member.scored_percent}}&#x25;
+                            {% else %}
+                                &nbsp;
+                            {% endif %}
+                        </td>
                         {% endfor %}
                     </tr>
                     {% endfor %}

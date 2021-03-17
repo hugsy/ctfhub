@@ -97,7 +97,7 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
         "most_solved": stats.solved_categories(),
         "last_year_stats": stats.last_year_stats(),
         "ranked_members": stats.get_ranking(),
-        "ranked_history": stats.get_ranking_history()
+        "ranked_history": stats.get_ranking_history(),
     }
     return render(request, "ctfpad/stats/detail.html", context)
 

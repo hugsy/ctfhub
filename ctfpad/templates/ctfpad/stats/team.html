@@ -67,6 +67,7 @@
             <table class="table table-sm table-hover">
                 <thead>
                 <tr>
+                    <th scope="col"></th>
                     <th scope="col">Name</th>
                     <th scope="col">Country</th>
                     <th scope="col">Status</th>
@@ -83,9 +84,12 @@
                 {% for member in team.members %}
                 <tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
                     <td>
+                        <img width="25px" height="25px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
+                    </td>
+                    <td>
                         <a href="{% url 'ctfpad:users-detail' member.id %}">{{member.username}}</a>
                     </td>
-                    <td style="text-align: center;"><img height="20px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
+                    <td style="text-align: center;"><img height="25px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
                     <td>
                         {% if not member.is_active %}
                         Inactive
