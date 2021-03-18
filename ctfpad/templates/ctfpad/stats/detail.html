@@ -26,13 +26,16 @@
         <div>
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a href="#team" class="nav-link active" data-toggle="tab">Global</a>
+                    <a href="#team" class="nav-link active" data-toggle="tab">General</a>
                 </li>
                 <li class="nav-item">
                     <a href="#charts" class="nav-link" data-toggle="tab">Stats</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#rank" class="nav-link" data-toggle="tab">Player Ranking</a>
+                    <a href="#rank" class="nav-link" data-toggle="tab">Ranking</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#timeline" class="nav-link" data-toggle="tab">Timeline</a>
                 </li>
             </ul>
         </div>
@@ -46,6 +49,9 @@
             </div>
             <div class="tab-pane fade" id="rank">
                 {% include 'ctfpad/stats/rank.html' %}
+            </div>
+            <div class="tab-pane fade" id="timeline">
+                {% include 'ctfpad/stats/timeline.html' %}
             </div>
         </div>
     </div>

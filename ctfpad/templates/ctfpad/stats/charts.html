@@ -1,27 +1,3 @@
-<script>
-function get_random_int(max)
-{
-  return Math.floor(Math.random() * Math.floor(max));
-}
-
-function generate_random_rgba()
-{
-    return `rgba(${get_random_int(256)}, ${get_random_int(256)}, ${get_random_int(256)}, 0.2)`;
-}
-
-function generate_random_rgb()
-{
-    return `rgb(${get_random_int(256)}, ${get_random_int(256)}, ${get_random_int(256)})`;
-}
-
-// https://stackoverflow.com/a/20129594
-function generate_random_color(number) {
-    const hue = number * 137.508; // use golden angle approximation
-    return `hsl(${hue},50%,75%)`;
-}
-</script>
-
-
 <div class="row" id="stats">
 	<div class="col-md-4">
         <div class="card card-body">
@@ -33,17 +9,17 @@ new Chart(document.getElementById("chart1"),
 	"data":
 	{
 		"labels": [
-        {% for player in player_ctf_count %}
-            "{{player}}",
-        {% endfor %}
+            {% for player in player_ctf_count %}
+                "{{player}}",
+            {% endfor %}
         ],
 		"datasets": [
 		{
 			"label": "Most active players*",
 			"data": [
-            {% for player, count in player_ctf_count.items %}
-            {{count}},
-            {% endfor %}
+                {% for player, count in player_ctf_count.items %}
+                    {{count}},
+                {% endfor %}
             ],
 			"fill": false,
 			"borderWidth": 1,
@@ -79,16 +55,16 @@ new Chart(document.getElementById("chart2"), {
     "data": {
         "labels": [
             {% for solved in most_solved %}
-            "{{solved.category__name|upper}}",
+                "{{solved.category__name|upper}}",
             {% endfor %}
         ],
         "datasets": [{
             "label": "Most solved categories",
             "data": [
                 {% for solved in most_solved %}
-                {{solved.dcount|upper}},
+                    {{solved.category__count|upper}},
                 {% endfor %}
-                ],
+            ],
             "backgroundColor": [{% for _ in most_solved %}generate_random_color({{forloop.counter}}), {% endfor %}]
         }]
     }
@@ -106,12 +82,12 @@ new Chart(document.getElementById("chart3"), {
     "type": "line",
     "data": {
         "labels": [
-        {% for month in last_year_stats reversed %}"{{month}}",{%endfor%}
+            {% for month in last_year_stats reversed %}"{{month}}",{% endfor %}
         ],
         "datasets": [{
             "label": "Number of CTFs played for the last year",
             "data": [
-            {% for month, count in last_year_stats.items reversed %}{{count}},{%endfor%}
+                {% for month, count in last_year_stats.items reversed %}{{count}},{% endfor %}
             ],
             "fill": false,
             "borderColor": "rgb(75, 192, 192)",

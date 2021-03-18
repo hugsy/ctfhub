@@ -147,15 +147,45 @@
 
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a href="#stats" class="nav-link active" data-toggle="tab">Overview</a>
+                    <a href="#categories" class="nav-link active" data-toggle="tab">Categories</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#detail" class="nav-link" data-toggle="tab">Detail</a>
+                    <a href="#stats" class="nav-link" data-toggle="tab">Timeline</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#detail" class="nav-link" data-toggle="tab">History</a>
                 </li>
             </ul>
 
             <div class="tab-content" style="margin-top: 17px;">
-                <div class="tab-pane fade show active" id="stats">
+
+                <div class="tab-pane fade show active" id="categories">
+                    <div id="wrapper-chart-user-stats">
+                        <canvas id="user-categories"></canvas>
+                        <script>
+new Chart(document.getElementById("user-categories"), {
+    "type": "doughnut",
+    "data": {
+        "labels": [
+            {% for c in member.solved_categories %}
+                "{{c.category__name|upper}}",
+            {% endfor %}
+        ],
+        "datasets": [{
+            "label": "Solved categories",
+            "data": [
+                {% for c in member.solved_categories %}
+                    {{c.category__count|upper}},
+                {% endfor %}
+            ],
+            "backgroundColor": [ {% for _ in member.solved_categories %}generate_random_color({{forloop.counter}}), {% endfor %}]
+        }]
+    }
+});
+                        </script>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="stats">
                     <div id="wrapper-chart-user-stats">
                         <canvas id="user-stats"></canvas>
                         <script>
@@ -163,12 +193,12 @@ new Chart(document.getElementById("user-stats"), {
     "type": "line",
     "data": {
         "labels": [
-        {% for solved in member.solved_public_challenges.all|as_time_accumulator_graph %}"{{solved.time}}",{%endfor%}
+            {% for solved in member.solved_public_challenges.all|as_time_accumulator_graph %}"{{solved.time}}",{% endfor %}
         ],
         "datasets": [{
             "label": "Scored points",
             "data": [
-            {% for solved in member.solved_challenges.all|as_time_accumulator_graph %}{{solved.accu}}, {%endfor%}
+                {% for solved in member.solved_public_challenges.all|as_time_accumulator_graph %}{{solved.accu}}, {% endfor %}
             ],
             "fill": false,
             "borderColor": "rgb(75, 192, 192)",

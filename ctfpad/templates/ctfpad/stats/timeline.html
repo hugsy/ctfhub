@@ -1,0 +1,34 @@
+
+<div class="row" style="width: 100%;">
+    <div class="card card-body">
+        <canvas id="timeline_chart"></canvas>
+        <script>
+new Chart(document.getElementById("timeline_chart"), {
+    "type": "line",
+    "data": {
+        "labels": [
+            {% for ctf, _ in ranked_members.0.scored_percent_history %}
+                "{{ ctf.name }}",            
+            {% endfor %}
+        ],
+        "datasets": [
+            {% for member in ranked_members %}
+                {
+                    "label": "{{ member.username }}",
+                    "data": [
+                        {% for _, accu in member.scored_percent_history %}{{ accu }}, {% endfor %}
+                    ],
+                    "fill": false,
+                    "lineTension": 0,
+                    "borderColor": generate_random_color({{ forloop.counter }}),
+                },
+            {% endfor %}
+        ]
+    },
+    "options": {
+        
+    }
+});
+        </script>
+    </div>
+</div>

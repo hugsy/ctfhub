@@ -46,7 +46,7 @@
                         {% for member in ranked_members %}
                         <tr>
                             <th scope="row">{{ forloop.counter | ordinal }}</th>
-                            <td>{{ member.username }}</td>
+                            <td><a href="{% url 'ctfpad:users-detail' member.id %}">{{ member.username }}</a></td>
                             <td>{{ member.total_scored_percent }}</td>
                             <td>{{ member.best_category | lower }}</td>
                         </tr>
@@ -78,7 +78,7 @@
                         {% for member in ranked %}
                         <td style="vertical-align: middle;">
                             {% if member %}
-                                <img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar of " class="rounded-circle">
+                                <a href="{% url 'ctfpad:users-detail' member.id %}"><img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar of " class="rounded-circle"></a>
                                 &nbsp;{{member.scored_percent}}&#x25;
                             {% else %}
                                 &nbsp;
