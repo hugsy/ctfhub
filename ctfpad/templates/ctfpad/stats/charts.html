@@ -13,6 +13,12 @@ function generate_random_rgb()
 {
     return `rgb(${get_random_int(256)}, ${get_random_int(256)}, ${get_random_int(256)})`;
 }
+
+// https://stackoverflow.com/a/20129594
+function generate_random_color(number) {
+    const hue = number * 137.508; // use golden angle approximation
+    return `hsl(${hue},50%,75%)`;
+}
 </script>
 
 
@@ -41,7 +47,7 @@ new Chart(document.getElementById("chart1"),
             ],
 			"fill": false,
 			"borderWidth": 1,
-            "backgroundColor": [ {% for i in player_ctf_count %}generate_random_rgba(), {% endfor %}]
+            "backgroundColor": [{% for _ in player_ctf_count %}generate_random_color({{forloop.counter}}), {% endfor %}]
 		}]
 	},
 	"options":
@@ -83,7 +89,7 @@ new Chart(document.getElementById("chart2"), {
                 {{solved.dcount|upper}},
                 {% endfor %}
                 ],
-            "backgroundColor": [ {% for i in most_solved %}generate_random_rgba(), {% endfor %}]
+            "backgroundColor": [{% for _ in most_solved %}generate_random_color({{forloop.counter}}), {% endfor %}]
         }]
     }
 });
