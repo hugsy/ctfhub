@@ -93,7 +93,7 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
 
     context = {
         "team": Team.objects.first(),
-        "player_ctf_count": stats.players_activity(),
+        "active_players": stats.active_players(),
         "most_solved": stats.solved_categories(),
         "last_year_stats": stats.last_year_stats(),
         "ranked_members": stats.get_ranking(),

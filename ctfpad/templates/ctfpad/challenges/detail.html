@@ -7,23 +7,6 @@
 {% include 'snippets/messages.html' %}
 {% load ctfpad_filters %}
 
-{% if request.user.member.hedgedoc_password %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    fetch("{{hedgedoc_url}}/login", {
-      method: 'POST',
-      mode: 'no-cors',
-      cache: 'no-cache',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
-      body: "email={{request.user.member.hedgedoc_username}}&password={{request.user.member.hedgedoc_password}}"
-    }).then(data => {
-        document.getElementById("note_frame").contentWindow.location.replace("{{ challenge.note_url }}?both#");
-    });
-});
-</script>
-{% endif %}
-
 <div class="row">
     <div class="col-md-3">
         <div class="row">
@@ -224,6 +207,20 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
 </div>
 
+{% if request.user.member.hedgedoc_password %}
+<script>
+    fetch("{{hedgedoc_url}}/login", {
+        method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+        body: "email={{request.user.member.hedgedoc_username}}&password={{request.user.member.hedgedoc_password}}"
+    }).then(data => {
+        document.getElementById("note_frame").contentWindow.location.replace("{{ challenge.note_url }}?both#");
+    });
+</script>
+{% endif %}
 
 {% include 'snippets/quick_add_file.html' with challenge=challenge %}
 
