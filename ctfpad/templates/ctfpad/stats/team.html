@@ -1,9 +1,8 @@
 {% load static %}
 <div class="row">
     <div class="col-md-4">
-        <h5>{{team.name | upper}}</h5>
-		<hr>
 		<div class="card card-body">
+            <h5>{{team.name}}</h5>
             <ul class="list-group">
                 <li class="list-group-item list-group-item-action" style="text-align: center;">
                     {% if team.avatar %}
@@ -61,9 +60,8 @@
     </div>
 
     <div class="col-md-8">
-        <h5>Members</h5>
-        <hr>
         <div class="card card-body">
+            <h5>Members</h5>
             <table class="table table-sm table-hover">
                 <thead>
                 <tr>

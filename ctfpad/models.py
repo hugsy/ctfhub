@@ -560,17 +560,13 @@ class CtfStats:
     Statistic collection class
     """
 
-    def players_activity(self) -> dict:
+    def active_players(self) -> list:
+        """Return a list of active players (members with at least one solved challenge)
         """
-        Retrieve all the players activity (i.e. number of CTFs with at least
-        one solved challenge)
-        """
-        res = {}
-        active_players = Member.objects.filter(solved_challenges__isnull=False)
-        for player in active_players:
-            res[ player.username ] = Challenge.objects.filter(solvers__in = [player,]).distinct("ctf").count()
-        return res
-
+        members = Member.objects.filter(solved_challenges__isnull=False).distinct()
+        for member in members:
+            member.played_ctfs = Challenge.objects.filter(solvers__in = [member,])
+        return members
 
     def solved_categories(self) -> dict:
         """Return the total number of challenges solved per category

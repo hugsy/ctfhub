@@ -5,38 +5,43 @@
             <script>
 new Chart(document.getElementById("chart1"),
 {
-	"type": "bar",
-	"data":
+	type: "bar",
+	data:
 	{
-		"labels": [
-            {% for player in player_ctf_count %}
-                "{{player}}",
+		labels: [
+            {% for member in active_players %}
+                "{{member.username}}",
             {% endfor %}
         ],
-		"datasets": [
-		{
-			"label": "Most active players*",
-			"data": [
-                {% for player, count in player_ctf_count.items %}
-                    {{count}},
-                {% endfor %}
-            ],
-			"fill": false,
-			"borderWidth": 1,
-            "backgroundColor": [{% for _ in player_ctf_count %}generate_random_color({{forloop.counter}}), {% endfor %}]
-		}]
+		datasets: [
+            {
+                data: [
+                    {% for member in active_players %}
+                        {{member.played_ctfs.count}},
+                    {% endfor %}
+                ],
+                fill: false,
+                borderWidth: 1,
+                backgroundColor: [{% for member in active_players %}generate_random_color({{forloop.counter}}), {% endfor %}]
+            },
+        ]
 	},
-	"options":
-	{
-		"scales":
-		{
-			"yAxes": [
-			{
-				"ticks":
-				{
-					"beginAtZero": true
-				}
-			}]
+	options: {
+        legend: {
+            display: false
+        },
+        title: {
+            display: true,
+            text: "Most active players*"
+        },
+		scales: {
+            yAxes: [
+                {
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }
+            ]
 		}
 	}
 });
@@ -51,22 +56,27 @@ new Chart(document.getElementById("chart1"),
             <canvas id="chart2" width="33%" height="20%"></canvas>
             <script>
 new Chart(document.getElementById("chart2"), {
-    "type": "doughnut",
-    "data": {
-        "labels": [
+    type: "doughnut",
+    data: {
+        labels: [
             {% for solved in most_solved %}
                 "{{solved.category__name|upper}}",
             {% endfor %}
         ],
-        "datasets": [{
-            "label": "Most solved categories",
-            "data": [
+        datasets: [{
+            data: [
                 {% for solved in most_solved %}
                     {{solved.category__count|upper}},
                 {% endfor %}
             ],
-            "backgroundColor": [{% for _ in most_solved %}generate_random_color({{forloop.counter}}), {% endfor %}]
+            backgroundColor: [{% for _ in most_solved %}generate_random_color({{forloop.counter}}), {% endfor %}]
         }]
+    },
+    options: {
+        title: {
+            display: true,
+            text: "Most Solved Categories"
+        }
     }
 });
             </script>
@@ -79,22 +89,29 @@ new Chart(document.getElementById("chart2"), {
             <canvas id="chart3" width="33%" height="20%"></canvas>
             <script>
 new Chart(document.getElementById("chart3"), {
-    "type": "line",
-    "data": {
-        "labels": [
+    type: "line",
+    data: {
+        labels: [
             {% for month in last_year_stats reversed %}"{{month}}",{% endfor %}
         ],
-        "datasets": [{
-            "label": "Number of CTFs played for the last year",
-            "data": [
+        datasets: [{
+            data: [
                 {% for month, count in last_year_stats.items reversed %}{{count}},{% endfor %}
             ],
-            "fill": false,
-            "borderColor": "rgb(75, 192, 192)",
-            "lineTension": 0.1
+            fill: false,
+            borderColor: "rgb(75, 192, 192)",
+            lineTension: 0.1
         }]
     },
-    "options": {}
+    options: {
+        legend: {
+            display: false
+        },
+        title: {
+            display: true,
+            text: "Number of CTFs played for the last year"
+        }
+    }
 });
             </script>
         </div>
