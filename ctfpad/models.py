@@ -298,6 +298,16 @@ class Member(TimeStampedModel):
         ).order_by("solved_time")
 
     @cached_property
+    def solved_categories(self):
+        return self.solved_challenges.filter(
+            ctf__visibility = "public"
+        ).values(
+            "category__name"
+        ).annotate(
+            Count("category")
+        ).order_by("category")
+
+    @cached_property
     def last_solved_challenge(self):
         solved = self.solved_public_challenges
         if len(solved) == 0:
@@ -318,19 +328,31 @@ class Member(TimeStampedModel):
 
         return best_categories_by_point.first()["category__name"]
 
-    @property
+    @cached_property
     def total_scored_percent(self):
         if not self.solved_public_challenges:
             return 0
 
         member_slices = []
-        for ctf in filter(lambda c: c.scored_points > 0, Ctf.objects.filter(visibility = "public")):
+        for ctf in filter(lambda c: c.scored_points > 0, Ctf.objects.filter(visibility="public")):
             member_points = 0
             for challenge in self.solved_public_challenges.filter(ctf=ctf):
                 member_points += challenge.points / challenge.solvers.count()
             member_slices.append(member_points / ctf.scored_points)
 
         return round(100 * mean(member_slices), 2)
+
+    @cached_property
+    def scored_percent_history(self):
+        history = []
+        percent_accu = 0
+        for ctf in filter(lambda c: c.scored_points > 0, Ctf.objects.filter(visibility="public")):
+            member_points = 0
+            for challenge in self.solved_public_challenges.filter(ctf=ctf):
+                member_points += challenge.points / challenge.solvers.count()
+            percent_accu += 100 * member_points / ctf.scored_points
+            history.append((ctf, int(percent_accu)))
+        return history
 
     @property
     def last_logged_in(self):
@@ -551,37 +573,30 @@ class CtfStats:
 
 
     def solved_categories(self) -> dict:
-        """[summary]
-
-        Returns:
-            dict: [description]
+        """Return the total number of challenges solved per category
         """
         count_solved_challenges = Challenge.objects.filter(
             solvers__isnull=False
         ).values("category__name").annotate(
-            dcount=Count("category")
+            Count("category")
         )
         return count_solved_challenges
 
-
     def last_year_stats(self) -> dict:
-        """[summary]
-
-        Returns:
-            dict: [description]
+        """Return the total number of registered public CTFs per month
         """
         res = {}
-        now = datetime.now()
-        cur_month = now
+        cur_month = datetime.now()
         for _ in range(12):
             start_cur_month = cur_month.replace(day=1)
             ctf_by_month = Ctf.objects.filter(
-                start_date__month = start_cur_month.month
-            ).count()
+                visibility="public",
+                challenge__isnull=False,
+                start_date__month=start_cur_month.month
+            ).distinct().count()
             res[start_cur_month.strftime("%Y/%m")] = ctf_by_month
             cur_month = start_cur_month - timedelta(days=1)
         return res
-
 
     def get_ranking(self) -> list:
         """Return the all time player ranking
