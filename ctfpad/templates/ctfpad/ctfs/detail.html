@@ -104,6 +104,17 @@
                         </div>
                     </div>
                 </li>
+
+                <li class="list-group-item list-group-item-action">
+                    <div class="row">
+                        <div class="col-sm-2" style="text-align: center;">
+                            <strong><i class="fas fa-clock" title="CTF Duration" style="font-size: x-large;"></i></strong>
+                        </div>
+                        <div class="col-sm-8">
+                            {{ ctf.duration | naturaltime}}
+                        </div>
+                    </div>
+                </li>
                 {% endif %}
 
 

@@ -20,10 +20,33 @@ function toggle_input_password_visibility()
     }
 }
 
-function generate_random_color(number) {
+function generate_random_color(number)
+{
     const hue = number * 137.508; // use golden angle approximation
     return `hsl(${hue},50%,75%)`;
 }
+
+
+function timeuntil(datetime)
+{
+    const end = Date.parse(datetime);
+    const now = new Date().getTime();
+    const offset = end - now;
+    if (offset < 0)
+        return "Finished";
+
+    let days = Math.floor(offset / (1000 * 60 * 60 * 24));
+    let hours = Math.floor((offset % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let minutes = Math.floor((offset % (1000 * 60 * 60)) / (1000 * 60));
+    let seconds = Math.floor((offset % (1000 * 60)) / 1000);
+
+    var res = "";
+    if (days)
+        res += `${days}d `;
+    res += `${hours}h ${minutes}m ${seconds}s`;
+    return res;
+}
+
 
 // function get_random_int(max)
 // {
