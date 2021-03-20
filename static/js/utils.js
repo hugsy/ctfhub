@@ -29,14 +29,15 @@ function generate_random_color(number)
 
 function timeuntil(datetime)
 {
-    const end = Date.parse(datetime);
+    const end = new Date(datetime).getTime();
     const now = new Date().getTime();
-    const offset = end - now;
+    const tz = new Date().getTimezoneOffset();
+    const offset = end - now - tz*60*1000;
     if (offset < 0)
         return "Finished";
 
-    let days = Math.floor(offset / (1000 * 60 * 60 * 24));
-    let hours = Math.floor((offset % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    let days    = Math.floor(offset / (1000 * 60 * 60 * 24));
+    let hours   = Math.floor((offset % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     let minutes = Math.floor((offset % (1000 * 60 * 60)) / (1000 * 60));
     let seconds = Math.floor((offset % (1000 * 60)) / 1000);
 
