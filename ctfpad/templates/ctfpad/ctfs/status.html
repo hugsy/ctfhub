@@ -9,9 +9,9 @@
             {% if ctf.is_running %}
                 style="background-color: #56c74c;"
             {% elif ctf.is_finished %}
-                style="background-color: #787e80;"
+                style="background-color: #15708f;"
             {% else %}
-                style="background-color: #4cb4c7;"
+                style="background-color: #bd42b2;"
             {% endif %}
             >
                   <div class="card-header">
@@ -24,6 +24,7 @@
                     {% else %}
                         {% if ctf.is_running %}
                         <script>
+                            document.getElementById("countdown").innerHTML = `${timeuntil("{{ ctf.end_date|date:'%Y/%m/%d %H:%i' }}")} left`;
                             setInterval(() => { document.getElementById("countdown").innerHTML = `${timeuntil("{{ ctf.end_date|date:'%Y/%m/%d %H:%i' }}")} left`; }, 1000);
                         </script>
                         <p id="countdown"></p>
