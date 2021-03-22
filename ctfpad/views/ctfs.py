@@ -111,7 +111,7 @@ class CtfImportView(CtfCreateView):
             initial["description"] = ctf["description"]
             initial["start_date"] = ctftime_parse_date(ctf["start"])
             initial["end_date"] = ctftime_parse_date(ctf["finish"])
-            initial["weight"] = ctf["weight"] or 1.0
+            initial["weight"] = ctf["weight"]
 
         form = self.form_class(initial=initial)
         return render(request, self.template_name, {'form': form})
