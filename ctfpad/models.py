@@ -621,7 +621,7 @@ class CtfStats:
                     rating = points / first_points # TODO ctftime.weight
                     percent = 100 * points / total_points
 
-                member.rating_accu += round(rating, 2)
+                member.rating_accu = round(member.rating_accu + rating, 2)
                 member.ratings[ctf] = member.rating_accu
                 member.percents[ctf] = percent
 
