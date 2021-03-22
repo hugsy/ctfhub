@@ -175,7 +175,7 @@ new Chart(document.getElementById("user-categories"), {
             "label": "Solved categories",
             "data": [
                 {% for c in member.solved_categories %}
-                    {{c.category__count|upper}},
+                    {{c.category__count}},
                 {% endfor %}
             ],
             "backgroundColor": [ {% for _ in member.solved_categories %}generate_random_color({{forloop.counter}}), {% endfor %}]
@@ -193,12 +193,12 @@ new Chart(document.getElementById("user-stats"), {
     "type": "line",
     "data": {
         "labels": [
-            {% for solved in member.solved_public_challenges.all|as_time_accumulator_graph %}"{{solved.time}}",{% endfor %}
+            {% for solved in member.solved_public_challenges|as_time_accumulator_graph %}"{{solved.time}}",{% endfor %}
         ],
         "datasets": [{
             "label": "Scored points",
             "data": [
-                {% for solved in member.solved_public_challenges.all|as_time_accumulator_graph %}{{solved.accu}}, {% endfor %}
+                {% for solved in member.solved_public_challenges|as_time_accumulator_graph %}{{solved.accu}}, {% endfor %}
             ],
             "fill": false,
             "borderColor": "rgb(75, 192, 192)",

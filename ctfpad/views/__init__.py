@@ -93,11 +93,11 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
 
     context = {
         "team": Team.objects.first(),
-        "active_players": stats.active_players(),
-        "most_solved": stats.solved_categories(),
-        "last_year_stats": stats.last_year_stats(),
-        "ranked_members": stats.get_ranking(),
-        "ranked_history": stats.get_ranking_history(),
+        "members": Member.objects.select_related('user'),
+        "player_activity": stats.player_activity(),
+        "category_stats": stats.category_stats(),
+        "ctf_stats": stats.ctf_stats(),
+        "ranking_stats": stats.ranking_stats()
     }
     return render(request, "ctfpad/stats/detail.html", context)
 

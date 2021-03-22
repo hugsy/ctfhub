@@ -10,7 +10,7 @@
                 <div id="podium-box" class="row" style="height: 250px">
                     <div class="col-md-4 step-container m-0 p-0">
                         <div>
-                            <img width="100px" height="100px" src="{{ranked_members.1.avatar_url}}" title="{{ranked_members.1.username}}" alt="2nd" class="rounded-circle">
+                            <img width="100px" height="100px" src="{{ranking_stats.alltime.1.avatar_url}}" title="{{ranking_stats.alltime.1.username}}" alt="2nd" class="rounded-circle">
                         </div>
                         <div id="second-step" class="bg-blue step centerBoth podium-number">
                             2
@@ -18,7 +18,7 @@
                     </div>
                     <div class="col-md-4 step-container m-0 p-0">
                         <div>
-                            <img width="100px" height="100px" src="{{ranked_members.0.avatar_url}}" title="{{ranked_members.0.username}}" alt="1st" class="rounded-circle">
+                            <img width="100px" height="100px" src="{{ranking_stats.alltime.0.avatar_url}}" title="{{ranking_stats.alltime.0.username}}" alt="1st" class="rounded-circle">
                         </div>
                         <div id="first-step" class="bg-blue step centerBoth podium-number">
                             1
@@ -26,7 +26,7 @@
                     </div>
                     <div class="col-md-4 step-container m-0 p-0">
                         <div>
-                            <img width="100px" height="100px" src="{{ranked_members.2.avatar_url}}" title="{{ranked_members.2.username}}" alt="3rd" class="rounded-circle">
+                            <img width="100px" height="100px" src="{{ranking_stats.alltime.2.avatar_url}}" title="{{ranking_stats.alltime.2.username}}" alt="3rd" class="rounded-circle">
                         </div>
                         <div id="third-step" class="bg-blue step centerBoth podium-number">
                             3
@@ -38,17 +38,19 @@
                     <tr>
                         <th scope="col">Rank</th>
                         <th scope="col">Member</th>
+                        <th scope="col">Rating</th>
                         <th scope="col">Scored %</th>
                         <th scope="col">Best category</th>
                     </tr>
                     </thead>
                     <tbody>
-                        {% for member in ranked_members %}
+                        {% for member in ranking_stats.alltime %}
                         <tr>
                             <th scope="row">{{ forloop.counter | ordinal }}</th>
                             <td><a href="{% url 'ctfpad:users-detail' member.id %}">{{ member.username }}</a></td>
-                            <td>{{ member.total_scored_percent }}</td>
-                            <td>{{ member.best_category | lower }}</td>
+                            <td>{{ member.rating_accu }}</td>
+                            <td>{{ member.percent }}</td>
+                            <td>{{ member.best_category }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -72,14 +74,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                    {% for ctf, ranked in ranked_history %}
+                    {% for ctf in ranking_stats.last_ctfs|slice:":15" %}
                     <tr>
-                        <th scope="row" style="vertical-align: middle;">{{ctf.name}}</th>
-                        {% for member in ranked %}
+                        <th scope="row" style="vertical-align: middle;">{{ctf}}</th>
+                        {% for member, percent in ctf.ranking|slice:":4" %}
                         <td style="vertical-align: middle;">
-                            {% if member %}
-                                <a href="{% url 'ctfpad:users-detail' member.id %}"><img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar of " class="rounded-circle"></a>
-                                &nbsp;{{member.scored_percent}}&#x25;
+                            {% if percent > 0 %}
+                                <a href="{% url 'ctfpad:users-detail' member.id %}"><img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle"></a>
+                                &nbsp;{{percent|floatformat:"0"}}&#x25;
                             {% else %}
                                 &nbsp;
                             {% endif %}

@@ -9,20 +9,20 @@ new Chart(document.getElementById("chart1"),
 	data:
 	{
 		labels: [
-            {% for member in active_players %}
+            {% for member in player_activity %}
                 "{{member.username}}",
             {% endfor %}
         ],
 		datasets: [
             {
                 data: [
-                    {% for member in active_players %}
-                        {{member.played_ctfs.count}},
+                    {% for member in player_activity %}
+                        {{member.play_count}},
                     {% endfor %}
                 ],
                 fill: false,
                 borderWidth: 1,
-                backgroundColor: [{% for member in active_players %}generate_random_color({{forloop.counter}}), {% endfor %}]
+                backgroundColor: [{% for member in player_activity %}generate_random_color({{forloop.counter}}), {% endfor %}]
             },
         ]
 	},
@@ -59,23 +59,23 @@ new Chart(document.getElementById("chart2"), {
     type: "doughnut",
     data: {
         labels: [
-            {% for solved in most_solved %}
-                "{{solved.category__name|upper}}",
+            {% for category in category_stats %}
+                "{{category.category__name|lower}}",
             {% endfor %}
         ],
         datasets: [{
             data: [
-                {% for solved in most_solved %}
-                    {{solved.category__count|upper}},
+                {% for category in category_stats %}
+                    {{category.category__count}},
                 {% endfor %}
             ],
-            backgroundColor: [{% for _ in most_solved %}generate_random_color({{forloop.counter}}), {% endfor %}]
+            backgroundColor: [{% for _ in category_stats %}generate_random_color({{forloop.counter}}), {% endfor %}]
         }]
     },
     options: {
         title: {
             display: true,
-            text: "Most Solved Categories"
+            text: "Most solved categories"
         }
     }
 });
@@ -92,11 +92,11 @@ new Chart(document.getElementById("chart3"), {
     type: "line",
     data: {
         labels: [
-            {% for month in last_year_stats reversed %}"{{month}}",{% endfor %}
+            {% for month, _ in ctf_stats.monthly_counts %}"{{month}}",{% endfor %}
         ],
         datasets: [{
             data: [
-                {% for month, count in last_year_stats.items reversed %}{{count}},{% endfor %}
+                {% for _, count in ctf_stats.monthly_counts %}{{count}},{% endfor %}
             ],
             fill: false,
             borderColor: "rgb(75, 192, 192)",
@@ -109,7 +109,7 @@ new Chart(document.getElementById("chart3"), {
         },
         title: {
             display: true,
-            text: "Number of CTFs played for the last year"
+            text: "Number of CTFs played"
         }
     }
 });

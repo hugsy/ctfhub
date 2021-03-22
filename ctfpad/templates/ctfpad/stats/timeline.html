@@ -7,16 +7,16 @@ new Chart(document.getElementById("timeline_chart"), {
     type: "line",
     data: {
         labels: [
-            {% for ctf, _ in ranked_members.0.scored_percent_history %}
-                "{{ ctf.name }}",            
+            {% for ctf in ranking_stats.alltime.0.ratings %}
+                "{{ ctf.name }}",
             {% endfor %}
         ],
         datasets: [
-            {% for member in ranked_members %}
+            {% for member in ranking_stats.alltime %}
                 {
                     label: "{{ member.username }}",
                     data: [
-                        {% for _, accu in member.scored_percent_history %}{{ accu }}, {% endfor %}
+                        {% for rating in member.ratings.values %}{{ rating }}, {% endfor %}
                     ],
                     fill: false,
                     lineTension: 0,

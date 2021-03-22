@@ -14,7 +14,7 @@
 
                 <li class="list-group-item list-group-item-action">
                     <strong>Members:</strong>
-                    {{team.members|length}}
+                    {{team.member_set.count}}
                 </li>
 
                 <li class="list-group-item list-group-item-action">
@@ -49,7 +49,7 @@
                     {% endif %}
                 </li>
 
-                {% if team.team.ctftime_id > 0 %}
+                {% if team.ctftime_id > 0 %}
                 <li class="list-group-item list-group-item-action">
                     View team on
                     <a href="https://ctftime.org/team/{{team.ctftime_id}}"><strong>CTFTime</strong> <i class="fas fa-external-link-alt"></i></a>
@@ -79,7 +79,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {% for member in team.members %}
+                {% for member in members %}
                 <tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
                     <td>
                         <img width="25px" height="25px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
