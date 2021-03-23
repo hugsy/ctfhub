@@ -1,5 +1,7 @@
 {% load ctfpad_filters %}
+{% load tz %}
 
+{% localtime on %}
 <div class="row">
     <div class="col">
     {% if object_list %}
@@ -30,10 +32,10 @@
                 <td>♾</td>
                 {% else %}
                 <td>
-                    <abbr title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start_date | date:"Y/m/d H:i:s"}}</abbr>
+                    <abbr title='Local time: {{ ctf.start_date | localtime | date:"Y/m/d H:i" }}'>{{ctf.start_date | date:"Y/m/d H:i"}}</abbr>
                 </td>
                 <td>
-                    <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
+                    <abbr title='Local time: {{ ctf.end_date | localtime | date:"Y/m/d H:i" }}'>{{ctf.end_date | date:"Y/m/d H:i"}}</abbr>
                 </td>
                 {% endif %}
                 <td><a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Edit"><i class="fas fa-edit"></i></a></td>
@@ -70,3 +72,4 @@
         {% endif %}
     </div>
 </div>
+{% endlocaltime %}
