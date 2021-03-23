@@ -37,22 +37,12 @@ class TeamCreateUpdateForm(forms.ModelForm):
 class MemberCreateForm(forms.ModelForm):
     class Meta:
         model = Member
-        exclude = [
-            "user",
-            "team",
-            "country",
-            "timezone",
-            "last_scored",
-            "last_ip",
-            "last_active_notification",
-            "last_logged_in",
-            "hedgedoc_password",
-            "joined_time",
-            "twitter_url",
-            "github_url",
-            "blog_url",
-            "selected_ctf",
-            "status",
+        fields = [
+            "username",
+            "email",
+            "password1",
+            "password2",
+            "api_key"
         ]
 
     username = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
@@ -104,6 +94,8 @@ class CtfCreateUpdateForm(forms.ModelForm):
             "visibility",
             "whiteboard_access_token",
         ]
+
+    weight = forms.FloatField(min_value=0.0)
 
 
 class ChallengeCreateForm(forms.ModelForm):
