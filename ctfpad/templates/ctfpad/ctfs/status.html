@@ -1,8 +1,5 @@
 {% load humanize %}
-{% load ctfpad_filters %}
-{% load tz %}
 
-{% localtime on %}
 <br>
 
 <div class="row">
@@ -27,13 +24,13 @@
                     {% else %}
                         {% if ctf.is_running %}
                         <script>
-                            setInterval(() => { document.getElementById("countdown").innerHTML = `${timeuntil("{{ ctf.end_date|localtime|date:'Y/m/d H:i' }}", )} left`; }, 1000);
+                            setInterval(() => { document.getElementById("countdown").innerHTML = `${timeuntil("{{ ctf.end_date|date:'%Y/%m/%d %H:%i' }}")} left`; }, 1000);
                         </script>
                         <p id="countdown"></p>
                         {% elif ctf.is_finished %}
-                        Ended {{ ctf.end_date|localtime|timesince }} ago
+                        Ended {{ ctf.end_date | timesince }} ago
                         {% else %}
-                        Starts in {{ ctf.start_date|localtime|timeuntil }}
+                        Starts in {{ ctf.start_date | timeuntil }}
                         {% endif %}
                     {% endif %}
                     </h5>
@@ -90,4 +87,3 @@
         </div>
     </div>
 </div>
-{% endlocaltime %}

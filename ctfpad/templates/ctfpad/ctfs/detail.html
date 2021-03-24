@@ -10,9 +10,6 @@
 
 {% load humanize %}
 {% load ctfpad_filters %}
-{% load tz %}
-
-{% localtime on %}
 
 <div class="row">
     <div class="col-md-5">
@@ -101,9 +98,9 @@
                         </div>
 
                         <div class="col-sm-8">
-                            <abbr title='Local time: {{ ctf.start_date | localtime| date:"Y/m/d H:i" }}'>{{ctf.start_date | date:"Y/m/d H:i"}}</abbr>
+                            <abbr title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i" }}'>{{ctf.start_date | date:"Y/m/d H:i"}}</abbr>
                             &nbsp;<i class="fas fa-chevron-right"></i>&nbsp;
-                            <abbr title='Local time: {{ ctf.end_date | localtime | date:"Y/m/d H:i" }}'>{{ctf.end_date | date:"Y/m/d H:i"}}</abbr>
+                            <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i" }}'>{{ctf.end_date | date:"Y/m/d H:i"}}</abbr>
                         </div>
                     </div>
                 </li>
@@ -235,5 +232,5 @@
     </div>
 </div>
 
-{% endlocaltime %}
+
 {% endblock %}

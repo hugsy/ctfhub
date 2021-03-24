@@ -1,8 +1,6 @@
 {% load ctfpad_filters %}
 {% load humanize %}
-{% load tz %}
 
-{% localtime on %}
 <div class="row">
     <div class="col-md-12">
         <h5>List of current and future CTFs registered on CTFTime</h5>
@@ -12,9 +10,8 @@
             <thead>
             <tr>
                 <th scope="col">CTF</th>
-                <th scope="col"><abbr title="Hover to convert to your local time">Date (in UTC)</abbr></th>
+                <th scope="col"><abbr title="Hover for showing the local time conversion">Date (in UTC)</abbr></th>
                 <th scope="col">Duration</th>
-                <th scope="col">Weight</th>
                 <th scope="col">Import</th>
             </tr>
             </thead>
@@ -25,14 +22,13 @@
                     <a href="https://ctftime.org/event/{{ctf.id}}" target="_blank">{{ctf.title}} <i class="fas fa-external-link-alt"></i></a>
                 </td>
                 <td>
-                    <abbr title='Local time: {{ ctf.start | localtime | date:"Y/m/d H:i" }}'>{{ctf.start | date:"Y/m/d H:i"}}</abbr>
+                    <abbr title='Local time: {{ ctf.start | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start | date:"Y/m/d H:i:s"}}</abbr>
                     &nbsp;→&nbsp;
-                    <abbr title='Local time: {{ ctf.finish | localtime | date:"Y/m/d H:i" }}'>{{ctf.finish | date:"Y/m/d H:i"}}</abbr>
+                    <abbr title='Local time: {{ ctf.finish | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.finish | date:"Y/m/d H:i:s"}}</abbr>
                 </td>
                 <td>
                     {{ ctf.duration|naturaltime}}
                 </td>
-                <td>{{ ctf.weight|floatformat }}</td>
                 <td><a href="{% url 'ctfpad:ctfs-import' %}?ctftime_id={{ctf.id|urlencode}}"><i class="fas fa-file-import"></i></a></td>
             </tr>
             {% endfor %}
@@ -40,4 +36,3 @@
         </table>
     </div>
 </div>
-{% endlocaltime %}
