@@ -1,5 +1,6 @@
 {% load static %}
 {% load humanize %}
+{% load ctfpad_filters %}
 
 
 <div class="row">
@@ -50,7 +51,7 @@
                             <td><a href="{% url 'ctfpad:users-detail' member.id %}">{{ member.username }}</a></td>
                             <td>{{ member.rating_accu }}</td>
                             <td>{{ member.percent }}</td>
-                            <td>{{ member.best_category }}</td>
+                            <td>{% best_category member year_pick %}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

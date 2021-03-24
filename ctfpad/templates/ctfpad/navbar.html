@@ -23,7 +23,7 @@
                     <h5 class="dropdown-header">Hi, {{request.user}} ({{request.user.member.team.name}})!</h5>
                     <div class="dropdown-divider"></div>
                     {% if not request.user.member.is_guest %}
-                    <a class="dropdown-item" href="{% url 'ctfpad:stats-detail'%}"><i class="fas fa-signal"></i>&nbsp;Team Info</a>
+                    <a class="dropdown-item" href="{% url 'ctfpad:stats-detail' %}"><i class="fas fa-signal"></i>&nbsp;Team Info</a>
                     <a class="dropdown-item" href="{% url 'ctfpad:ctfs-list' %}"><i class="fas fa-flag"></i>&nbsp;CTFs</a>
                     <a class="dropdown-item" href="{% url 'ctfpad:tags-list' %}"><i class="fas fa-tags"></i>&nbsp;Browse by Tags</a>
                     {% endif %}

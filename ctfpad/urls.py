@@ -43,6 +43,7 @@ urlpatterns = [
 
     # stats
     path("stats/", views.generate_stats, name="stats-detail"),
+    path("stats/<int:year>/", views.generate_stats, name="stats-detail"),
 
     # toggle dark mode
     path("toggle-theme/", views.toggle_dark_mode, name="set-dark-mode"),

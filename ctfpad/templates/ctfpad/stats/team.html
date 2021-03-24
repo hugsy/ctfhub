@@ -1,4 +1,5 @@
 {% load static %}
+{% load ctfpad_filters %}
 <div class="row">
     <div class="col-md-4">
 		<div class="card card-body">
@@ -95,7 +96,7 @@
                         {{member.status | title}}
                         {% endif %}
                     </td>
-                    <td>{{member.best_category}}</td>
+                    <td>{% best_category member year_pick %}</td>
                     <td>{{member.joined_time | date:'Y'}}</td>
                     <td>
                         &nbsp;●&nbsp;<a href="mailto:{{member.email}}" target="_blank"><i class="fas fa-envelope"></i></a>

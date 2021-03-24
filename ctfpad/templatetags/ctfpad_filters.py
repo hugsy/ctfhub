@@ -13,6 +13,9 @@ register = template.Library()
 def as_local_datetime_for_member(utc_timezone, member):
     return utc_timezone +  member.timezone_offset
 
+@register.simple_tag
+def best_category(member, year=None):
+    return member.best_category(year)
 
 @register.filter
 def as_time_accumulator_graph(items):

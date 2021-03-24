@@ -310,21 +310,6 @@ class Member(TimeStampedModel):
     def last_solved_challenge(self):
         return self.solved_public_challenges.last()
 
-    @cached_property
-    def best_category(self) -> str:
-        qs = self.solved_public_challenges.values(
-            "category__name"
-        ).annotate(
-            Sum("points")
-        ).order_by(
-            "points__sum"
-        )
-
-        if not qs:
-            return ""
-
-        return qs.last()["category__name"]
-
     @property
     def last_logged_in(self):
         return self.user.last_login
@@ -396,6 +381,24 @@ class Member(TimeStampedModel):
     def get_absolute_url(self):
         return reverse('ctfpad:users-detail', args=[str(self.id), ])
 
+    def best_category(self, year=None):
+        qs = self.solved_public_challenges.values(
+            "category__name"
+        ).annotate(
+            Sum("points")
+        ).order_by(
+            "-points__sum"
+        )
+
+        if year:
+            qs = qs.filter(
+                solved_time__year=year
+            )
+
+        if not qs:
+            return ""
+
+        return qs.first()["category__name"]
 
 class ChallengeCategory(TimeStampedModel):
     """
@@ -530,14 +533,24 @@ class CtfStats:
     """
     Statistic collection class
     """
+    def __init__(self, year):
+        self.year = year
 
+    def members(self):
+        return Member.objects.select_related(
+            'user'
+        ).filter(
+            creation_time__year__lte=self.year
+        )
+        
     def player_activity(self) -> dict:
         """Return the number of ctfs played per member
         """
         return Member.objects.select_related(
             'user'
         ).filter(
-            solved_challenges__isnull=False
+            solved_challenges__isnull=False,
+            solved_challenges__ctf__start_date__year=self.year
         ).annotate(
             play_count=Count('solved_challenges__ctf', distinct=True)
         )
@@ -546,17 +559,18 @@ class CtfStats:
         """Return the total number of challenges solved per category
         """
         return Challenge.objects.filter(
-            solvers__isnull=False
+            solvers__isnull=False,
+            ctf__start_date__year=self.year
         ).values("category__name").annotate(
             Count("category")
         )
 
     def ctf_stats(self) -> dict:
-        """Return a monthly count of public CTFs played in the last year
+        """Return a monthly count of public CTFs played
         """
         ctfs = Ctf.objects.filter(
             challenge__isnull=False,
-            start_date__gte=datetime.now()-timedelta(weeks=52)
+            start_date__year=self.year,
         ).annotate(
             month=TruncMonth('start_date')
         ).order_by(
@@ -568,6 +582,15 @@ class CtfStats:
 
         return {'monthly_counts': monthly_counts}
 
+    def year_stats(self) -> list:
+        """Return a yearly count of public CTFs played
+        """
+        return Ctf.objects.values_list(
+            'start_date__year'
+        ).annotate(
+            Count('start_date__year')
+        )
+
     def ranking_stats(self) -> dict:
         """Return the all time and last CTFs rankings
         """
@@ -578,6 +601,7 @@ class CtfStats:
         ).filter(
             visibility='public',
             end_date__lt=datetime.now(), # finished ctfs only
+            start_date__year=self.year,
             challenge__solvers__isnull=False,
             challenge__status='solved'
         ).order_by(
