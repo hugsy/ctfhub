@@ -1,7 +1,9 @@
+{% load humanize %}
 {% load ctfpad_filters %}
 
 <div class="row">
     <div class="col">
+    <h5>List of registered CTFs</h5>
     {% if object_list %}
         <div class="row">
             <div class="col">
@@ -15,8 +17,9 @@
             <thead>
             <tr>
                 <th scope="col">CTF</th>
-                <th scope="col">Start</th>
-                <th scope="col">End</th>
+                <th scope="col"><abbr title="Hover to convert to your local time">Date (in UTC)</abbr></th>
+                <th scope="col">Duration</th>
+                <th scope="col">Weight</th>
                 <th scope="col"></th>
                 <th scope="col"></th>
             </tr>
@@ -24,18 +27,20 @@
             <tbody>
             {% for ctf in page_obj %}
             <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}">
-                <th scope="row">{{ctf.name}}</td>
+                <td scope="row">
+                    <a href="{% url 'ctfpad:ctfs-detail' ctf.id %}">{{ctf.name}}</a>
+                </td>
                 {% if ctf.is_permanent %}
-                <td>♾</td>
                 <td>♾</td>
                 {% else %}
                 <td>
                     <abbr title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start_date | date:"Y/m/d H:i:s"}}</abbr>
-                </td>
-                <td>
+                    &nbsp;→&nbsp;
                     <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
                 </td>
+                <td>{% if ctf.duration == 0 %}♾{% else %}{{ ctf.duration | naturaltime}}{% endif %}</td>
                 {% endif %}
+                <td>{{ ctf.weight | floatformat }}</td>
                 <td><a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Edit"><i class="fas fa-edit"></i></a></td>
                 <td><a href="{% url 'ctfpad:ctfs-delete' ctf.id %}" title="Delete"><i class="fas fa-trash"></i></a></td>
             </tr>
