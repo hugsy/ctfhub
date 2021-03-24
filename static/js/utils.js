@@ -31,8 +31,8 @@ function timeuntil(datetime)
 {
     const end = new Date(datetime).getTime();
     const now = new Date().getTime();
-    const tz = new Date().getTimezoneOffset();
-    const offset = end - now - tz*60*1000;
+
+    const offset = end - now;
     if (offset < 0)
         return "Finished";
 

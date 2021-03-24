@@ -387,7 +387,7 @@ class Member(TimeStampedModel):
     @property
     def timezone_offset(self):
         if not self.timezone:
-            return 0
+            return timedelta()
         return timedelta(hours = int(self.timezone.replace("UTC", ""), 10))
 
     def to_local_date(self, utc_date):
