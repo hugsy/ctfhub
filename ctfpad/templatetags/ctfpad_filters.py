@@ -3,6 +3,7 @@ from collections import namedtuple
 from django import template
 from django.contrib import messages
 from django.utils.safestring import mark_safe
+from datetime import timezone
 
 import bleach
 
@@ -10,8 +11,9 @@ import bleach
 register = template.Library()
 
 @register.filter
-def as_local_datetime_for_member(utc_timezone, member):
-    return utc_timezone +  member.timezone_offset
+def as_local_datetime_for_member(naive_utc, member):
+    offset = timezone(member.timezone_offset)
+    return naive_utc.astimezone(offset)
 
 
 @register.filter
