@@ -164,7 +164,7 @@ class Ctf(TimeStampedModel):
     @property
     def is_running(self):
         if self.is_permanent:
-            return True        
+            return True
         now = datetime.now()
         return self.start_date <= now < self.end_date
 
@@ -542,7 +542,7 @@ class CtfStats:
         ).filter(
             creation_time__year__lte=self.year
         )
-        
+
     def player_activity(self) -> dict:
         """Return the number of ctfs played per member
         """
@@ -585,7 +585,9 @@ class CtfStats:
     def year_stats(self) -> list:
         """Return a yearly count of public CTFs played
         """
-        return Ctf.objects.values_list(
+        return Ctf.objects.filter(
+            start_date__isnull = False
+        ).values_list(
             'start_date__year'
         ).annotate(
             Count('start_date__year')
