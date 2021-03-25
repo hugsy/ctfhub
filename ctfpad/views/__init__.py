@@ -7,6 +7,7 @@ from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
+from django.shortcuts import redirect
 
 
 import datetime
@@ -80,7 +81,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
 
 
 @only_if_authenticated_user
-def generate_stats(request: HttpRequest) -> HttpResponse:
+def generate_stats(request: HttpRequest, year: int = None) -> HttpResponse:
     """Generate some statistics of the CTFPad
 
     Args:
@@ -89,15 +90,19 @@ def generate_stats(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    stats = CtfStats()
+    if not year:
+        return redirect("ctfpad:stats-detail", year=datetime.datetime.now().year)
 
+    stats = CtfStats(year)
     context = {
         "team": Team.objects.first(),
-        "members": Member.objects.select_related('user'),
+        "members": stats.members(),
         "player_activity": stats.player_activity(),
         "category_stats": stats.category_stats(),
         "ctf_stats": stats.ctf_stats(),
-        "ranking_stats": stats.ranking_stats()
+        "ranking_stats": stats.ranking_stats(),
+        "year_stats": stats.year_stats(),
+        "year_pick": year
     }
     return render(request, "ctfpad/stats/detail.html", context)
 

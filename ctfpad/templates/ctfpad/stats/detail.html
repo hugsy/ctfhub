@@ -37,6 +37,14 @@
                 <li class="nav-item">
                     <a href="#timeline" class="nav-link" data-toggle="tab">Timeline</a>
                 </li>
+                <li class="nav-item dropdown ml-auto">
+                    <a class="nav-link dropdown-toggle" id="dropdownyear" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ year_pick }}</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownyear">
+                        {% for year, _ in year_stats reversed %}
+                        <a class="dropdown-item" href="{% url 'ctfpad:stats-detail' year=year %}">{{ year }}</a>
+                        {% endfor %}
+                    </div>
+                </li>
             </ul>
         </div>
 

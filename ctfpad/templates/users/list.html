@@ -2,6 +2,7 @@
 
 {% block content %}
 
+{% load ctfpad_filters %}
 <br/>
 
 
@@ -38,7 +39,7 @@
                             {{member.username}}
                         </a>
                     </td>
-                    <td>{{member.best_category}}</td>
+                    <td>{% best_category member %}</td>
                     <td>{{member.joined_time | date:'Y'}}</td>
                     <td>{% if member.blog_url%}<a href="{{member.blog_url}}"><i class="fas fa-blog"></i></i></a>{% endif %}</td>
                     <td>{% if member.twitter_url%}<a href="{{member.twitter_url}}"><i class="fab fa-twitter"></i></a>{% endif %}</td>

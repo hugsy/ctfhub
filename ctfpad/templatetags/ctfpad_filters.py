@@ -15,6 +15,9 @@ def as_local_datetime_for_member(naive_utc, member):
     offset = timezone(member.timezone_offset)
     return naive_utc.astimezone(offset)
 
+@register.simple_tag
+def best_category(member, year=None):
+    return member.best_category(year)
 
 @register.filter
 def as_time_accumulator_graph(items):
