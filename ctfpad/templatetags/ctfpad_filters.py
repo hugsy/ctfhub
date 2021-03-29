@@ -1,19 +1,17 @@
-from datetime import datetime, timedelta
 from collections import namedtuple
 from django import template
 from django.contrib import messages
 from django.utils.safestring import mark_safe
-from datetime import timezone
-
+import pytz
 import bleach
-
 
 register = template.Library()
 
 @register.filter
 def as_local_datetime_for_member(naive_utc, member):
-    offset = timezone(member.timezone_offset)
-    return naive_utc.astimezone(offset)
+    aware_utc = pytz.utc.localize(naive_utc)
+    member_tz = pytz.timezone(member.timezone)
+    return aware_utc.astimezone(member_tz)
 
 @register.simple_tag
 def best_category(member, year=None):
