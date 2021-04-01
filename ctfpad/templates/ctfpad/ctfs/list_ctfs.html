@@ -28,9 +28,10 @@
             {% for ctf in page_obj %}
             <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}">
                 <td scope="row">
-                    <a href="{% url 'ctfpad:ctfs-detail' ctf.id %}">{{ctf.name}}</a>
+                    <a href="{{ ctf.get_absolute_url }}">{{ctf.name}}</a>
                 </td>
                 {% if ctf.is_permanent %}
+                <td>♾</td>
                 <td>♾</td>
                 {% else %}
                 <td>
@@ -38,9 +39,9 @@
                     &nbsp;→&nbsp;
                     <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
                 </td>
-                <td>{% if ctf.duration == 0 %}♾{% else %}{{ ctf.duration | naturaltime}}{% endif %}</td>
+                <td>{{ ctf.duration | naturaltime}}</td>
                 {% endif %}
-                <td>{{ ctf.weight | floatformat }}</td>
+                <td>{{ ctf.weight | floatformat:"-2" }}</td>
                 <td><a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Edit"><i class="fas fa-edit"></i></a></td>
                 <td><a href="{% url 'ctfpad:ctfs-delete' ctf.id %}" title="Delete"><i class="fas fa-trash"></i></a></td>
             </tr>
