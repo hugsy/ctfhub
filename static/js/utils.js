@@ -44,7 +44,7 @@ function timeuntil(datetime)
     var res = "";
     if (days)
         res += `${days}d `;
-    res += `${hours}h ${minutes}m ${seconds}s`;
+    res += `${hours}h ${minutes}m ${seconds}s left`;
     return res;
 }
 

@@ -24,7 +24,7 @@
                     {% else %}
                         {% if ctf.is_running %}
                         <script>
-                            setInterval(() => { document.getElementById("countdown").innerHTML = `${timeuntil("{{ ctf.end_date|as_local_datetime_for_member:request.user.member|date:'c' }}")} left`; }, 1000);
+                            setInterval(() => { document.getElementById("countdown").innerHTML = `${timeuntil("{{ ctf.end_date|as_local_datetime_for_member:request.user.member|date:'c' }}")} `; }, 1000);
                         </script>
                         <p id="countdown"></p>
                         {% elif ctf.is_finished %}
