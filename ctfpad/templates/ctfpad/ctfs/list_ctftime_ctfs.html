@@ -4,7 +4,14 @@
 <div class="row">
     <div class="col-md-12">
         <h5>Current and future CTFs from CTFTime</h5>
-        <small>* All times are in UTC (hover for local time)</small>
+        <div class="row">
+            <div class="col">
+                <small>* All times are in UTC (hover for local time)</small>
+            </div>
+            <div class="col" style="text-align: right;">
+                <a onclick="new bootstrap.Modal(document.getElementById('ctftime_ctf_id_modal')).toggle();" title="Import from CTFTime CTF number"><strong><i class="fas fa-plus"></i></strong></a>
+            </div>
+        </div>
 
         <table class="table table-sm table-hover">
             <thead>
@@ -30,11 +37,33 @@
                 <td>
                     {{ ctf.duration|naturaltime}}
                 </td>
-                <td>{{ ctf.weight | floatformat }}</td>
+                <td>{{ ctf.weight | floatformat:"-2" }}</td>
                 <td><a href="{% url 'ctfpad:ctfs-import' %}?ctftime_id={{ctf.id|urlencode}}"><i class="fas fa-file-import"></i></a></td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+
+
+<div class="modal" tabindex="-1" id="ctftime_ctf_id_modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Specify the CTFTime ID</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon3">CTFTime ID</span>
+                    <input type="number" min="0" max="100000" class="form-control" aria-describedby="basic-addon3" id="ctftime_id_input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="document.location='{% url "ctfpad:ctfs-import" %}?ctftime_id='+document.getElementById('ctftime_id_input').value;">Import</button>
+            </div>
+        </div>
     </div>
 </div>
