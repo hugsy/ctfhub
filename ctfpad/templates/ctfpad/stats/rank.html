@@ -78,7 +78,7 @@
                 <tbody>
                     {% for ctf in ranking_stats.last_ctfs|slice:":15" %}
                     <tr>
-                        <th scope="row" style="vertical-align: middle;">{{ctf}}</th>
+                        <td style="vertical-align: middle;"><a href="{% url 'ctfpad:ctfs-detail' ctf.id %}">{{ctf}}</a></td>
                         {% for member, percent in ctf.ranking|slice:":4" %}
                         <td style="vertical-align: middle;">
                             {% if percent > 0 %}

@@ -578,7 +578,8 @@ class CtfStats:
         """Return a yearly count of public CTFs played
         """
         return Ctf.objects.filter(
-            start_date__isnull = False
+            start_date__isnull = False,
+            visibility='public'
         ).values_list(
             'start_date__year'
         ).annotate(
