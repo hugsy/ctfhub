@@ -8,6 +8,7 @@ import requests
 import smtplib
 
 from functools import lru_cache
+from cachetools import cached, TTLCache
 from uuid import uuid4
 
 from ctftools.settings import (
@@ -23,8 +24,7 @@ from ctftools.settings import (
 )
 
 
-
-@lru_cache(maxsize=128)
+@lru_cache(maxsize=1)
 def get_current_site() -> str:
     r = "https://" if CTFPAD_USE_SSL else "http://"
     r+= f"{CTFPAD_HOSTNAME}:{CTFPAD_PORT}"
@@ -152,7 +152,7 @@ def ctftime_ctfs(running=True, future=True) -> list:
     return result
 
 
-@lru_cache(maxsize=128)
+@cached(TTLCache(128, 600)) # 10 minutes
 def ctftime_fetch_ctfs(limit=100) -> list:
     """Retrieve CTFs from CTFTime API with a wide start/finish window (-1/+26 weeks) so we can later run our own filters
     on the cached results for better performance and accuracy.
@@ -160,8 +160,10 @@ def ctftime_fetch_ctfs(limit=100) -> list:
     Returns:
         list: JSON output from CTFTime
     """
-    res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*60):.0f}&finish={time()+(3600*24*7*26):.0f}",
-        headers={"user-agent": CTFTIME_USER_AGENT})
+    url = f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*60):.0f}&finish={time()+(3600*24*7*26):.0f}"
+    headers = {"user-agent": CTFTIME_USER_AGENT}
+
+    res = requests.get(url=url, headers=headers)
     if res.status_code != requests.codes.ok:
         raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
 
