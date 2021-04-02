@@ -24,7 +24,7 @@ from ctftools.settings import (
 
 
 
-@lru_cache(maxsize=128)
+@lru_cache(maxsize=1)
 def get_current_site() -> str:
     r = "https://" if CTFPAD_USE_SSL else "http://"
     r+= f"{CTFPAD_HOSTNAME}:{CTFPAD_PORT}"
@@ -152,7 +152,6 @@ def ctftime_ctfs(running=True, future=True) -> list:
     return result
 
 
-@lru_cache(maxsize=128)
 def ctftime_fetch_ctfs(limit=100) -> list:
     """Retrieve CTFs from CTFTime API with a wide start/finish window (-1/+26 weeks) so we can later run our own filters
     on the cached results for better performance and accuracy.
