@@ -128,6 +128,12 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
         "hedgedoc_url": HEDGEDOC_URL,
     }
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx |= {
+            "team_timeline": self.object.team_timeline(),
+        }
+        return ctx
 
 class CtfUpdateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, UpdateView):
     model = Ctf
