@@ -187,6 +187,38 @@ class Ctf(TimeStampedModel):
     def jitsi_url(self):
         return f"{JITSI_URL}/{self.id}"
 
+    def team_timeline(self):
+        challs = self.challenge_set.prefetch_related(
+            'solvers__user'
+        ).filter(
+            status='solved',
+            solvers__isnull=False
+        ).order_by(
+            'solved_time'
+        ).distinct(
+            'solved_time',
+            'id'
+        ).all()
+
+        members = []
+        for chall in challs:
+            for member in chall.solvers.all():
+                if member in members:
+                    continue
+                member.accu = 0
+                member.challs = OrderedDict()
+                members.append(member)
+        
+        for chall in challs:
+            solvers = chall.solvers.all()
+            for member in members:
+                points = 0
+                if member in solvers:
+                    points = chall.points / len(solvers)
+                member.accu += points
+                member.challs[chall] = member.accu
+
+        return members
 
     def export_notes_as_zipstream(self, stream, member=None):
         zip_file = zipfile.ZipFile(stream, 'w')
