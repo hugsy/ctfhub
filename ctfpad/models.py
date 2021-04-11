@@ -107,6 +107,7 @@ class Ctf(TimeStampedModel):
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
     visibility = StatusField(choices_name="VISIBILITY")
     weight = models.FloatField(default=1.0)
+    rating = models.FloatField(default=0.0)
     note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
     whiteboard_access_token = models.CharField(default=get_random_string_64, max_length=64)
 
@@ -627,6 +628,7 @@ class CtfStats:
             'challenge_set__solvers__user',
         ).filter(
             visibility='public',
+            rating__gt=0,
             end_date__lt=datetime.now(), # finished ctfs only
             start_date__year=self.year,
             challenge__solvers__isnull=False,
@@ -669,7 +671,7 @@ class CtfStats:
 
                 if member in ctf.member_points:
                     points = ctf.member_points[member]
-                    rating = ctf.weight * points / first_points
+                    rating = ctf.rating * points / total_points
                     percent = 100 * points / total_points
 
                 member.rating_accu = round(member.rating_accu + rating, 2)

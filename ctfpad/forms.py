@@ -91,11 +91,13 @@ class CtfCreateUpdateForm(forms.ModelForm):
             "team_password",
             "ctftime_id",
             "weight",
+            "rating",
             "visibility",
             "whiteboard_access_token",
         ]
 
     weight = forms.FloatField(min_value=0.0)
+    rating = forms.FloatField(min_value=0.0, required=False)
 
 
 class ChallengeCreateForm(forms.ModelForm):

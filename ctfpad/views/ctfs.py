@@ -18,7 +18,7 @@ from ctfpad.forms import (
     CategoryCreateForm,
     CtfCreateUpdateForm, TagCreateForm,
 )
-from ctfpad.models import Ctf
+from ctfpad.models import Ctf, Team
 from ctfpad.helpers import (
     ctftime_ctfs,
     ctftime_get_ctf_info,
@@ -142,6 +142,10 @@ class CtfUpdateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, U
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
     success_message = "CTF '%(name)s' updated"
+
+    extra_context = {
+        "team": Team.objects.first()
+    }
 
     def get_success_url(self):
         return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.pk})
