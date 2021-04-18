@@ -143,9 +143,12 @@ class CtfUpdateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, U
     redirect_field_name = "redirect_to"
     success_message = "CTF '%(name)s' updated"
 
-    extra_context = {
-        "team": Team.objects.first()
-    }
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx |= {
+            "team": Team.objects.first()
+        }
+        return ctx
 
     def get_success_url(self):
         return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.pk})
