@@ -5,3 +5,4 @@ python-magic
 psycopg2-binary
 django-model-utils
 bleach
+whitenoise

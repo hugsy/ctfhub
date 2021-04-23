@@ -12,5 +12,6 @@ echo "DB setup: makemigrations..."
 echo "DB setup: migrate..."
 python3 manage.py makemigrations --noinput
 python3 manage.py migrate --noinput
+python3 manage.py collectstatic --noinput
 
 exec "$@"
