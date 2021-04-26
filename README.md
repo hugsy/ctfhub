@@ -9,6 +9,7 @@ A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki
 
 ## Build
 
+### Docker
 
 For most people, this will suffice:
 
@@ -20,6 +21,14 @@ $ nano docker-compose.yml
 $ docker-compose up -d --build
 ```
 
+### Heroku
+
+Install and run it on Heroku (it's free!):
+
+```
+$ ./install-heroku.sh
+```
+
 ## Features
 
 A non-exhaustive list of features:
@@ -29,7 +38,7 @@ A non-exhaustive list of features:
  - Key-in-hands setup via [`docker-compose`](https://docs.docker.com/compose)
  - Fully built on top of [HedgeDoc](https://github.com/hedgedoc/hedgedoc): smart markdown note mechanism, with [tons of features](https://demo.hedgedoc.org/features)
  - Possibility to create and play private CTFs
- - Internal statistic system to track members' involment + basic ranking system
+ - Internal statistic system to track members' involment + team ranking
  - [Jitsi](https://meet.jit.si) integration: instantly jump on video chat with your team mate
  - CTFTime integration: import CTF (+ data) from CTFTime in 2 clicks
  - Dark mode (duh!)
