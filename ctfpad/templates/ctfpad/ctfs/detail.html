@@ -84,7 +84,24 @@
                             <strong><i class="fas fa-address-card" title="CTF credentials" style="font-size: x-large;"></i></i></strong>
                         </div>
                         <div class="col-sm-8">
-                            <code>{{ctf.team_login}}</code>&nbsp;/&nbsp;<code>{{ctf.team_password}}</code>
+                            <code>{{ctf.team_login}}</code>&nbsp;/&nbsp;<code id="ctf_password">{{ctf.team_password}}</code>
+                            &nbsp;
+                            <i class="fas fa-paste"
+                                style="font-size: x-large;"
+                                title="Copy password to Clipboard"
+                                id="ctf_password_clipboard_icon"
+                                onclick="navigator.clipboard.writeText(document.getElementById('ctf_password').innerText).then(function(){
+                                    let x = document.getElementById('ctf_password_clipboard_icon');
+                                    let o = x.title;
+                                    x.title ='Copied to clipboard!';
+                                    {
+                                        let p = new bootstrap.Tooltip(x);
+                                        p.toggle();
+                                        setTimeout(function(){p.toggle();}, 3000);
+                                        x.title = o;
+                                    }
+                                }, function(){alert('Failed to copy to clipboard')});"
+                            ></i>
                         </div>
                     </div>
                 </li>

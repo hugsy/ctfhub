@@ -3,16 +3,18 @@
 <footer class="footer bg-{% theme_cookie %}">
   <div class="container">
     <div class="row">
-      <div class="col-lg-3 h-100 text-lg-left my-auto">
-        <ul class="list-inline mb-2">
+      <div class="col-lg-4 h-200 text-lg-left my-auto">
+        <ul class="list-inline mb-3">
           <li class="list-inline-item"><a href="https://github.com/hugsy/ctfpad/" target="_blank">Github</a></li>
           <li class="list-inline-item">&sdot;</li>
           <li class="list-inline-item"><a href="https://github.com/hugsy/ctfpad/issues" target="_blank">Submit a bug</a></li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item"><a href="#" onclick="(new bootstrap.Modal(document.getElementById('shorcutHelpModal'))).toggle();" >Shortcuts</a></li>
         </ul>
-        <p class="text-muted small mb-4 mb-lg-0">CTFPad by <a href="https://github.com/hugsy" target="_blank">hugsy</a></p>
+        <p class="text-muted small mb-3 mb-lg-0">CTFPad by <a href="https://github.com/hugsy" target="_blank">hugsy</a></p>
       </div>
 
-      <div class="col-lg-9 h-100 text-center text-lg-right my-auto">
+      <div class="col-lg-8 h-100 text-center text-lg-right my-auto">
         <ul class="list-inline mb-0">
           {% if request.user.member.team.blog_url %}
           <li class="list-inline-item mr-3">
