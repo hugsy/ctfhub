@@ -209,7 +209,7 @@ class Ctf(TimeStampedModel):
                 member.accu = 0
                 member.challs = OrderedDict()
                 members.append(member)
-        
+
         for chall in challs:
             solvers = chall.solvers.all()
             for member in members:
@@ -376,8 +376,8 @@ class Member(TimeStampedModel):
     @property
     def country_flag_url(self):
         if not self.country:
-            return f"{STATIC_URL}/images/blank-country.png"
-        return f"{STATIC_URL}/images/flags/{slugify(self.country)}.png"
+            return f"{STATIC_URL}images/blank-country.png"
+        return f"{STATIC_URL}images/flags/{slugify(self.country)}.png"
 
     @property
     def is_guest(self):
