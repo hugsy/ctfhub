@@ -12,7 +12,7 @@ app_name = "ctfpad"
 urlpatterns = [
     # /
     path("", views.index, name="home"),
-    path("favicon.ico", RedirectView.as_view(url=staticfiles_storage.url('images/favicon.png'))),
+    path("favicon.ico", RedirectView.as_view(url=staticfiles_storage.url('static/images/favicon.ico'))),
 
     # team
     ## create
