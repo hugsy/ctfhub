@@ -8,10 +8,13 @@ while psql -h db 2>&1 | grep -q 'could not connect to server'; do
   sleep 1
 done
 
-echo "DB setup: makemigrations..."
-echo "DB setup: migrate..."
-python3 manage.py makemigrations --noinput
-python3 manage.py migrate --noinput
+echo "Django setup: collectstatic..."
 python3 manage.py collectstatic --noinput
+
+echo "DB setup: makemigrations..."
+python3 manage.py makemigrations --noinput
+
+echo "DB setup: migrate..."
+python3 manage.py migrate --noinput
 
 exec "$@"
