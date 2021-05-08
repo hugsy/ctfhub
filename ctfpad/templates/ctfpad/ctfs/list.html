@@ -32,13 +32,22 @@
         <div>
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a href="#list_ctfs" class="nav-link active" data-toggle="tab">Registered CTFs</a>
+                    <a href="#list_ctfs" class="nav-link" data-toggle="tab" id="list_ctf_tab">Registered CTFs</a>
                 </li>
                 <li class="nav-item">
-                    <a href="#list_ctftime_ctfs" class="nav-link" data-toggle="tab">Import from CTFTime</a>
+                    <a href="#list_ctftime_ctfs" class="nav-link" data-toggle="tab" id="list_ctftime_tab">Import from CTFTime</a>
                 </li>
             </ul>
         </div>
+
+        <script type="text/javascript">
+            let url = document.location.toString();
+            let active_tab = url.substring(url.indexOf("#") + 1);
+            if (active_tab === "list_ctftime_ctfs")
+                document.getElementById("list_ctftime_tab").className += " active";
+            else
+                document.getElementById("list_ctf_tab").className += " active";
+        </script>
 
         <div class="tab-content">
             <div class="tab-pane fade show active" id="list_ctfs">

@@ -23,7 +23,7 @@
 				</div>
 				{% endif %}
 				<div class="col">
-					<a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:stats-detail' %}">View Members</a>
+					<a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:stats-detail' %}">View Team</a>
 				</div>
 			</div>
 			<table class="table table-sm table-hover">
@@ -55,11 +55,14 @@
 		<hr>
 		<div class="card card-body">
 			<div class="row">
-				<div class="col-md-6">
-					<a class="btn btn-primary  btn-sm btn-block" href="{% url 'ctfpad:ctfs-create'%}">New CTF</a>
+				<div class="col-md-3">
+					<a class="btn btn-primary  btn-sm btn-block" href="{% url 'ctfpad:ctfs-create'%}">Create CTF</a>
+				</div>
+				<div class="col-md-3">
+					<a class="btn btn-info  btn-sm btn-block" href="{% url 'ctfpad:ctfs-list'%}#list_ctftime_ctfs">Import CTF</a>
 				</div>
 				<div class="col-md-6">
-					<a class="btn btn-success  btn-sm btn-block" href="{% url 'ctfpad:ctfs-list'%}">View CTFs</a>
+					<a class="btn btn-success  btn-sm btn-block" href="{% url 'ctfpad:ctfs-list'%}">View All CTFs</a>
 				</div>
 			</div>
 			<table class="table table-sm table-hover">
