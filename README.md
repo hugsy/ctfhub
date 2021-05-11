@@ -38,8 +38,13 @@ A non-exhaustive list of features:
  - Discord notifications
  - ...and more to come...
 
+## Community ##
+
+[![Discord](https://img.shields.io/badge/Discord-CTFPad-green)](https://discord.com/channels/705160148813086841/841712082311446538) [[Channel Invitation Link](https://discord.gg/zcYq2E6Djy)]
 
 ## Gallery
+
+_Note_: the development of CTFPad is very active, the screenshots below might not reflect the exact state of the tool.
 
 ### Dashboard
 
