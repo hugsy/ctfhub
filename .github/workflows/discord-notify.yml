@@ -1,0 +1,27 @@
+name: "Discord Notification"
+on: [push, pull_request, issues]
+env:
+  DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CTFPad Push Notification
+        uses: Ilshidur/action-discord@0.3.0
+        if: github.event_name == 'push' && github.repository_owner == 'hugsy'
+        with:
+          args: |
+            ${{ github.actor }} pushed ${{ github.event.ref }}: ${{ github.event.compare }}
+      - name: CTFPad PR Notification
+        uses: Ilshidur/action-discord@0.3.0
+        if: github.event_name == 'pull_request' && github.event.action == 'opened' && github.repository_owner == 'hugsy'
+        with:
+          args: |
+            New PR (#${{ github.event.pull_request.number }}) from ${{ github.actor }}
+      - name: CTFPad Issue Notification
+        uses: Ilshidur/action-discord@0.3.0
+        if: github.event_name == 'issues' && github.event.action == 'opened' && github.repository_owner == 'hugsy'
+        with:
+          args: |
+            New Issue (#${{ github.event.issue.number }}) from ${{ github.actor }}
