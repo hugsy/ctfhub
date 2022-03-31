@@ -40,7 +40,7 @@ A non-exhaustive list of features:
 
 ## Community ##
 
-[![Discord](https://img.shields.io/badge/Discord-CTFPad-green)](https://discord.com/channels/705160148813086841/841712082311446538) [[Channel Invitation Link](https://discord.gg/zcYq2E6Djy)]
+[![Discord](https://img.shields.io/badge/Discord-CTFPad-green)](https://discord.gg/5HmwPxy3HP) 
 
 ## Gallery
 
