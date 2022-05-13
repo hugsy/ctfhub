@@ -35,7 +35,7 @@ CTFPAD_USE_SSL = os.getenv("CTFPAD_USE_SSL")=="1" or False
 
 # SECURITY WARNING: harden for production!
 ALLOWED_HOSTS = [CTFPAD_HOSTNAME, "localhost", "127.0.0.1"]
-
+CSRF_TRUSTED_ORIGINS = ['https://*','http://127.0.0.1']
 
 # Application definition
 
