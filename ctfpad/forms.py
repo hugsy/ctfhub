@@ -93,7 +93,6 @@ class CtfCreateUpdateForm(forms.ModelForm):
             "weight",
             "rating",
             "visibility",
-            "whiteboard_access_token",
         ]
 
     weight = forms.FloatField(min_value=0.0)
@@ -122,7 +121,8 @@ class ChallengeUpdateForm(forms.ModelForm):
             "description",
             "category",
             "note_id",
-            "whiteboard_id",
+            "excalidraw_room_id",
+            "excalidraw_room_key",
             "ctf",
             "flag",
             "last_update_by",

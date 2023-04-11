@@ -20,14 +20,21 @@ CTFPAD_HOSTNAME = os.getenv("CTFPAD_HOSTNAME") or "localhost"
 CTFPAD_PORT = os.getenv("CTFPAD_PORT") or "8000"
 CTFPAD_USE_SSL = os.getenv("CTFPAD_USE_SSL")=="1" or False
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # SECURITY WARNING: harden for production!
 ALLOWED_HOSTS = [CTFPAD_HOSTNAME, "localhost", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1"]
 if CTFPAD_USE_SSL:
-    CSRF_TRUSTED_ORIGINS.append(f"https://{CTFPAD_HOSTNAME}:{CTFPAD_PORT}")
+    CTFPAD_SSL_URL = f"https://{CTFPAD_HOSTNAME}"
+    if CTFPAD_PORT != "443":
+        CTFPAD_SSL_URL += f":{CTFPAD_PORT}"
+    CSRF_TRUSTED_ORIGINS.append(CTFPAD_SSL_URL)
 else:
     CSRF_TRUSTED_ORIGINS.append(f"http://{CTFPAD_HOSTNAME}:{CTFPAD_PORT}")
+
+CSRF_COOKIE_NAME="ctfpad-csrf"
+SESSION_COOKIE_NAME="ctfpad-session"
 
 # Application definition
 
@@ -154,7 +161,8 @@ USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
 CTFPAD_URL = os.getenv("CTFPAD_URL") or 'http://localhost:8000'
 HEDGEDOC_URL = os.getenv("HEDGEDOC_URL") or 'http://localhost:3000'
-WHITEBOARD_URL = os.getenv("WHITEBOARD_URL") or 'http://localhost:3001'
+USE_INTERNAL_HEDGEDOC = os.getenv("USE_INTERNAL_HEDGEDOC") in ["1", "True", "true", True]
+EXCALIDRAW_URL = os.getenv("EXCALIDRAW_URL") or 'http://localhost:5010'
 
 CTFTIME_URL = "https://ctftime.org"
 CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
@@ -192,3 +200,8 @@ JITSI_URL = "https://meet.jit.si"
 
 DISCORD_WEBHOOK_URL = os.getenv("CTFPAD_DISCORD_WEBHOOK_URL") or None
 DISCORD_BOT_NAME = os.getenv("CTFPAD_DISCORD_BOT_NAME") or "SpiderBot"
+
+# Excalidraw integration
+
+EXCALIDRAW_ROOM_ID_PATTERN = '[0-9a-f]{20}'
+EXCALIDRAW_ROOM_KEY_PATTERN = '[a-zA-Z0-9_-]{22}'
