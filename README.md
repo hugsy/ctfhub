@@ -5,8 +5,6 @@
 A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki/Wargame_(hacking)). If you're looking for a platform for hosting CTFs use [CTFd](https://github.com/ctfd/ctfd).
 
 
-
-
 ## Build
 
 
@@ -15,9 +13,21 @@ For most people, this will suffice:
 ```
 $ git clone https://github.com/hugsy/ctfpad
 $ cd ctfpad
-$ nano docker-compose.yml
-### CHANGE THE CREDENTIALS IN docker-compose.yml ###
-$ docker-compose up -d --build
+$ cp .env.example .env
+### CHANGE THE CREDENTIALS IN .env ###
+$ nano .env
+### BUILD EXCALIDRAW USING .env VARIABLES ###
+$ make build
+$ docker compose up -d --build
+```
+
+If you want to use SSL locally, follow the [instructions to generate local SSL certificates](./conf/README.md)
+and run:
+
+```
+$ cp .env.nginx-proxy.example .env
+$ docker compose -f docker-compose-proxy.yml -f docker-compose.yml up -d --build
+
 ```
 
 ## Features
@@ -34,7 +44,7 @@ A non-exhaustive list of features:
  - CTFTime integration: import CTF (+ data) from CTFTime in 2 clicks
  - Dark mode (duh!)
  - Basic search engine
- - [Whiteboard](https://github.com/cracker0dks/whiteboard) integration: draw & share ideas with your team mates
+ - Self-hosted [Excalidraw](https://github.com/excalidraw/excalidraw) integration: draw & share ideas with your team mates
  - Discord notifications
  - ...and more to come...
 
