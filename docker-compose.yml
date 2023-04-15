@@ -76,7 +76,7 @@ services:
 
   excalidraw:
     build:
-      context: ./src-repos/excalidraw
+      context: ./external-repos/excalidraw
       target: production
     container_name: excalidraw
     networks:
