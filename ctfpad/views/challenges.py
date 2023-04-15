@@ -81,7 +81,7 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
             "flag_form": ChallengeSetFlagForm(),
             "file_upload_form": ChallengeFileCreateForm(),
             "hedgedoc_url": HEDGEDOC_URL,
-            "whiteboard_url": self.object.get_whiteboard_url(self.request.user.member),
+            "excalidraw_url": self.object.get_excalidraw_url(self.request.user.member),
         }
         return ctx
 

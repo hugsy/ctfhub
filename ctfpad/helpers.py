@@ -6,6 +6,7 @@ import os
 import pathlib
 import requests
 import smtplib
+import exrex
 
 from functools import lru_cache
 from uuid import uuid4
@@ -15,11 +16,14 @@ from ctftools.settings import (
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
     CTFPAD_DEFAULT_CTF_LOGO,
     HEDGEDOC_URL,
+    USE_INTERNAL_HEDGEDOC,
     STATIC_URL,
     CTFTIME_API_EVENTS_URL,
     CTFTIME_USER_AGENT,
     EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
     DISCORD_WEBHOOK_URL,
+    EXCALIDRAW_ROOM_ID_PATTERN,
+    EXCALIDRAW_ROOM_KEY_PATTERN,
 )
 
 
@@ -43,7 +47,7 @@ def which_hedgedoc() -> str:
     try:
         requests.get(HEDGEDOC_URL)
     except:
-        if HEDGEDOC_URL == 'http://localhost:3000':
+        if USE_INTERNAL_HEDGEDOC or HEDGEDOC_URL == 'http://localhost:3000':
             return 'http://hedgedoc:3000'
     return HEDGEDOC_URL
 
@@ -322,3 +326,10 @@ def export_challenge_note(member, note_id: uuid4) -> str:
                 result = h2.text
             session.post(f"{HEDGEDOC_URL}/logout")
     return result
+
+
+def generate_excalidraw_room_id() -> str:
+    return exrex.getone(EXCALIDRAW_ROOM_ID_PATTERN)
+
+def generate_excalidraw_room_key() -> str:
+    return exrex.getone(EXCALIDRAW_ROOM_KEY_PATTERN)

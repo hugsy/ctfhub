@@ -13,6 +13,7 @@ import tempfile
 
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Sum, Count, Q
 from django.db.models.functions import TruncMonth
@@ -26,8 +27,8 @@ from model_utils import Choices, FieldTracker
 from ctfpad.helpers import ctftime_ctfs
 
 from ctftools.settings import (
-    HEDGEDOC_URL, SHORT_DATETIME_FORMAT,
-    WHITEBOARD_URL,
+    EXCALIDRAW_ROOM_ID_PATTERN, EXCALIDRAW_ROOM_KEY_PATTERN, HEDGEDOC_URL, SHORT_DATETIME_FORMAT,
+    EXCALIDRAW_URL,
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT, STATIC_URL,
     USERS_FILE_PATH,
@@ -41,6 +42,8 @@ from ctfpad.helpers import (
     get_file_magic,
     get_file_mime,
     ctftime_get_ctf_logo_url,
+    generate_excalidraw_room_id,
+    generate_excalidraw_room_key,
 )
 
 
@@ -109,7 +112,6 @@ class Ctf(TimeStampedModel):
     weight = models.FloatField(default=1.0)
     rating = models.FloatField(default=0.0)
     note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
-    whiteboard_access_token = models.CharField(default=get_random_string_64, max_length=64)
 
     def __str__(self) -> str:
         return self.name
@@ -453,7 +455,8 @@ class Challenge(TimeStampedModel):
     description = models.TextField(blank=True)
     category = models.ForeignKey(ChallengeCategory, on_delete=models.DO_NOTHING, null=True)
     note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
-    whiteboard_id = models.UUIDField(default=uuid.uuid4)
+    excalidraw_room_id = models.CharField(default=generate_excalidraw_room_id, validators=[RegexValidator(regex=EXCALIDRAW_ROOM_ID_PATTERN, message=f'Please follow regex format {EXCALIDRAW_ROOM_ID_PATTERN}', code='nomatch')])
+    excalidraw_room_key = models.CharField(default=generate_excalidraw_room_key, validators=[RegexValidator(regex=EXCALIDRAW_ROOM_KEY_PATTERN, message=f'Please follow regex format {EXCALIDRAW_ROOM_KEY_PATTERN}', code='nomatch')])
     ctf = models.ForeignKey(Ctf, on_delete=models.CASCADE)
     last_update_by = models.ForeignKey(Member, on_delete=models.DO_NOTHING, null=True, related_name='last_updater')
     flag = models.CharField(max_length=128, blank=True)
@@ -477,12 +480,10 @@ class Challenge(TimeStampedModel):
         note_id = self.note_id or "/"
         return f"{HEDGEDOC_URL}{note_id}"
 
-    def get_whiteboard_url(self, member=None) -> str:
-        url = WHITEBOARD_URL
-        url+= f"?accesstoken={self.ctf.whiteboard_access_token}"
-        url+= f"&whiteboardid={self.whiteboard_id}"
-        if member:
-            url += f"&username={member.username}"
+    def get_excalidraw_url(self, member=None) -> str:
+        # Ensure presence of a trailing slash at the end
+        url = os.path.join(EXCALIDRAW_URL, "")
+        url+= f"#room={self.excalidraw_room_id},{self.excalidraw_room_key}"
         return url
 
     @cached_property

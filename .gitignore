@@ -6,3 +6,5 @@ env/
 debug.log
 uploads/media/
 uploads/files/
+external-repos/
+.env

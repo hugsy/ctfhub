@@ -6,3 +6,4 @@ psycopg2-binary
 django-model-utils
 bleach
 pytz
+exrex
