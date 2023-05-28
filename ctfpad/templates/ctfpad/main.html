@@ -3,46 +3,55 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title>CTFPad</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-	<link rel="stylesheet" type="text/css" href="{% static '/css/fontawesome/css/all.min.css' %}" />
-	<link rel="stylesheet" type="text/css" href="/static/css/main-{% theme_cookie %}.css"/>
-	<link rel="icon" type="image/png" sizes="16x16" href="{% static '/images/favicon.png'%}">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
-	<link rel="stylesheet" type="text/css" href="{% static '/css/chart.css' %}"/>
-	<link rel="stylesheet" type="text/css" href="{% static '/css/podium.css' %} ">
-	<script src="{% static '/js/utils.js' %}"></script>
+    <title>CTFPad</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+          integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static '/css/fontawesome/css/all.min.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="/static/css/main-{% theme_cookie %}.css"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static '/images/favicon.png' %}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{% static '/css/chart.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static '/css/podium.css' %} ">
+    <script src="{% static '/js/utils.js' %}"></script>
 </head>
-<body>
-	{% if request.user.is_authenticated %}
-	{% include 'ctfpad/navbar.html' %}
-	{% endif %}
+<body class="d-flex flex-column min-vh-100">
+{% if request.user.is_authenticated %}
+    {% include 'ctfpad/navbar.html' %}
+{% endif %}
 
-	<div class="container-fluid">
-	{% block content %}
-	{% endblock %}
+<main class="flex-shrink-0">
+    <div class="container-fluid">
+        {% block content %}
+        {% endblock %}
     </div>
+</main>
 
-	{% if request.user.is_authenticated %}
+{% if request.user.is_authenticated %}
     {% include 'ctfpad/shortcuts.html' %}
     {% include 'ctfpad/footer.html' %}
-	{% endif %}
+{% endif %}
 </body>
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
+        integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
+        crossorigin="anonymous"></script>
 
 <script type="text/javascript">
-	$(document).ready(function($) {
-		$(".table-row").click(function() {
-			window.document.location = $(this).data("href");
-		});
-	});
+    $(document).ready(function ($) {
+        $(".table-row").click(function () {
+            window.document.location = $(this).data("href");
+        });
+    });
 </script>
 <style>
-	tr.table-row {
-    	cursor: pointer;
-	}
+    tr.table-row {
+        cursor: pointer;
+    }
 </style>
 </html>

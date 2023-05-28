@@ -16,7 +16,7 @@
 		<h5>Team Activity</h5>
 		<hr>
 		<div class="card card-body">
-			<div class="row">
+			<div class="row mb-3">
 				{% if request.user.member.has_superpowers %}
 				<div class="col">
 					<a class="btn btn-primary btn-sm btn-block" href="{% url 'ctfpad:users-register' %}">Add a Member</a>
@@ -54,7 +54,7 @@
 		<h5>Latest CTFs</h5>
 		<hr>
 		<div class="card card-body">
-			<div class="row">
+			<div class="row mb-3">
 				<div class="col-md-3">
 					<a class="btn btn-primary  btn-sm btn-block" href="{% url 'ctfpad:ctfs-create'%}">Create CTF</a>
 				</div>
