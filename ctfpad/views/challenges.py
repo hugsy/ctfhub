@@ -98,17 +98,18 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
             for challenge in challenges_data:
                 category, created = ChallengeCategory.objects.get_or_create(name=challenge["category"].strip().lower())
 
-                challenge_form = ChallengeCreateForm(data={
-                    "name": challenge.get("name"),
-                    "points": challenge.get("value"),
-                    "category": category.pk,
-                    "ctf": ctf
-                })
+                if Challenge.objects.filter(name=challenge.get("name"), ctf=ctf).count() == 0:
+                    challenge_form = ChallengeCreateForm(data={
+                        "name": challenge.get("name"),
+                        "points": challenge.get("value"),
+                        "category": category.pk,
+                        "ctf": ctf
+                    })
 
-                if challenge_form.is_valid():
-                    challenge_form.save()
-                else:
-                    raise ValueError(f"Invalid data for challenge: {challenge_form.errors}")
+                    if challenge_form.is_valid():
+                        challenge_form.save()
+                    else:
+                        raise ValueError(f"Invalid data for challenge: {challenge_form.errors}")
 
             messages.success(self.request, "Import successful!")
             return super().form_valid(form)
