@@ -60,6 +60,7 @@ urlpatterns = [
     # challenges
     path("challenges/", views.challenges.ChallengeListView.as_view(), name="challenges-list"),
     path("challenges/create/", views.challenges.ChallengeCreateView.as_view(), name="challenges-create"),
+    path("challenges/import/<uuid:ctf>/", views.challenges.ChallengeImportView.as_view(), name="challenges-import"),
     path("challenges/create/<uuid:ctf>/", views.challenges.ChallengeCreateView.as_view(), name="challenges-create"),
     path("challenges/<uuid:pk>/", views.challenges.ChallengeDetailView.as_view(), name="challenges-detail"),
     path("challenges/<uuid:pk>/edit/", views.challenges.ChallengeUpdateView.as_view(), name="challenges-edit"),

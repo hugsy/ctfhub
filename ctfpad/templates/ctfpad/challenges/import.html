@@ -1,0 +1,71 @@
+{% extends 'ctfpad/main.html' %}
+
+{% block content %}
+    <br/>
+
+    {% if form.errors %}
+        <div class="row">
+            <div class="col-lg-4 offset-lg-4">
+                <div class="alert alert-danger">
+                    <strong>ERROR</strong>&nbsp;&nbsp;
+                    {{ form.errors }}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4">
+
+            {% for message in messages %}
+                <p id="messages">{{ message }}</p>
+            {% endfor %}
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <p class="card-header-title">Import Challenges</p>
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <form class="form" method="post">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <input type="hidden" id="{{ form.ctf.id_for_label }}" name="{{ form.ctf.html_name }}"
+                                       value="{{ form.ctf.value }}"/>
+
+                                <label class="label"><strong>JSON Data</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-file-import"></i>
+                                        </span>
+                                    </div>
+                                    <textarea id="{{ form.json_data.id_for_label }}"
+                                              name="{{ form.json_data.html_name }}"
+                                              placeholder="{{ form.json_data.label }}" class="form-control"
+                                              required>{% if form.json_data %}
+                                        {{ form.json_data.value }}{% endif %}</textarea>
+                                </div>
+
+                            </div>
+
+                            <div class="card-footer text-muted">
+                                <div class="control card-footer-item">
+                                    <button type="button" class="btn-primary btn-sm btn-block"
+                                            onclick="this.form.submit();">Import Challenges
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm btn-block"
+                                            onclick="window.history.back();">Cancel
+                                    </button>
+                                </div>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

@@ -7,15 +7,18 @@ import bleach
 
 register = template.Library()
 
+
 @register.filter
 def as_local_datetime_for_member(naive_utc, member):
     aware_utc = pytz.utc.localize(naive_utc)
     member_tz = pytz.timezone(member.timezone)
     return aware_utc.astimezone(member_tz)
 
+
 @register.simple_tag
 def best_category(member, year=None):
     return member.best_category(year)
+
 
 @register.filter
 def as_time_accumulator_graph(items):
@@ -24,11 +27,11 @@ def as_time_accumulator_graph(items):
     res = []
     for x in items:
         accu += x.points
-        res.append( Point(x.solved_time, accu) )
+        res.append(Point(x.solved_time, accu))
     return res
 
 
-@register.simple_tag(takes_context = True)
+@register.simple_tag(takes_context=True)
 def theme_cookie(context):
     request = context['request']
     value = request.COOKIES.get('theme', 'light')
