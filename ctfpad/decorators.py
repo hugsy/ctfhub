@@ -9,10 +9,11 @@ def only_if_unauthenticated_user(view_func):
     """
     Decorator to redirect back logged-in users
     """
+
     def wrapper_func(request: HttpRequest, *args, **kwargs):
         if request.user.is_authenticated:
             messages.warning(request, f"You're already authenticated!")
-            return redirect( request.META.get("HTTP_REFERER") )
+            return redirect(request.META.get("HTTP_REFERER"))
         else:
             return view_func(request, *args, **kwargs)
 
@@ -23,6 +24,7 @@ def only_if_authenticated_user(view_func):
     """
     Decorator to redirect back unauthenticated users
     """
+
     def wrapper_func(request: HttpRequest, *args, **kwargs):
         if not request.user.is_authenticated:
             messages.warning(request, f"You must be authenticated!")
@@ -37,6 +39,7 @@ def only_if_admin(view_func):
     """
     View decorator only for admin
     """
+
     def wrapper_func(request: HttpRequest, *args, **kwargs):
         group = None
         if request.user.groups.exists():

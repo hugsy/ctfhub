@@ -6,7 +6,6 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 
 from ctfpad import views
 
-
 app_name = "ctfpad"
 
 urlpatterns = [
@@ -33,7 +32,8 @@ urlpatterns = [
     path("users/login/", views.users.CtfpadLogin.as_view(), name="user-login"),
     path("users/logout/", views.users.logout, name="user-logout"),
     path("users/reset/", views.users.UserResetPassword.as_view(), name="user-password-reset"),
-    path("users/reset/confirm/<str:uidb64>/<str:token>/", views.users.UserChangePassword.as_view(), name="user-password-change"),
+    path("users/reset/confirm/<str:uidb64>/<str:token>/", views.users.UserChangePassword.as_view(),
+         name="user-password-change"),
 
     # dashboard
     path("dashboard/", views.dashboard, name="dashboard"),
@@ -65,12 +65,16 @@ urlpatterns = [
     path("challenges/<uuid:pk>/edit/", views.challenges.ChallengeUpdateView.as_view(), name="challenges-edit"),
     path("challenges/<uuid:pk>/delete/", views.challenges.ChallengeDeleteView.as_view(), name="challenges-delete"),
     path("challenges/<uuid:pk>/score/", views.challenges.ChallengeSetFlagView.as_view(), name="challenges-score"),
-    path("challenges/<uuid:pk>/export/", views.challenges.ChallengeExportAsGithubPageView.as_view(), name="challenges-export"),
+    path("challenges/<uuid:pk>/export/", views.challenges.ChallengeExportAsGithubPageView.as_view(),
+         name="challenges-export"),
 
     # files
-    path("challenges/<uuid:challenge_id>/files/add/", views.files.ChallengeFileCreateView.as_view(), name="challenge-files-add"),
-    path("challenges/<uuid:challenge_id>/files/<uuid:pk>/", views.files.ChallengeFileDetailView.as_view(), name="challenge-files-detail"),
-    path("challenges/<uuid:challenge_id>/files/<uuid:pk>/delete/", views.files.ChallengeFileDeleteView.as_view(), name="challenge-files-delete"),
+    path("challenges/<uuid:challenge_id>/files/add/", views.files.ChallengeFileCreateView.as_view(),
+         name="challenge-files-add"),
+    path("challenges/<uuid:challenge_id>/files/<uuid:pk>/", views.files.ChallengeFileDetailView.as_view(),
+         name="challenge-files-detail"),
+    path("challenges/<uuid:challenge_id>/files/<uuid:pk>/delete/", views.files.ChallengeFileDeleteView.as_view(),
+         name="challenge-files-delete"),
 
     # categories
     path("categories/create/", views.categories.CategoryCreateView.as_view(), name="categories-create"),

@@ -9,7 +9,6 @@ from django.shortcuts import redirect, render
 from django.core.paginator import Paginator
 from django.shortcuts import redirect
 
-
 import datetime
 
 from . import (
@@ -55,7 +54,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     user = request.user
     member = user.member
     if member.is_guest:
-        members = Member.objects.filter( selected_ctf = member.selected_ctf )
+        members = Member.objects.filter(selected_ctf=member.selected_ctf)
     else:
         members = Member.objects.all()
     latest_ctfs = member.ctfs.order_by("-start_date")
@@ -63,8 +62,8 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     nb_ctf_played = member.ctfs.count()
     current_ctfs = member.public_ctfs.filter(
         end_date__isnull=False,
-        start_date__lte = now,
-        end_date__gt = now,
+        start_date__lte=now,
+        end_date__gt=now,
     )
     next_ctf = member.public_ctfs.filter(
         end_date__isnull=False,
@@ -105,8 +104,6 @@ def generate_stats(request: HttpRequest, year: int = None) -> HttpResponse:
         "year_pick": year
     }
     return render(request, "ctfpad/stats/detail.html", context)
-
-
 
 
 @only_if_authenticated_user
@@ -156,4 +153,3 @@ def toggle_dark_mode(request: HttpRequest) -> HttpResponse:
     else:
         res.set_cookie('theme', 'light')
     return res
-

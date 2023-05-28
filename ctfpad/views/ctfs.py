@@ -43,7 +43,7 @@ class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
 
     def get_queryset(self):
         qs = super(CtfListView, self).get_queryset()
-        return qs.filter( Q(visibility = "public" ) | Q(created_by = self.request.user.member ) ).order_by('-start_date')
+        return qs.filter(Q(visibility="public") | Q(created_by=self.request.user.member)).order_by('-start_date')
 
 
 class CtfCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, CreateView):
@@ -70,14 +70,13 @@ class CtfCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, C
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {'form': form})
 
-
     def form_valid(self, form):
         if Ctf.objects.filter(name=form.instance.name, visibility="public").count() > 0:
             form.errors["name"] = "CtfAlreadyExistError"
             return render(self.request, self.template_name, {'form': form})
 
         if form.instance.ctftime_id:
-            ctf = ctftime_get_ctf_info( form.instance.ctftime_id )
+            ctf = ctftime_get_ctf_info(form.instance.ctftime_id)
             form.instance.ctftime_id = ctf["id"]
             form.instance.name = ctf["title"]
             form.instance.url = ctf["url"]
@@ -87,7 +86,6 @@ class CtfCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, C
 
         form.instance.created_by = self.request.user.member
         return super().form_valid(form)
-
 
     def get_success_url(self):
         return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.pk})
@@ -134,6 +132,7 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
             "team_timeline": self.object.team_timeline(),
         }
         return ctx
+
 
 class CtfUpdateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, UpdateView):
     model = Ctf
