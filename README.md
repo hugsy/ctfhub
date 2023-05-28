@@ -50,7 +50,7 @@ A non-exhaustive list of features:
 
 ## Community ##
 
-[![Discord](https://img.shields.io/badge/Discord-CTFPad-green)](https://discord.gg/5HmwPxy3HP) 
+[![Discord](https://img.shields.io/badge/Discord-CTFPad-green)](https://discord.gg/fYsAjvsdQT) 
 
 ## Gallery
 
