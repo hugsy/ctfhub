@@ -27,11 +27,10 @@ from ctftools.settings import (
 )
 
 
-
 @lru_cache(maxsize=1)
 def get_current_site() -> str:
     r = "https://" if CTFPAD_USE_SSL else "http://"
-    r+= f"{CTFPAD_HOSTNAME}:{CTFPAD_PORT}"
+    r += f"{CTFPAD_HOSTNAME}:{CTFPAD_PORT}"
     return r
 
 
@@ -66,7 +65,7 @@ def register_new_hedgedoc_user(username: str, password: str) -> bool:
     res = requests.post(
         which_hedgedoc() + '/register',
         data={'email': username, 'password': password},
-        allow_redirects = False
+        allow_redirects=False
     )
 
     if res.status_code != requests.codes.found:
@@ -93,7 +92,7 @@ def check_note_id(id: str) -> bool:
     Returns:
         bool: returns True if it exists
     """
-    res = requests.head( f"{HEDGEDOC_URL}/{id}" )
+    res = requests.head(f"{HEDGEDOC_URL}/{id}")
     return res.status_code == requests.codes.found
 
 
@@ -163,10 +162,12 @@ def ctftime_fetch_ctfs(limit=100) -> list:
     Returns:
         list: JSON output from CTFTime
     """
-    res = requests.get(f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time()-(3600*24*60):.0f}&finish={time()+(3600*24*7*26):.0f}",
+    res = requests.get(
+        f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time() - (3600 * 24 * 60):.0f}&finish={time() + (3600 * 24 * 7 * 26):.0f}",
         headers={"user-agent": CTFTIME_USER_AGENT})
     if res.status_code != requests.codes.ok:
-        raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
+        raise RuntimeError(
+            f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
 
     result = []
     for ctf in res.json():
@@ -191,7 +192,8 @@ def ctftime_get_ctf_info(ctftime_id: int) -> dict:
     url = f"{CTFTIME_API_EVENTS_URL}{ctftime_id}/"
     res = requests.get(url, headers={"user-agent": CTFTIME_USER_AGENT})
     if res.status_code != requests.codes.ok:
-        raise RuntimeError(f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
+        raise RuntimeError(
+            f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
     result = res.json()
     return result
 
@@ -218,7 +220,6 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     return logo
 
 
-
 def send_mail(recipients: list, subject: str, body: str) -> bool:
     """[summary]
 
@@ -237,13 +238,12 @@ def send_mail(recipients: list, subject: str, body: str) -> bool:
                 body,
                 EMAIL_HOST_USER,
                 recipients,
-                fail_silently = False
+                fail_silently=False
             )
             return True
         except smtplib.SMTPException:
             pass
     return False
-
 
 
 def get_random_string_64() -> str:
@@ -252,7 +252,6 @@ def get_random_string_64() -> str:
 
 def get_random_string_128() -> str:
     return get_random_string(128)
-
 
 
 def discord_send_message(js: dict) -> bool:
@@ -279,7 +278,6 @@ def discord_send_message(js: dict) -> bool:
         return False
 
     return True
-
 
 
 def generate_github_page_header(**kwargs) -> str:
@@ -319,7 +317,8 @@ def export_challenge_note(member, note_id: uuid4) -> str:
     """
     result = ""
     with requests.Session() as session:
-        h = session.post(f"{HEDGEDOC_URL}/login", data={"email": member.hedgedoc_username, "password": member.hedgedoc_password})
+        h = session.post(f"{HEDGEDOC_URL}/login",
+                         data={"email": member.hedgedoc_username, "password": member.hedgedoc_password})
         if h.status_code == requests.codes.ok:
             h2 = session.get(f"{HEDGEDOC_URL}{note_id}/download")
             if h2.status_code == requests.codes.ok:
@@ -330,6 +329,7 @@ def export_challenge_note(member, note_id: uuid4) -> str:
 
 def generate_excalidraw_room_id() -> str:
     return exrex.getone(EXCALIDRAW_ROOM_ID_PATTERN)
+
 
 def generate_excalidraw_room_key() -> str:
     return exrex.getone(EXCALIDRAW_ROOM_KEY_PATTERN)

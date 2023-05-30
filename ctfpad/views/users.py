@@ -81,7 +81,6 @@ class UserPasswordUpdateView(LoginRequiredMixin, SuccessMessageMixin, PasswordCh
     success_message = "Password successfully updated, please log back in."
 
 
-
 class MemberCreateView(SuccessMessageMixin, CreateView):
     model = Member
     template_name = "users/register.html"
@@ -152,13 +151,11 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             raise Http404()
         return super().get(request, *args, **kwargs)
 
-
     def get_context_data(self, **kwargs):
         if 'form' not in kwargs:
             kwargs['form'] = self.get_form()
         kwargs['form'].initial['has_superpowers'] = self.get_object().has_superpowers
         return super().get_context_data(**kwargs)
-
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         if self.request.user.member.has_superpowers and 'has_superpowers' in form.cleaned_data:

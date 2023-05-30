@@ -15,8 +15,8 @@ class UserUpdateForm(UserChangeForm):
             "username",
             "email",
         ]
-    current_password = forms.CharField(label="Current password", widget=forms.PasswordInput, required=True)
 
+    current_password = forms.CharField(label="Current password", widget=forms.PasswordInput, required=True)
 
 
 class TeamCreateUpdateForm(forms.ModelForm):
@@ -49,7 +49,8 @@ class MemberCreateForm(forms.ModelForm):
     email = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Email address'}))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
     password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Repeat the password'}))
-    api_key = forms.CharField(required = True, label = "api_key", widget=forms.TextInput(attrs={'placeholder': 'Team API key'}))
+    api_key = forms.CharField(required=True, label="api_key",
+                              widget=forms.TextInput(attrs={'placeholder': 'Team API key'}))
 
 
 class MemberUpdateForm(forms.ModelForm):
@@ -160,12 +161,14 @@ class CategoryCreateForm(forms.ModelForm):
             "name",
         ]
 
+
 class TagCreateForm(forms.ModelForm):
     class Meta:
         model = Tag
         fields = [
             "name",
         ]
+
 
 class MemberMarkAsSelectedForm(forms.ModelForm):
     class Meta:

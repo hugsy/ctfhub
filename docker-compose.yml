@@ -7,7 +7,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
-      - ./volumes/db:/var/lib/postgresql/data
+      - postgres-vol:/var/lib/postgresql/data
     networks:
       - ctfpad
     restart: always
@@ -126,3 +126,5 @@ services:
 networks:
   ctfpad:
     driver: bridge
+volumes:
+  postgres-vol:

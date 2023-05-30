@@ -1,117 +1,140 @@
-    {%  extends 'ctfpad/main.html' %}
+{% extends 'ctfpad/main.html' %}
 
 {% block content %}
 
-<br/>
+    <br/>
 
-{% include 'snippets/messages.html' %}
+    {% include 'snippets/messages.html' %}
 
+    {% include 'snippets/formerror.html' %}
 
-<div style="padding-left: 33%;">
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <p class="card-header-title">Editing Team '<strong>{{ team.name }}</strong>'</p>
+                    </h5>
+                </div>
 
-    {{ form.errors }}
+                <div class="card-body">
+                    <form class="form" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label class="label"><strong>Team avatar</strong></label>
+                                <div class="input-group mb-3">
+                                    {{ form.avatar }}
+                                </div>
 
-    <div class="card" style="width: 35rem;">
-        <div class="card-header">
-            <h5 class="card-title">
-                <p class="card-header-title">Editing Team '<strong>{{team.name}}</strong>'</p>
-            </h5>
-        </div>
-
-        <div class="card-body">
-            <form class="form" method="POST" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label class="label"><strong>Team avatar</strong></label>
-                        <div class="input-group mb-3">
-                            {{ form.avatar }}
-                        </div>
-
-                        <label class="label"><strong>Name</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                                <label class="label"><strong>Name</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fas fa-hat-cowboy-side"></i>
                                 </span>
-                            </div>
-                            <input id="{{form.name.id_for_label}}" name="{{form.name.html_name }}" placeholder="{{form.name.label}}" value="{{form.name.value}}" class="form-control"/>
-                        </div>
+                                    </div>
+                                    <input id="{{ form.name.id_for_label }}" name="{{ form.name.html_name }}"
+                                           placeholder="{{ form.name.label }}" value="{{ form.name.value }}"
+                                           class="form-control"/>
+                                </div>
 
-                        <label class="label"><strong>Email</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                                <label class="label"><strong>Email</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fas fa-hat-cowboy-side"></i>
                                 </span>
-                            </div>
-                            <input type="email" id="{{form.email.id_for_label}}" name="{{form.email.html_name }}" placeholder="{{form.email.label}}" value="{{form.email.value}}" class="form-control"/>
-                        </div>
+                                    </div>
+                                    <input type="email" id="{{ form.email.id_for_label }}"
+                                           name="{{ form.email.html_name }}" placeholder="{{ form.email.label }}"
+                                           value="{{ form.email.value }}" class="form-control"/>
+                                </div>
 
-                        <label class="label"><strong>Blog URL</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                                <label class="label"><strong>Blog URL</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fas fa-link"></i>
                                 </span>
-                            </div>
-                            <input type="url" id="{{form.blog_url.id_for_label}}" name="{{form.blog_url.html_name }}" placeholder="{{form.blog_url.label}}" value="{{form.blog_url.value}}" class="form-control"/>
-                        </div>
+                                    </div>
+                                    <input type="url" id="{{ form.blog_url.id_for_label }}"
+                                           name="{{ form.blog_url.html_name }}" placeholder="{{ form.blog_url.label }}"
+                                           value="{{ form.blog_url.value }}" class="form-control"/>
+                                </div>
 
-                        <label class="label"><strong>Github</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                                <label class="label"><strong>Github</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fab fa-github"></i>
                                 </span>
-                            </div>
-                            <input type="url" id="{{form.github_url.id_for_label}}" name="{{form.github_url.html_name }}" placeholder="{{form.github_url.label}}" value="{{form.github_url.value}}" class="form-control"/>
-                        </div>
+                                    </div>
+                                    <input type="url" id="{{ form.github_url.id_for_label }}"
+                                           name="{{ form.github_url.html_name }}"
+                                           placeholder="{{ form.github_url.label }}" value="{{ form.github_url.value }}"
+                                           class="form-control"/>
+                                </div>
 
-                        <label class="label"><strong>Twitter</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                                <label class="label"><strong>Twitter</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fab fa-twitter"></i>
                                 </span>
-                            </div>
-                            <input type="url" id="{{form.twitter_url.id_for_label}}" name="{{form.twitter_url.html_name }}" placeholder="{{form.twitter_url.label}}" value="{{form.twitter_url.value}}" class="form-control"/>
-                        </div>
+                                    </div>
+                                    <input type="url" id="{{ form.twitter_url.id_for_label }}"
+                                           name="{{ form.twitter_url.html_name }}"
+                                           placeholder="{{ form.twitter_url.label }}"
+                                           value="{{ form.twitter_url.value }}" class="form-control"/>
+                                </div>
 
-                        <label class="label"><strong>Youtube</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                                <label class="label"><strong>Youtube</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fab fa-youtube"></i>
                                 </span>
-                            </div>
-                            <input type="url" id="{{form.youtube_url.id_for_label}}" name="{{form.youtube_url.html_name }}" placeholder="{{form.youtube_url.label}}" value="{{form.youtube_url.value}}" class="form-control"/>
-                        </div>
+                                    </div>
+                                    <input type="url" id="{{ form.youtube_url.id_for_label }}"
+                                           name="{{ form.youtube_url.html_name }}"
+                                           placeholder="{{ form.youtube_url.label }}"
+                                           value="{{ form.youtube_url.value }}" class="form-control"/>
+                                </div>
 
-                        <label class="label"><strong>CTFTime Id</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                                <label class="label"><strong>CTFTime Id</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-append">
                                 <span class="input-group-text">
                                     <i class="fas fa-random"></i>
                                 </span>
+                                    </div>
+                                    <input id="{{ form.ctftime_id.id_for_label }}"
+                                           name="{{ form.ctftime_id.html_name }}"
+                                           placeholder="{{ form.ctftime_id.label }}" class="form-control" type="number"
+                                           min="0" value="{{ form.ctftime_id.value }}">
+                                </div>
                             </div>
-                            <input id="{{form.ctftime_id.id_for_label}}" name="{{form.ctftime_id.html_name }}" placeholder="{{form.ctftime_id.label}}"  class="form-control" type="number" min="0" value="{{form.ctftime_id.value}}" >
                         </div>
-                    </div>
-                </div>
 
-                <div class="card-footer text-muted">
-                    <div class="control card-footer-item">
-                        <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">Update Settings</button>
-                        <button type="button" class="btn btn-secondary btn-sm btn-block" onclick="window.history.back();">Cancel</button>
-                        <button type="button" class="btn btn-danger btn-sm btn-block" onclick="document.location={% url 'ctfpad:team-delete' %}">Delete Team</button>
-                    </div>
+                        <div class="card-footer text-muted">
+                            <div class="control card-footer-item">
+                                <button type="button" class="btn-primary btn-sm btn-block"
+                                        onclick="this.form.submit();">Update Settings
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm btn-block"
+                                        onclick="window.history.back();">Cancel
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm btn-block"
+                                        onclick="document.location={% url 'ctfpad:team-delete' %}">Delete Team
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
-            </form>
-
+            </div>
         </div>
     </div>
-</div>
 
 
 {% endblock %}

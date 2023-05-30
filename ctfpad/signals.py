@@ -9,7 +9,6 @@ from ctftools.settings import (
     DISCORD_BOT_NAME
 )
 
-
 # formatted with the ctf name
 NEW_CTF_MESSAGES = [
     "New CTF added ! `{}` 💻 ",
@@ -21,7 +20,6 @@ NEW_CTF_MESSAGES = [
     "`$ sudo apt-get install '{}'` 💻",
 ]
 
-
 # formatted with the challenge name
 SCORED_FLAG_MESSAGES = [
     "Flag scored for `{}`! 🎺",
@@ -29,7 +27,6 @@ SCORED_FLAG_MESSAGES = [
     "You get a flag, you get a flag, everybody gets a flag ! `{}` was just scored...",
     "RIP `{}` 🎃, we own you!",
 ]
-
 
 
 @receiver(post_save, sender=Ctf, dispatch_uid="ctf_create_notify_discord")
@@ -54,10 +51,9 @@ def discord_notify_ctf_creation(sender, instance: Ctf, created: bool, **kwargs: 
 {date_and_time}
 Link: [{url}]({url})
 """,
-    }]}
+        }]}
     data = kwargs.setdefault("json", defaults)
     return discord_send_message(data)
-
 
 
 @receiver(post_save, sender=Challenge, dispatch_uid="discord_notify_scored_challenge")
@@ -94,5 +90,5 @@ def discord_notify_scored_challenge(sender, instance: Challenge, created: bool, 
 
 Flag: `{instance.flag}`
 """,
-    }]}
+        }]}
     return discord_send_message(js)
