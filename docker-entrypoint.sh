@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 echo "DB init..."
 while psql -h db 2>&1 | grep -q 'could not connect to server'; do
   >&2 echo "Waiting for PostgreSQL to boot up"
