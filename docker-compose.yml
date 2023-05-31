@@ -3,6 +3,8 @@ version: '3'
 services:
   postgres:
     image: postgres:alpine
+    env_file:
+      - .env
     environment:
       - POSTGRES_DB=${CTFPAD_DB_NAME}
       - POSTGRES_USER=${CTFPAD_DB_USER}
