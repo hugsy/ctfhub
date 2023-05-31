@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 
@@ -134,6 +135,25 @@ class ChallengeUpdateForm(forms.ModelForm):
     def cleaned_tags(self):
         data = [x.lower() for x in self.cleaned_data['tags'].split()]
         return data
+
+
+class ChallengeImportForm(forms.Form):
+    json_data = forms.CharField(
+        widget=forms.Textarea,
+        help_text='Paste the CTFd JSON data here'
+    )
+
+    def clean_json_data(self):
+        json_data = self.cleaned_data['json_data']
+
+        try:
+            data = json.loads(json_data)
+            if not data.get('success') or 'data' not in data:
+                raise ValidationError('Invalid JSON format. Please provide valid CTFd JSON data.')
+        except json.JSONDecodeError:
+            raise ValidationError('Invalid JSON format. Please provide valid CTFd JSON data.')
+
+        return json_data
 
 
 class ChallengeSetFlagForm(ChallengeUpdateForm):
