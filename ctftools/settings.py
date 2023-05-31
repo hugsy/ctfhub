@@ -10,7 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('CTFPAD_SECRET_KEY') or 'ow#8y081ih3nunjqh)u^ug)ln_$xri3-upt^e)7h)&l$05-7tf'
+SECRET_KEY = os.getenv(
+    'CTFPAD_SECRET_KEY') or 'ow#8y081ih3nunjqh)u^ug)ln_$xri3-upt^e)7h)&l$05-7tf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') or False
@@ -18,7 +19,7 @@ DEBUG = os.getenv('DEBUG') or False
 
 CTFPAD_HOSTNAME = os.getenv("CTFPAD_HOSTNAME") or "localhost"
 CTFPAD_PORT = os.getenv("CTFPAD_PORT") or "8000"
-CTFPAD_USE_SSL = os.getenv("CTFPAD_USE_SSL")=="1" or False
+CTFPAD_USE_SSL = os.getenv("CTFPAD_USE_SSL") == "1" or False
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
@@ -33,13 +34,13 @@ if CTFPAD_USE_SSL:
 else:
     CSRF_TRUSTED_ORIGINS.append(f"http://{CTFPAD_HOSTNAME}:{CTFPAD_PORT}")
 
-CSRF_COOKIE_NAME="ctfpad-csrf"
-SESSION_COOKIE_NAME="ctfpad-session"
+CSRF_COOKIE_NAME = "ctfpad-csrf"
+SESSION_COOKIE_NAME = "ctfpad-session"
 
 # Application definition
 
 INSTALLED_APPS = [
-#    'django.contrib.admin',
+    #    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -130,13 +131,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = False
-
 USE_TZ = False
 
 
@@ -148,20 +145,21 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-MEDIA_URL   = "/uploads/"
-MEDIA_ROOT  = BASE_DIR / "uploads/"
+MEDIA_URL = "/uploads/"
+MEDIA_ROOT = BASE_DIR / "uploads/"
 
 CTF_CHALLENGE_FILE_URL = "/uploads/files/"
 CTF_CHALLENGE_FILE_PATH = "files/"
 CTF_CHALLENGE_FILE_ROOT = MEDIA_ROOT / CTF_CHALLENGE_FILE_PATH
 
-USERS_FILE_URL  = "/uploads/media/"
+USERS_FILE_URL = "/uploads/media/"
 USERS_FILE_PATH = "media/"
 USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
 CTFPAD_URL = os.getenv("CTFPAD_URL") or 'http://localhost:8000'
 HEDGEDOC_URL = os.getenv("HEDGEDOC_URL") or 'http://localhost:3000'
-USE_INTERNAL_HEDGEDOC = os.getenv("USE_INTERNAL_HEDGEDOC") in ["1", "True", "true", True]
+USE_INTERNAL_HEDGEDOC = os.getenv("USE_INTERNAL_HEDGEDOC") in [
+    "1", "True", "true", True]
 EXCALIDRAW_URL = os.getenv("EXCALIDRAW_URL") or 'http://localhost:5010'
 
 CTFTIME_URL = "https://ctftime.org"
@@ -198,7 +196,7 @@ JITSI_URL = "https://meet.jit.si"
 
 # Discord integration
 
-DISCORD_WEBHOOK_URL = os.getenv("CTFPAD_DISCORD_WEBHOOK_URL") or None
+DISCORD_WEBHOOK_URL = os.getenv("CTFPAD_WEBHOOK_URL_DISCORD") or None
 DISCORD_BOT_NAME = os.getenv("CTFPAD_DISCORD_BOT_NAME") or "SpiderBot"
 
 # Excalidraw integration

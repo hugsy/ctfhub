@@ -441,15 +441,18 @@ class Member(TimeStampedModel):
     status = StatusField()
 
     @property
-    def username(self):
+    def username(self) -> str:
+        assert self.user
         return self.user.username
 
     @property
-    def email(self):
+    def email(self) -> str:
+        assert self.user
         return self.user.email
 
     @property
     def has_superpowers(self):
+        assert self.user
         return self.user.is_superuser
 
     def __str__(self):
