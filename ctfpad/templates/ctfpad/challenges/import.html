@@ -27,20 +27,27 @@
                                 <input type="hidden" id="{{ form.ctf.id_for_label }}" name="{{ form.ctf.html_name }}"
                                        value="{{ form.ctf.value }}"/>
 
-                                <label class="label"><strong>JSON Data</strong></label>
+                                <label for="{{ form.format.id_for_label }}" class="label"><strong>Format</strong></label>
+                                <div class="input-group mb-3">
+                                    <select id="{{ form.format.id_for_label }}" name="{{ form.format.html_name }}" class="form-control">
+                                        {% for choice in form.format.field.choices %}
+                                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <label for="{{ form.data.id_for_label }}" class="label"><strong>Data</strong></label>
                                 <div class="input-group mb-3">
                                     <div class="input-group-append">
                                         <span class="input-group-text">
                                             <i class="fas fa-file-import"></i>
                                         </span>
                                     </div>
-                                    <textarea id="{{ form.json_data.id_for_label }}"
-                                              name="{{ form.json_data.html_name }}"
-                                              placeholder="{{ form.json_data.label }}" class="form-control"
-                                              required>{% if form.json_data %}
-                                        {{ form.json_data.value }}{% endif %}</textarea>
+                                    <textarea id="{{ form.data.id_for_label }}"
+                                              name="{{ form.data.html_name }}"
+                                              placeholder="Name | Category or CTFd JSON /api/v1/challenges" class="form-control"
+                                              required>{% if form.data.value %}{{ form.data.value }}{% endif %}</textarea>
                                 </div>
-
                             </div>
 
                             <div class="card-footer text-muted">

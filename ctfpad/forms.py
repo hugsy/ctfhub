@@ -138,22 +138,48 @@ class ChallengeUpdateForm(forms.ModelForm):
 
 
 class ChallengeImportForm(forms.Form):
-    json_data = forms.CharField(
-        widget=forms.Textarea,
-        help_text='Paste the CTFd JSON data here'
+    FORMAT_CHOICES = (
+        ('RAW', 'RAW'),
+        ('CTFd', 'CTFd'),
     )
+    format = forms.ChoiceField(choices=FORMAT_CHOICES, initial='CTFd')
+    data = forms.CharField(widget=forms.Textarea)
 
-    def clean_json_data(self):
-        json_data = self.cleaned_data['json_data']
+    def clean_data(self):
+        data = self.cleaned_data['data']
 
+        # Choose the cleaning method based on the format field.
+        if self.cleaned_data['format'] == 'CTFd':
+            return self._clean_ctfd_data(data)
+        elif self.cleaned_data['format'] == 'RAW':
+            return self._clean_raw_data(data)
+        else:
+            raise forms.ValidationError('Invalid data format.')
+
+    @staticmethod
+    def _clean_ctfd_data(data):
         try:
-            data = json.loads(json_data)
-            if not data.get('success') or 'data' not in data:
+            json_data = json.loads(data)
+            if not json_data.get('success') or 'data' not in json_data:
                 raise ValidationError('Invalid JSON format. Please provide valid CTFd JSON data.')
         except json.JSONDecodeError:
             raise ValidationError('Invalid JSON format. Please provide valid CTFd JSON data.')
 
-        return json_data
+        return json_data["data"]
+
+    @staticmethod
+    def _clean_raw_data(data):
+        lines = data.split('\n')
+        challenges = []
+        for line in lines:
+            parts = line.split('|')
+            if len(parts) != 2:
+                raise forms.ValidationError('RAW data line does not have exactly two parts.')
+            challenges.append({
+                'name': parts[0].strip(),
+                'category': parts[1].strip(),
+            })
+        return challenges
 
 
 class ChallengeSetFlagForm(ChallengeUpdateForm):

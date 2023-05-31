@@ -77,9 +77,6 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
     redirect_field_name = "redirect_to"
     form_class = ChallengeImportForm
     success_message = "Challenges were successfully imported!"
-    initial = {
-        "json_data": "",
-    }
 
     def get(self, request, *args, **kwargs):
         self.initial["ctf"] = self.kwargs.get("ctf")
@@ -87,33 +84,33 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
         return render(request, self.template_name, {'form': form})
 
     def form_valid(self, form):
-        json_data = form.cleaned_data["json_data"]
         ctf_id = self.kwargs.get("ctf")
         ctf = Ctf.objects.get(pk=ctf_id)
+        data = form.cleaned_data['data']
 
         try:
-            data = json.loads(json_data)
-            challenges_data = data.get("data")
-
-            for challenge in challenges_data:
+            for challenge in data:
                 category, created = ChallengeCategory.objects.get_or_create(name=challenge["category"].strip().lower())
+                points = 0
 
-                if Challenge.objects.filter(name=challenge.get("name"), ctf=ctf).count() == 0:
-                    challenge_form = ChallengeCreateForm(data={
-                        "name": challenge.get("name"),
-                        "points": challenge.get("value"),
-                        "category": category.pk,
-                        "ctf": ctf
-                    })
+                if form.cleaned_data['format'] == 'CTFd':
+                    points = challenge.get("value")
 
-                    if challenge_form.is_valid():
-                        challenge_form.save()
-                    else:
-                        raise ValueError(f"Invalid data for challenge: {challenge_form.errors}")
+                defaults = {
+                    "name": challenge.get("name"),
+                    "points": points,
+                    "category": category,
+                    "ctf": ctf,
+                }
+
+                Challenge.objects.update_or_create(
+                    defaults=defaults,
+                    name=challenge.get("name"),
+                    ctf=ctf,
+                )
 
             messages.success(self.request, "Import successful!")
             return super().form_valid(form)
-
         except Exception as e:
             messages.error(self.request, f"Error: {str(e)}")
             return self.form_invalid(form)
