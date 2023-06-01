@@ -121,7 +121,7 @@ networks:
     driver: bridge
 
   excalidraw:
-    driver: bridge
+
 
 volumes:
   postgres-vol:
