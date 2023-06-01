@@ -12,7 +12,7 @@ from functools import lru_cache
 from uuid import uuid4
 
 from ctftools.settings import (
-    CTFPAD_HOSTNAME, CTFPAD_PORT, CTFPAD_USE_SSL,
+    CTFPAD_DOMAIN, CTFPAD_PORT, CTFPAD_USE_SSL,
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
     CTFPAD_DEFAULT_CTF_LOGO,
     HEDGEDOC_URL,
@@ -30,7 +30,7 @@ from ctftools.settings import (
 @lru_cache(maxsize=1)
 def get_current_site() -> str:
     r = "https://" if CTFPAD_USE_SSL else "http://"
-    r += f"{CTFPAD_HOSTNAME}:{CTFPAD_PORT}"
+    r += f"{CTFPAD_DOMAIN}:{CTFPAD_PORT}"
     return r
 
 
@@ -292,7 +292,8 @@ def generate_github_page_header(**kwargs) -> str:
     title = kwargs.setdefault("title", "Exported note")
     author = kwargs.setdefault("author", "Anonymous")
     tags = kwargs.setdefault("tags", "[]")
-    date = kwargs.setdefault("date", datetime.now()).strftime("%Y-%m-%d %H:%M %Z")
+    date = kwargs.setdefault("date", datetime.now()
+                             ).strftime("%Y-%m-%d %H:%M %Z")
     content = f"""---
 layout: post
 title: {title}
