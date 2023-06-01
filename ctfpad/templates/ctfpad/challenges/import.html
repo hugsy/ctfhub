@@ -27,9 +27,11 @@
                                 <input type="hidden" id="{{ form.ctf.id_for_label }}" name="{{ form.ctf.html_name }}"
                                        value="{{ form.ctf.value }}"/>
 
-                                <label for="{{ form.format.id_for_label }}" class="label"><strong>Format</strong></label>
+                                <label for="{{ form.format.id_for_label }}"
+                                       class="label"><strong>Format</strong></label>
                                 <div class="input-group mb-3">
-                                    <select id="{{ form.format.id_for_label }}" name="{{ form.format.html_name }}" class="form-control">
+                                    <select id="{{ form.format.id_for_label }}" name="{{ form.format.html_name }}"
+                                            class="form-control">
                                         {% for choice in form.format.field.choices %}
                                             <option value="{{ choice.0 }}">{{ choice.1 }}</option>
                                         {% endfor %}
@@ -45,8 +47,10 @@
                                     </div>
                                     <textarea id="{{ form.data.id_for_label }}"
                                               name="{{ form.data.html_name }}"
-                                              placeholder="Name | Category or CTFd JSON /api/v1/challenges" class="form-control"
-                                              required>{% if form.data.value %}{{ form.data.value }}{% endif %}</textarea>
+                                              placeholder="Data"
+                                              class="form-control"
+                                              required>{% if form.data.value %}
+                                        {{ form.data.value }}{% endif %}</textarea>
                                 </div>
                             </div>
 
@@ -65,5 +69,36 @@
             </div>
         </div>
     </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            var formatSelect = document.getElementById('{{ form.format.id_for_label }}');
+            var dataTextArea = document.getElementById('{{ form.data.id_for_label }}');
+
+            formatSelect.addEventListener('change', function () {
+                var selectedFormat = this.value;
+                var placeholderText;
+
+                switch (selectedFormat) {
+                    case 'RAW':
+                        placeholderText = 'name | category';
+                        break;
+                    case 'CTFd':
+                        placeholderText = 'paste CTFd JSON /api/v1/challenges';
+                        break;
+                    case 'rCTF':
+                        placeholderText = 'paste rCTF JSON /api/v1/challs';
+                        break;
+                    default:
+                        placeholderText = '';
+                }
+
+                dataTextArea.setAttribute('placeholder', placeholderText);
+            });
+
+            // Trigger the change event on page load to set initial placeholder
+            formatSelect.dispatchEvent(new Event('change'));
+        });
+    </script>
+
 
 {% endblock %}

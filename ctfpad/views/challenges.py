@@ -92,14 +92,19 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
             for challenge in data:
                 category, created = ChallengeCategory.objects.get_or_create(name=challenge["category"].strip().lower())
                 points = 0
+                description = ""
 
                 if form.cleaned_data['format'] == 'CTFd':
                     points = challenge.get("value")
+                elif form.cleaned_data['format'] == 'rCTF':
+                    points = challenge.get("points")
+                    description = challenge.get("description")
 
                 defaults = {
                     "name": challenge.get("name"),
                     "points": points,
                     "category": category,
+                    "description": description,
                     "ctf": ctf,
                 }
 
