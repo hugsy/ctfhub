@@ -1,10 +1,10 @@
-    {% if form.errors %}
-        <div class="row">
-            <div class="col-lg-4 offset-lg-4">
-                <div class="alert alert-danger">
-                    <strong>ERROR</strong>&nbsp;&nbsp;
-                    {{ form.errors }}
-                </div>
-            </div>
+{% if form.errors %}
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="alert alert-danger">
+            <strong>ERROR</strong>&nbsp;&nbsp;
+            {{ form.errors }}
         </div>
-    {% endif %}
+    </div>
+</div>
+{% endif %}

@@ -19,7 +19,8 @@ SECRET_KEY = os.getenv(
     'CTFPAD_SECRET_KEY') or 'ow#8y081ih3nunjqh)u^ug)ln_$xri3-upt^e)7h)&l$05-7tf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = get_boolean('DEBUG') or False
+DEBUG = get_boolean('CTFPAD_DEBUG') or False
+VERSION: float = 0.1
 
 CTFPAD_PROTOCOL = os.getenv("CTFPAD_PROTOCOL") or "http"
 CTFPAD_DOMAIN = os.getenv("CTFPAD_DOMAIN") or "localhost"
@@ -87,6 +88,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'ctfpad.context_processors.add_debug_context'
             ],
         },
     },

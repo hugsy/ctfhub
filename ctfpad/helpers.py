@@ -215,7 +215,7 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
         _, ext = os.path.splitext(logo)
         if ext.lower() not in CTFPAD_ACCEPTED_IMAGE_EXTENSIONS:
             return default_logo
-    except:
+    except ValueError:
         logo = default_logo
     return logo
 

@@ -1,31 +1,30 @@
+import datetime
+
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls.base import reverse, reverse_lazy
-from ctfpad.decorators import only_if_authenticated_user
+from django.core.paginator import Paginator
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from django.core.paginator import Paginator
-from django.shortcuts import redirect
+from django.urls.base import reverse
 
-import datetime
-
-from . import (
-    users,
-    teams,
-    ctfs,
-    challenges,
-    categories,
-    files,
-    tags,
-)
+from ctfpad.decorators import only_if_authenticated_user
 
 from ..models import (
-    Ctf, CtfStats, SearchEngine, Team,
+    CtfStats,
     Member,
+    SearchEngine,
+    Team,
 )
 
+from . import (
+    categories,
+    challenges,
+    ctfs,
+    files,
+    tags,
+    teams,
+    users,
+)
 
 def index(request: HttpRequest) -> HttpResponse:
     """
