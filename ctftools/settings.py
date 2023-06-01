@@ -2,6 +2,11 @@ import os
 from pathlib import Path
 
 
+def get_boolean(key: str) -> bool:
+    return os.getenv(key) in (
+        "1", "True", "true", True)
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -14,25 +19,27 @@ SECRET_KEY = os.getenv(
     'CTFPAD_SECRET_KEY') or 'ow#8y081ih3nunjqh)u^ug)ln_$xri3-upt^e)7h)&l$05-7tf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG') or False
+DEBUG = get_boolean('DEBUG') or False
 
-
-CTFPAD_HOSTNAME = os.getenv("CTFPAD_HOSTNAME") or "localhost"
+CTFPAD_PROTOCOL = os.getenv("CTFPAD_PROTOCOL") or "http"
+CTFPAD_DOMAIN = os.getenv("CTFPAD_DOMAIN") or "localhost"
 CTFPAD_PORT = os.getenv("CTFPAD_PORT") or "8000"
-CTFPAD_USE_SSL = os.getenv("CTFPAD_USE_SSL") == "1" or False
+CTFPAD_USE_SSL = CTFPAD_PROTOCOL == "https" or False
+CTFPAD_URL = os.getenv(
+    "CTFPAD_URL") or f'{CTFPAD_PROTOCOL}://{CTFPAD_DOMAIN}:{CTFPAD_PORT}'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # SECURITY WARNING: harden for production!
-ALLOWED_HOSTS = [CTFPAD_HOSTNAME, "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [CTFPAD_DOMAIN, "localhost", "127.0.0.1"]
 CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1"]
 if CTFPAD_USE_SSL:
-    CTFPAD_SSL_URL = f"https://{CTFPAD_HOSTNAME}"
+    CTFPAD_SSL_URL = f"https://{CTFPAD_DOMAIN}"
     if CTFPAD_PORT != "443":
         CTFPAD_SSL_URL += f":{CTFPAD_PORT}"
     CSRF_TRUSTED_ORIGINS.append(CTFPAD_SSL_URL)
 else:
-    CSRF_TRUSTED_ORIGINS.append(f"http://{CTFPAD_HOSTNAME}:{CTFPAD_PORT}")
+    CSRF_TRUSTED_ORIGINS.append(f"http://{CTFPAD_DOMAIN}:{CTFPAD_PORT}")
 
 CSRF_COOKIE_NAME = "ctfpad-csrf"
 SESSION_COOKIE_NAME = "ctfpad-session"
@@ -156,11 +163,9 @@ USERS_FILE_URL = "/uploads/media/"
 USERS_FILE_PATH = "media/"
 USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
-CTFPAD_URL = os.getenv("CTFPAD_URL") or 'http://localhost:8000'
-HEDGEDOC_URL = os.getenv("HEDGEDOC_URL") or 'http://localhost:3000'
-USE_INTERNAL_HEDGEDOC = os.getenv("USE_INTERNAL_HEDGEDOC") in [
-    "1", "True", "true", True]
-EXCALIDRAW_URL = os.getenv("EXCALIDRAW_URL") or 'http://localhost:5010'
+HEDGEDOC_URL = os.getenv("CTFPAD_HEDGEDOC_URL") or 'http://localhost:3000'
+USE_INTERNAL_HEDGEDOC = get_boolean("CTFPAD_HEDGEDOC_IS_INTERNAL")
+EXCALIDRAW_URL = os.getenv("CTFPAD_EXCALIDRAW_URL") or 'http://localhost:5010'
 
 CTFTIME_URL = "https://ctftime.org"
 CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
@@ -196,8 +201,9 @@ JITSI_URL = "https://meet.jit.si"
 
 # Discord integration
 
-DISCORD_WEBHOOK_URL = os.getenv("CTFPAD_WEBHOOK_URL_DISCORD") or None
+DISCORD_WEBHOOK_URL = os.getenv("CTFPAD_DISCORD_WEBHOOK_URL") or None
 DISCORD_BOT_NAME = os.getenv("CTFPAD_DISCORD_BOT_NAME") or "SpiderBot"
+
 
 # Excalidraw integration
 

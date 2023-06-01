@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres-vol:/var/lib/postgresql/data
     networks:
-      - backend
+      - ctfpad
     restart: always
 
   hedgedoc:
@@ -26,8 +26,14 @@ services:
       - CMD_ALLOW_ANONYMOUS=false
       - CMD_ALLOW_FREEURL=true
       - CMD_IMAGE_UPLOAD_TYPE=filesystem
+      - CMD_DOMAIN=${CTFPAD_HEDGEDOC_DOMAIN}
+      - CMD_PORT=${CTFPAD_HEDGEDOC_PORT}
+      - CMD_URL_ADDPORT=true
+      - CMD_PROTOCOL_USESSL=false
     networks:
-      - backend
+      - ctfpad
+    ports:
+      - 3000:3000
     restart: always
     depends_on:
       - postgres
@@ -50,7 +56,7 @@ services:
     ports:
       - 8000:8000
     networks:
-      - backend
+      - ctfpad
     restart: always
     volumes:
       - ./volumes/uploads:/code/uploads
@@ -64,9 +70,10 @@ services:
       args:
         - NODE_ENV=${EXCALIDRAW_NODE_ENV}
     networks:
-      - backend
+      - ctfpad
+      - excalidraw
     ports:
-      - 8080:80
+      - 3001:80
     restart: always
     env_file:
       - .env
@@ -80,17 +87,17 @@ services:
     image: excalidraw/excalidraw-room
     restart: always
     networks:
-      - backend
-    ports:
-      - 8081:80
+      - excalidraw
+    # ports:
+    #   - 8081:80
 
   excalidraw-storage-backend:
     # repo https://gitlab.com/kiliandeca/excalidraw-storage-backend
     image: kiliandeca/excalidraw-storage-backend
     networks:
-      - backend
-    ports:
-      - 8082:8080
+      - excalidraw
+    # ports:
+    #   - 8082:8080
     restart: always
     env_file:
       - .env
@@ -103,14 +110,17 @@ services:
   redis:
     image: redis
     networks:
-      - backend
+      - excalidraw
     command: redis-server --requirepass ${REDIS_PASSWORD}
     restart: always
     volumes:
       - redis-vol:/data
 
 networks:
-  backend:
+  ctfpad:
+    driver: bridge
+
+  excalidraw:
     driver: bridge
 
 volumes:
