@@ -139,9 +139,9 @@ class ChallengeUpdateForm(forms.ModelForm):
 
 class ChallengeImportForm(forms.Form):
     FORMAT_CHOICES = (
-        ('RAW', 'RAW'),
-        ('CTFd', 'CTFd'),
-        ('rCTF', 'rCTF'),
+        ("RAW", "RAW"),
+        ("CTFd", "CTFd"),
+        ("rCTF", "rCTF"),
     )
     format = forms.ChoiceField(choices=FORMAT_CHOICES, initial='CTFd')
     data = forms.CharField(widget=forms.Textarea)
@@ -151,7 +151,7 @@ class ChallengeImportForm(forms.Form):
 
         # Choose the cleaning method based on the format field.
         if self.cleaned_data['format'] == 'RAW':
-            return self._clean_raw_data()
+            return self._clean_raw_data(data)
         elif self.cleaned_data['format'] == 'CTFd':
             return self._clean_ctfd_data(data)
         elif self.cleaned_data['format'] == 'rCTF':
@@ -161,9 +161,8 @@ class ChallengeImportForm(forms.Form):
 
     @staticmethod
     def _clean_raw_data(data):
-        lines = data.split('\n')
         challenges = []
-        for line in lines:
+        for line in data.splitlines():
             parts = line.split('|')
             if len(parts) != 2:
                 raise forms.ValidationError('RAW data line does not have exactly two parts.')
