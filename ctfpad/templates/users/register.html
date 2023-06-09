@@ -17,33 +17,23 @@
 				<form method="POST" action="{% url 'ctfpad:users-register' %}">
 					{% csrf_token %}
 					<div class="input-group mb-2">
-						<div class="input-group-append">
-							<span class="input-group-text"><i class="fas fa-user"></i></span>
-						</div>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
 						{{form.username}}
 					</div>
                     <div class="input-group mb-2">
-						<div class="input-group-append">
-							<span class="input-group-text"><i class="fas fa-envelope-square"></i></span>
-						</div>
+                        <span class="input-group-text"><i class="fas fa-envelope-square"></i></span>
 						{{form.email}}
 					</div>
 					<div class="input-group mb-2">
-						<div class="input-group-append">
-							<span class="input-group-text"><i class="fas fa-key"></i></span>
-						</div>
+						<span class="input-group-text"><i class="fas fa-key"></i></span>
 						{{form.password1}}
 					</div>
 					<div class="input-group mb-2">
-						<div class="input-group-append">
-							<span class="input-group-text"><i class="fas fa-key"></i></span>
-						</div>
+                        <span class="input-group-text"><i class="fas fa-key"></i></span>
 						{{form.password2}}
 					</div>
 					<div class="input-group mb-2">
-						<div class="input-group-append">
-							<span class="input-group-text"><i class="fas fa-key"></i></span>
-						</div>
+						<span class="input-group-text"><i class="fas fa-key"></i></span>
 						{{form.api_key}}
 					</div>
                     <div class="d-flex justify-content-center mt-3 login_container">

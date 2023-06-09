@@ -32,11 +32,9 @@
 
                                 <label class="label"><strong>Name</strong></label>
                                 <div class="input-group mb-3">
-                                    <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fas fa-hat-cowboy-side"></i>
-                            </span>
-                                    </div>
+                                <span class="input-group-text">
+                                    <i class="fas fa-hat-cowboy-side"></i>
+                                </span>
                                     <input id="{{ form.name.id_for_label }}" name="{{ form.name.html_name }}"
                                            value="{{ form.name.value }}" class="form-control" type="text"
                                            placeholder="{{ form.name.label }}" required>
@@ -44,11 +42,9 @@
 
                                 <label class="label"><strong>Points</strong></label>
                                 <div class="input-group mb-3">
-                                    <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fas fa-poll"></i>
-                            </span>
-                                    </div>
+                                    <span class="input-group-text">
+                                        <i class="fas fa-poll"></i>
+                                    </span>
                                     <input type="number" min="0" id="{{ form.points.id_for_label }}"
                                            name="{{ form.points.html_name }}" placeholder="{{ form.points.label }}"
                                            value="{{ form.points.value }}" class="form-control"/>
@@ -56,12 +52,9 @@
 
                                 <label class="label"><strong>Category</strong></label>
                                 <div class="input-group mb-3">
-                                    <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fas fa-folder-open"></i>
-                            </span>
-                                    </div>
-
+                                    <span class="input-group-text">
+                                        <i class="fas fa-folder-open"></i>
+                                    </span>
                                     <select class="form-control" id="{{ form.category.id_for_label }}"
                                             name="{{ form.category.html_name }}">
                                         {% for choice in form.category %}
@@ -77,15 +70,12 @@
 
                                 <label class="label"><strong>Description</strong></label>
                                 <div class="input-group mb-3">
-                                    <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fas fa-pen"></i>
-                            </span>
-                                    </div>
+                                    <span class="input-group-text">
+                                        <i class="fas fa-pen"></i>
+                                    </span>
                                     <textarea id="{{ form.description.id_for_label }}"
                                               name="{{ form.description.html_name }}"
                                               placeholder="{{ form.description.label }}"
-                                              value="{{ form.description.value }}"
                                               class="form-control">{% if form.description %}
                                         {{ form.description.value }}{% endif %}</textarea>
                                 </div>
@@ -93,11 +83,9 @@
                                 {% if form.instance.creation_time %}
                                     <label class="label"><strong>Flag</strong></label>
                                     <div class="input-group mb-3">
-                                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fas fa-flag"></i>
-                            </span>
-                                        </div>
+                                        <span class="input-group-text">
+                                            <i class="fas fa-flag"></i>
+                                        </span>
                                         <input type="text" id="{{ form.flag.id_for_label }}"
                                                name="{{ form.flag.html_name }}" placeholder="{{ form.flag.label }}"
                                                value="{{ form.flag.value }}" class="form-control"/>
@@ -106,11 +94,9 @@
                                     {% if form.solvers %}
                                         <label class="label"><strong>Solvers</strong></label>
                                         <div class="input-group mb-3">
-                                            <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fas fa-pen"></i>
-                            </span>
-                                            </div>
+                                            <span class="input-group-text">
+                                                <i class="fas fa-pen"></i>
+                                            </span>
                                             <select multiple class="form-control" id="{{ form.solvers.id_for_label }}"
                                                     name="{{ form.solvers.html_name }}">
                                                 {% for solver in form.solvers %}
@@ -124,11 +110,9 @@
                                 {% if form.instance.creation_time %}
                                     <label class="label"><strong>HedgeDoc ID </strong></label>
                                     <div class="input-group mb-3">
-                                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fab fa-markdown"></i>
-                            </span>
-                                        </div>
+                                        <span class="input-group-text">
+                                            <i class="fab fa-markdown"></i>
+                                        </span>
                                         <input id="{{ form.note_id.id_for_label }}" name="{{ form.note_id.html_name }}"
                                                placeholder="{{ form.note_id.label }}" value="{{ form.note_id.value }}"
                                                class="form-control" type="text" readonly>
@@ -136,11 +120,9 @@
 
                                     <label class="label"><strong>Excalidraw Room ID </strong></label>
                                     <div class="input-group mb-3">
-                                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fab fa-markdown"></i>
-                            </span>
-                                        </div>
+                                        <span class="input-group-text">
+                                            <i class="fab fa-markdown"></i>
+                                        </span>
                                         <input id="{{ form.excalidraw_room_id.id_for_label }}"
                                                name="{{ form.excalidraw_room_id.html_name }}"
                                                placeholder="{{ form.excalidraw_room_id.label }}"
@@ -151,11 +133,9 @@
 
                                     <label class="label"><strong>Excalidraw Room Key </strong></label>
                                     <div class="input-group mb-3">
-                                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fab fa-markdown"></i>
-                            </span>
-                                        </div>
+                                        <span class="input-group-text">
+                                            <i class="fab fa-markdown"></i>
+                                        </span>
                                         <input id="{{ form.excalidraw_room_key.id_for_label }}"
                                                name="{{ form.excalidraw_room_key.html_name }}"
                                                placeholder="{{ form.excalidraw_room_key.label }}"
@@ -166,11 +146,9 @@
 
                                     <label class="label"><strong>Tags </strong></label>
                                     <div class="input-group mb-3">
-                                        <div class="input-group-append">
-                            <span class="input-group-text">
-                                <i class="fab fa-markdown"></i>
-                            </span>
-                                        </div>
+                                        <span class="input-group-text">
+                                            <i class="fab fa-markdown"></i>
+                                        </span>
                                         <select multiple class="form-control" id="{{ form.tags.id_for_label }}"
                                                 name="{{ form.tags.html_name }}">
                                             {% for tag in form.tags %}
@@ -183,18 +161,20 @@
 
                             <div class="card-footer text-muted">
                                 <div class="control card-footer-item">
-                                    {% if form.instance.creation_time %}
-                                        <button type="button" class="btn-primary btn-sm btn-block"
-                                                onclick="this.form.submit();">Update Challenge
+                                    <div class="d-grid gap-2">
+                                        {% if form.instance.creation_time %}
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                    onclick="this.form.submit();">Update Challenge
+                                            </button>
+                                        {% else %}
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                    onclick="this.form.submit();">Create Challenge
+                                            </button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                                onclick="window.history.back();">Cancel
                                         </button>
-                                    {% else %}
-                                        <button type="button" class="btn-primary btn-sm btn-block"
-                                                onclick="this.form.submit();">Create Challenge
-                                        </button>
-                                    {% endif %}
-                                    <button type="button" class="btn btn-secondary btn-sm btn-block"
-                                            onclick="window.history.back();">Cancel
-                                    </button>
+                                    </div>
                                 </div>
                             </div>
                     </form>

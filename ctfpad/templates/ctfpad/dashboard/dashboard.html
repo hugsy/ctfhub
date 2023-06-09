@@ -2,103 +2,119 @@
 
 {% block content %}
 
-{% include 'ctfpad/dashboard/status.html' %}
+    {% include 'ctfpad/dashboard/status.html' %}
 
-{% load humanize %}
-{% load ctfpad_filters %}
+    {% load humanize %}
+    {% load ctfpad_filters %}
 
-<br/>
+    <br/>
 
-{% include 'snippets/messages.html' %}
+    {% include 'snippets/messages.html' %}
 
-<div class="row">
-	<div class="col-md-4">
-		<h5>Team Activity</h5>
-		<hr>
-		<div class="card card-body">
-			<div class="row mb-3">
-				{% if request.user.member.has_superpowers %}
-				<div class="col">
-					<a class="btn btn-primary btn-sm btn-block" href="{% url 'ctfpad:users-register' %}">Add a Member</a>
-				</div>
-				{% endif %}
-				<div class="col">
-					<a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:stats-detail' %}">View Team</a>
-				</div>
-			</div>
-			<table class="table table-sm table-hover">
-				<tr>
-					<th>Nickname</th>
-					<th>Working On</th>
-				</tr>
+    <div class="row">
+        <div class="col-md-4">
+            <h5>Team Activity</h5>
+            <hr>
+            <div class="card card-body">
+                <div class="row mb-3">
+                    {% if request.user.member.has_superpowers %}
+                        <div class="col">
+                            <div class="d-grid gap-2">
+                                <a class="btn btn-primary btn-sm" href="{% url 'ctfpad:users-register' %}">Add a
+                                    Member</a>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <div class="col">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-success btn-sm" href="{% url 'ctfpad:stats-detail' %}">View Team</a>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-sm table-hover">
+                    <tr>
+                        <th>Nickname</th>
+                        <th>Working On</th>
+                    </tr>
 
-				{% for member in members %}
-					{% if member.selected_ctf %}
-					<tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' member.selected_ctf.id %}">
-						<td>{{member.username}}</td>
-						<td>
-							{% if member.selected_ctf.is_public %}
-							{{member.selected_ctf}}
-							{% else %}
-							<i>(private)</i>
-							{% endif %}
-						</td>
-					</tr>
-					{% endif %}
-				{% endfor %}
-			</table>
-		</div>
-	</div>
+                    {% for member in members %}
+                        {% if member.selected_ctf %}
+                            <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' member.selected_ctf.id %}">
+                                <td>{{ member.username }}</td>
+                                <td>
+                                    {% if member.selected_ctf.is_public %}
+                                        {{ member.selected_ctf }}
+                                    {% else %}
+                                        <i>(private)</i>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
 
-	<div class="col-md-8">
-		<h5>Latest CTFs</h5>
-		<hr>
-		<div class="card card-body">
-			<div class="row mb-3">
-				<div class="col-md-3">
-					<a class="btn btn-primary  btn-sm btn-block" href="{% url 'ctfpad:ctfs-create'%}">Create CTF</a>
-				</div>
-				<div class="col-md-3">
-					<a class="btn btn-info  btn-sm btn-block" href="{% url 'ctfpad:ctfs-list'%}#list_ctftime_ctfs">Import CTF</a>
-				</div>
-				<div class="col-md-6">
-					<a class="btn btn-success  btn-sm btn-block" href="{% url 'ctfpad:ctfs-list'%}">View All CTFs</a>
-				</div>
-			</div>
-			<table class="table table-sm table-hover">
-				<tr>
-					<th>Name</th>
-					<th>Status</th>
-					<th></th>
-				</tr>
+        <div class="col-md-8">
+            <h5>Latest CTFs</h5>
+            <hr>
+            <div class="card card-body">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-primary btn-sm" href="{% url 'ctfpad:ctfs-create' %}"><i class="fas fa-plus-circle"></i> Create CTF</a>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-primary btn-sm" href="{% url 'ctfpad:ctfs-list' %}#list_ctftime_ctfs">Import
+                                CTF</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-success btn-sm" href="{% url 'ctfpad:ctfs-list' %}">View All
+                                CTFs</a>
+                        </div>
+                    </div>
+                </div>
+                <table class="table table-sm table-hover">
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
 
-				{% for ctf in latest_ctfs %}
-					<tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}"  {%if ctf.is_finished%}style="background-color: lightgray; font-style: italic;"{%endif%}>
-						<td>{{ctf.name}}</td>
-						<td>
-							{% if ctf.is_permanent %}
-							Permanent CTF
-							{% else %}
+                    {% for ctf in latest_ctfs %}
+                        <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}"
+                            {% if ctf.is_finished %}style="--bs-table-bg: lightgray; --bs-table-hover-bg: lightgray; font-style: italic;"{% endif %}>
+                            <td>{{ ctf.name }}</td>
+                            <td>
+                                {% if ctf.is_permanent %}
+                                    Permanent CTF
+                                {% else %}
 
-							{% if ctf.is_running %}
-							<b>Running now</b> (ends in {{ ctf.end_date | timeuntil }})
-							{% elif ctf.is_finished %}
-							Ended {{ ctf.end_date | timesince }} ago
-							{% else %}
-							Starts in {{ ctf.start_date | timeuntil }}
-							{% endif %}
+                                    {% if ctf.is_running %}
+                                        <b>Running now</b> (ends in {{ ctf.end_date | timeuntil }})
+                                    {% elif ctf.is_finished %}
+                                        Ended {{ ctf.end_date | timesince }} ago
+                                    {% else %}
+                                        Starts in {{ ctf.start_date | timeuntil }}
+                                    {% endif %}
 
-							{% endif %}
-						</td>
-						<td>
-							<a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Update"><strong><i class="fas fa-edit"></i></strong></a>
-							<a href="{% url 'ctfpad:ctfs-delete' ctf.id %}" title="Delete"><i class="fas fa-trash"></i></strong></a>
-						</td>
-					</tr>
-				{% endfor %}
-			</table>
-		</div>
-	</div>
-</div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Update"><strong><i
+                                        class="fas fa-edit"></i></strong></a>
+                                <a href="{% url 'ctfpad:ctfs-delete' ctf.id %}" title="Delete"><i
+                                        class="fas fa-trash"></i></strong></a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

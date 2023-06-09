@@ -1,68 +1,77 @@
-{%  extends 'ctfpad/main.html' %}
+{% extends 'ctfpad/main.html' %}
 
 {% block content %}
 
-<br>
-<div class="row">
-    <div class="col-2"></div>
-    <div class="col-8">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Team Information</h4>
-                <p class="card-text">
-                    General information, about the team, its members, and its performance.
-                </p>
-            </div>
-        </div>
+    <br>
+    <div class="row">
         <div class="col-2"></div>
-    </div>
-</div>
-
-<br>
-
-<div class="row">
-    <div class="col-sm-1"></div>
-    <div class="col-sm-10">
-        <div>
-            <ul class="nav nav-tabs">
-                <li class="nav-item">
-                    <a href="#team" class="nav-link active" data-toggle="tab">General</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#charts" class="nav-link" data-toggle="tab">Stats</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#rank" class="nav-link" data-toggle="tab">Ranking</a>
-                </li>
-                <li class="nav-item">
-                    <a href="#timeline" class="nav-link" data-toggle="tab">Timeline</a>
-                </li>
-                <li class="nav-item dropdown ml-auto">
-                    <a class="nav-link dropdown-toggle" id="dropdownyear" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ year_pick }}</a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownyear">
-                        {% for year, _ in year_stats reversed %}
-                        <a class="dropdown-item" href="{% url 'ctfpad:stats-detail' year=year %}">{{ year }}</a>
-                        {% endfor %}
-                    </div>
-                </li>
-            </ul>
-        </div>
-
-        <div class="tab-content">
-            <div class="tab-pane fade show active" id="team">
-                {% include 'ctfpad/stats/team.html' %}
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Team Information</h4>
+                    <p class="card-text">
+                        General information, about the team, its members, and its performance.
+                    </p>
+                </div>
             </div>
-            <div class="tab-pane fade" id="charts">
-                {% include 'ctfpad/stats/charts.html' %}
-            </div>
-            <div class="tab-pane fade" id="rank">
-                {% include 'ctfpad/stats/rank.html' %}
-            </div>
-            <div class="tab-pane fade" id="timeline">
-                {% include 'ctfpad/stats/timeline.html' %}
-            </div>
+            <div class="col-2"></div>
         </div>
     </div>
-    <div class="col-sm-1"></div>
-</div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-sm-1"></div>
+        <div class="col-sm-10">
+            <div>
+                <ul class="nav nav-tabs" id="statsTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="notes-tab" data-bs-toggle="tab" href="#team" role="tab"
+                           aria-controls="notes" aria-selected="false">General</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="notes-tab" data-bs-toggle="tab" href="#charts" role="tab"
+                           aria-controls="notes" aria-selected="false">Stats</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="notes-tab" data-bs-toggle="tab" href="#rank" role="tab"
+                           aria-controls="notes" aria-selected="false">Ranking</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="notes-tab" data-bs-toggle="tab" href="#timeline" role="tab"
+                           aria-controls="notes" aria-selected="false">Timeline</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdownyear" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ year_pick }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownyear">
+                            {% for year, _ in year_stats reversed %}
+                                <li><a class="dropdown-item"
+                                       href="{% url 'ctfpad:stats-detail' year=year %}">{{ year }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+
+                </ul>
+            </div>
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="team">
+                    {% include 'ctfpad/stats/team.html' %}
+                </div>
+                <div class="tab-pane fade" id="charts">
+                    {% include 'ctfpad/stats/charts.html' %}
+                </div>
+                <div class="tab-pane fade" id="rank">
+                    {% include 'ctfpad/stats/rank.html' %}
+                </div>
+                <div class="tab-pane fade" id="timeline">
+                    {% include 'ctfpad/stats/timeline.html' %}
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-1"></div>
+    </div>
 {% endblock %}

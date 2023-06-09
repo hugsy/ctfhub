@@ -1,4 +1,5 @@
 {% extends 'ctfpad/main.html' %}
+{% load static %}
 
 {% block content %}
     <br/>
@@ -40,65 +41,34 @@
 
                                 <label for="{{ form.data.id_for_label }}" class="label"><strong>Data</strong></label>
                                 <div class="input-group mb-3">
-                                    <div class="input-group-append">
                                         <span class="input-group-text">
                                             <i class="fas fa-file-import"></i>
                                         </span>
-                                    </div>
                                     <textarea id="{{ form.data.id_for_label }}"
                                               name="{{ form.data.html_name }}"
                                               placeholder="Data"
                                               class="form-control"
-                                              required>{% if form.data.value %}
-                                        {{ form.data.value }}{% endif %}</textarea>
+                                              required>{% if form.data.value %}{{ form.data.value }}{% endif %}</textarea>
                                 </div>
                             </div>
 
                             <div class="card-footer text-muted">
                                 <div class="control card-footer-item">
-                                    <button type="button" class="btn-primary btn-sm btn-block"
-                                            onclick="this.form.submit();">Import Challenges
-                                    </button>
-                                    <button type="button" class="btn btn-secondary btn-sm btn-block"
-                                            onclick="window.history.back();">Cancel
-                                    </button>
+                                    <div class="d-grid gap-2">
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                                onclick="this.form.submit();">Import Challenges
+                                        </button>
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                                onclick="window.history.back();">Cancel
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        window.addEventListener('DOMContentLoaded', (event) => {
-            var formatSelect = document.getElementById('{{ form.format.id_for_label }}');
-            var dataTextArea = document.getElementById('{{ form.data.id_for_label }}');
-
-            formatSelect.addEventListener('change', function () {
-                var selectedFormat = this.value;
-                var placeholderText;
-
-                switch (selectedFormat) {
-                    case 'RAW':
-                        placeholderText = 'name | category';
-                        break;
-                    case 'CTFd':
-                        placeholderText = 'paste CTFd JSON /api/v1/challenges';
-                        break;
-                    case 'rCTF':
-                        placeholderText = 'paste rCTF JSON /api/v1/challs';
-                        break;
-                    default:
-                        placeholderText = '';
-                }
-
-                dataTextArea.setAttribute('placeholder', placeholderText);
-            });
-
-            // Trigger the change event on page load to set initial placeholder
-            formatSelect.dispatchEvent(new Event('change'));
-        });
-    </script>
-
-
+    <script src="{% static '/js/challenge.js' %}"></script>
 {% endblock %}

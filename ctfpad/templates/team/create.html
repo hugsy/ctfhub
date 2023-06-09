@@ -21,15 +21,11 @@
 				<form method="POST" action="{% url 'ctfpad:team-register' %}">
 					{% csrf_token %}
 					<div class="input-group mb-4">
-						<div class="input-group-append">
-							<span class="input-group-text"><i class="fas fa-user"></i></span>
-						</div>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
 						{{form.name}}
 					</div>
                     <div class="input-group mb-4">
-						<div class="input-group-append">
-							<span class="input-group-text"><i class="fas fa-envelope-square"></i></span>
-						</div>
+                        <span class="input-group-text"><i class="fas fa-envelope-square"></i></span>
 						{{form.email}}
 					</div>
 					<div class="d-flex justify-content-center mt-3 login_container">
