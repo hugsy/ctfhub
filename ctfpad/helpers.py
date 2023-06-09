@@ -12,7 +12,7 @@ from functools import lru_cache
 from uuid import uuid4
 
 from ctftools.settings import (
-    CTFPAD_DOMAIN, CTFPAD_PORT, CTFPAD_USE_SSL,
+    CTFPAD_DOMAIN, CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT, CTFPAD_PORT, CTFPAD_USE_SSL,
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
     CTFPAD_DEFAULT_CTF_LOGO,
     HEDGEDOC_URL,
@@ -44,8 +44,8 @@ def which_hedgedoc() -> str:
         str: the base HedgeDoc URL
     """
     try:
-        requests.get(HEDGEDOC_URL)
-    except:
+        requests.get(HEDGEDOC_URL, timeout=CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT)
+    except ConnectionError:
         if USE_INTERNAL_HEDGEDOC or HEDGEDOC_URL == 'http://localhost:3000':
             return 'http://hedgedoc:3000'
     return HEDGEDOC_URL
@@ -274,7 +274,7 @@ def discord_send_message(js: dict) -> bool:
         if h.status_code not in (200, 204):
             raise Exception(f"Incorrect response, got {h.status_code}")
 
-    except Exception as e:
+    except Exception:
         return False
 
     return True

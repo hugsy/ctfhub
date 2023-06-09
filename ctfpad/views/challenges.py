@@ -1,28 +1,25 @@
-
-
-from django.http.request import HttpRequest
-from django.http.response import HttpResponse
-from ctfpad.decorators import only_if_authenticated_user
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
-from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http.response import HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+
+from ctfpad.decorators import user
 
 from ctfpad.forms import (
     ChallengeCreateForm,
-    ChallengeUpdateForm,
-    ChallengeSetFlagForm,
     ChallengeFileCreateForm,
+    ChallengeSetFlagForm,
+    ChallengeUpdateForm,
+)
+from ctfpad.helpers import (
+    export_challenge_note,
+    generate_github_page_header,
 )
 from ctfpad.models import Challenge, Ctf
 from ctftools.settings import HEDGEDOC_URL
-
-from ctfpad.helpers import (
-    generate_github_page_header,
-    export_challenge_note,
-)
 
 
 class ChallengeListView(LoginRequiredMixin, ListView):

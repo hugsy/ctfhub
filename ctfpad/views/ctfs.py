@@ -1,5 +1,5 @@
 from ctfpad.mixins import MembersOnlyMixin
-from ctfpad.decorators import only_if_authenticated_user
+from ctfpad.decorators import user
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http.request import HttpRequest
