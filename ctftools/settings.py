@@ -33,14 +33,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # SECURITY WARNING: harden for production!
 ALLOWED_HOSTS = [CTFPAD_DOMAIN, "localhost", "127.0.0.1"]
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1"]
-if CTFPAD_USE_SSL:
-    CTFPAD_SSL_URL = f"https://{CTFPAD_DOMAIN}"
-    if CTFPAD_PORT != "443":
-        CTFPAD_SSL_URL += f":{CTFPAD_PORT}"
-    CSRF_TRUSTED_ORIGINS.append(CTFPAD_SSL_URL)
-else:
-    CSRF_TRUSTED_ORIGINS.append(f"http://{CTFPAD_DOMAIN}:{CTFPAD_PORT}")
+CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", CTFPAD_URL]
 
 CSRF_COOKIE_NAME = "ctfpad-csrf"
 SESSION_COOKIE_NAME = "ctfpad-session"
@@ -168,7 +161,6 @@ USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
 
 HEDGEDOC_URL = os.getenv("CTFPAD_HEDGEDOC_URL") or 'http://localhost:3000'
 USE_INTERNAL_HEDGEDOC = get_boolean("CTFPAD_HEDGEDOC_IS_INTERNAL")
-EXCALIDRAW_URL = os.getenv("CTFPAD_EXCALIDRAW_URL") or 'http://localhost:5010'
 
 CTFTIME_URL = "https://ctftime.org"
 CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
@@ -199,7 +191,7 @@ EMAIL_SUBJECT_PREFIX = "[CTFPad] "
 
 # Jistsi integration
 
-JITSI_URL = "https://meet.jit.si"
+JITSI_URL = os.getenv("CTFPAD_JITSI_URL") or "https://meet.jit.si"
 
 
 # Discord integration
@@ -209,6 +201,9 @@ DISCORD_BOT_NAME = os.getenv("CTFPAD_DISCORD_BOT_NAME") or "SpiderBot"
 
 
 # Excalidraw integration
-
+EXCALIDRAW_URL = os.getenv("CTFPAD_EXCALIDRAW_URL") or "https://excalidraw.com"
 EXCALIDRAW_ROOM_ID_PATTERN = '[0-9a-f]{20}'
 EXCALIDRAW_ROOM_KEY_PATTERN = '[a-zA-Z0-9_-]{22}'
+
+
+CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT = 60
