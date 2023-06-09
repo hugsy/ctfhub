@@ -8,9 +8,15 @@
     <div class="row">
         <div class="col-6">
             <div class="row mb-3">
-                <div class="col-6">
+                <div class="col-3">
                     <a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:challenges-create' ctf=ctf.id %}">
                         <strong>New challenge</strong>
+                    </a>
+                </div>
+
+                <div class="col-3">
+                    <a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:challenges-import' ctf=ctf.id %}">
+                        <strong>Import challenges</strong>
                     </a>
                 </div>
 
