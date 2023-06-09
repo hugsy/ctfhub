@@ -1,6 +1,7 @@
 version: '3'
 
 services:
+
   postgres:
     image: postgres:alpine
     env_file:
@@ -38,7 +39,7 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./volumes/hedgedoc-public-uploads:/hedgedoc/public/uploads
+      - ./volumes/upload/hedgedoc:/hedgedoc/public/uploads
 
   ctfpad:
     # build: https://github.com/hugsy/ctfpad.git#master
@@ -52,77 +53,19 @@ services:
     depends_on:
       - postgres
       - hedgedoc
-      - excalidraw
     ports:
       - 8000:8000
     networks:
       - ctfpad
     restart: always
     volumes:
-      - ./volumes/uploads:/code/uploads
+      - ./volumes/upload/ctfpad:/code/uploads
       - ./ctfpad:/code/ctfpad
       - ./ctftools:/code/ctftools
-
-  excalidraw:
-    # https://github.com/excalidraw/excalidraw/blob/master/docker-compose.yml
-    build:
-      context: https://github.com/excalidraw/excalidraw.git#master
-      args:
-        - NODE_ENV=${EXCALIDRAW_NODE_ENV}
-    networks:
-      - ctfpad
-      - excalidraw
-    ports:
-      - 3001:80
-    restart: always
-    env_file:
-      - .env
-    environment:
-      - NODE_ENV=${EXCALIDRAW_NODE_ENV}
-    healthcheck:
-      disable: true
-    stdin_open: true
-
-  excalidraw-room:
-    image: excalidraw/excalidraw-room
-    restart: always
-    networks:
-      - excalidraw
-    # ports:
-    #   - 8081:80
-
-  excalidraw-storage-backend:
-    # repo https://gitlab.com/kiliandeca/excalidraw-storage-backend
-    image: kiliandeca/excalidraw-storage-backend
-    networks:
-      - excalidraw
-    # ports:
-    #   - 8082:8080
-    restart: always
-    env_file:
-      - .env
-    environment:
-      STORAGE_URI: redis://:${REDIS_PASSWORD}@redis:6379
-      STORAGE_TTL: 2592000000
-    depends_on:
-      - redis
-
-  redis:
-    image: redis
-    networks:
-      - excalidraw
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-    restart: always
-    volumes:
-      - redis-vol:/data
 
 networks:
   ctfpad:
     driver: bridge
 
-  excalidraw:
-
-
 volumes:
   postgres-vol:
-  redis-vol:
