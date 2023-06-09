@@ -41,7 +41,7 @@
                       </div>
 				</form>
 			</div>
-			{{ form.errors }}
+            {% include 'snippets/formerror.html' %}
 			<div class="mt-4">
 				{% if not request.user.is_authenticated %}
 				<div class="d-flex justify-content-center links">
