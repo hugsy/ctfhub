@@ -58,24 +58,19 @@
             {% endif %}
 
             <li>
-
-                <form action="{% url 'ctfpad:set-dark-mode' %}" method="POST">
-                    {% csrf_token %}
-                    {% theme_cookie as my_theme %}
-                    <div class="form-check form-switch" style="margin-top: 10px; margin-left: 10px;">
-                        {% if my_theme == 'dark' %}
-                            <input class="form-check-input" type="checkbox" role="switch" id="toggleDarkMode"
-                                   name="darkModeCookie" checked onchange="this.form.submit();">
-                            <label class="form-check-label" for="toggleDarkMode"><span
-                                    class="color: white;">☀</span></label>
-                        {% else %}
-                            <input class="form-check-input" type="checkbox" role="switch" id="toggleDarkMode"
-                                   name="darkModeCookie" onchange="this.form.submit();">
-                            <label class="form-check-label" for="toggleDarkMode"><span
-                                    class="color: white;">🌙</span></label>
-                        {% endif %}
-                    </div>
-                </form>
+                <div class="form-check form-switch" style="margin-top: 10px; margin-left: 10px;">
+                    {% if my_theme == 'dark' %}
+                        <input class="form-check-input" type="checkbox" role="switch" id="toggleDarkMode"
+                               name="darkModeCookie" checked onchange="this.form.submit();">
+                        <label class="form-check-label" for="toggleDarkMode"><span
+                                class="color: white;">☀</span></label>
+                    {% else %}
+                        <input class="form-check-input" type="checkbox" role="switch" id="toggleDarkMode"
+                               name="darkModeCookie" onchange="this.form.submit();">
+                        <label class="form-check-label" for="toggleDarkMode"><span
+                                class="color: white;">🌙</span></label>
+                    {% endif %}
+                </div>
             </li>
         </ul>
     </div>

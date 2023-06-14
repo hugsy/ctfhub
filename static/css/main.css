@@ -89,3 +89,7 @@ div #current-ctf
     height: 1.5rem;
     font-size: 1rem;
 }
+
+.ratio-custom {
+    --bs-aspect-ratio: 47.75%;
+}
