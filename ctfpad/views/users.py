@@ -1,32 +1,31 @@
-from ctfpad.helpers import get_random_string_128
-import os
 from django.contrib import auth, messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.contrib.auth.views import (
+    LoginView,
+    PasswordChangeView,
+    PasswordResetConfirmView,
+    PasswordResetView,
+)
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import BaseModelForm
 from django.http.request import HttpRequest
 from django.http.response import Http404, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
-    UpdateView,
     DeleteView,
-    ListView,
     DetailView,
-)
-from django.contrib.auth.views import (
-    LoginView, PasswordChangeView,
-    PasswordResetConfirmView,
-    PasswordResetView,
+    ListView,
+    UpdateView,
 )
 
-from ctfpad.models import Challenge, Ctf, Member, Team
+from ctfpad.decorators import user
 from ctfpad.forms import MemberCreateForm, MemberMarkAsSelectedForm, MemberUpdateForm, UserUpdateForm
-from ctfpad.decorators import only_if_authenticated_user
+from ctfpad.helpers import get_random_string_128
 from ctfpad.mixins import RequireSuperPowersMixin
-from ctftools.settings import HEDGEDOC_URL
+from ctfpad.models import Member, Team
 
 
 class CtfpadLogin(LoginView):
@@ -35,7 +34,7 @@ class CtfpadLogin(LoginView):
     redirect_field_name = "redirect_to"
 
 
-@only_if_authenticated_user
+@user.is_authenticated
 def logout(request: HttpRequest) -> HttpResponse:
     """Log out from current session. CBV is not necessary for logging out.
 

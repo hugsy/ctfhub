@@ -9,21 +9,29 @@ from django.views.generic import ListView, DetailView, UpdateView, DeleteView, C
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http.response import HttpResponse
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+
+from ctfpad.decorators import user
 
 from ctfpad.forms import (
     ChallengeCreateForm,
-    ChallengeUpdateForm,
-    ChallengeSetFlagForm,
     ChallengeFileCreateForm,
+    ChallengeSetFlagForm,
+    ChallengeUpdateForm,
     ChallengeImportForm,
 )
 from ctfpad.models import Challenge, Ctf, ChallengeCategory
 from ctftools.settings import HEDGEDOC_URL
 
 from ctfpad.helpers import (
-    generate_github_page_header,
     export_challenge_note,
+    generate_github_page_header,
 )
+from ctfpad.models import Challenge, Ctf
+from ctftools.settings import HEDGEDOC_URL
 
 
 class ChallengeListView(LoginRequiredMixin, ListView):

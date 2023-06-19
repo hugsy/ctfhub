@@ -10,7 +10,7 @@ A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki
 
 For most people, this will suffice:
 
-```
+```bash
 $ git clone https://github.com/hugsy/ctfpad
 $ cd ctfpad
 $ cp .env.example .env
@@ -21,13 +21,14 @@ $ make build
 $ docker compose up -d --build
 ```
 
-If you want to use SSL locally, follow the [instructions to generate local SSL certificates](./conf/README.md)
+If you want to use SSL locally, follow the [instructions to generate local SSL certificates](./conf/certs/README.md)
 and run:
 
-```
-$ cp .env.nginx-proxy.example .env
-$ docker compose -f docker-compose-proxy.yml -f docker-compose.yml up -d --build
-
+```bash
+$ cp scripts/proxy/.env.nginx-proxy.example scripts/proxy/.env
+$ nano scripts/proxy/.env
+### Edit the file to your need
+$ docker compose -f scripts/proxy/docker-compose.yml -f ./docker-compose.yml up -d --build
 ```
 
 ## Features
@@ -44,17 +45,15 @@ A non-exhaustive list of features:
  - CTFTime integration: import CTF (+ data) from CTFTime in 2 clicks
  - Dark mode (duh!)
  - Basic search engine
- - Self-hosted [Excalidraw](https://github.com/excalidraw/excalidraw) integration: draw & share ideas with your team mates
+ - Public & Self-hosted [Excalidraw](https://github.com/excalidraw/excalidraw) integration: draw & share ideas with your team mates
  - Discord notifications
  - ...and more to come...
 
 ## Community ##
 
-[![Discord](https://img.shields.io/badge/Discord-CTFPad-green)](https://discord.gg/fYsAjvsdQT) 
+[![Discord](https://img.shields.io/badge/Discord-CTFPad-green)](https://discord.gg/fYsAjvsdQT)
 
 ## Gallery
-
-_Note_: the development of CTFPad is very active, the screenshots below might not reflect the exact state of the tool.
 
 ### Dashboard
 
@@ -78,8 +77,6 @@ _Note_: the development of CTFPad is very active, the screenshots below might no
 ### Statistics
 
 ![stats](https://i.imgur.com/PGsPztU.png)
-
-
 
 
 

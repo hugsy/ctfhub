@@ -12,7 +12,7 @@ from functools import lru_cache
 from uuid import uuid4
 
 from ctftools.settings import (
-    CTFPAD_HOSTNAME, CTFPAD_PORT, CTFPAD_USE_SSL,
+    CTFPAD_DOMAIN, CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT, CTFPAD_PORT, CTFPAD_USE_SSL,
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
     CTFPAD_DEFAULT_CTF_LOGO,
     HEDGEDOC_URL,
@@ -30,7 +30,7 @@ from ctftools.settings import (
 @lru_cache(maxsize=1)
 def get_current_site() -> str:
     r = "https://" if CTFPAD_USE_SSL else "http://"
-    r += f"{CTFPAD_HOSTNAME}:{CTFPAD_PORT}"
+    r += f"{CTFPAD_DOMAIN}:{CTFPAD_PORT}"
     return r
 
 
@@ -44,8 +44,8 @@ def which_hedgedoc() -> str:
         str: the base HedgeDoc URL
     """
     try:
-        requests.get(HEDGEDOC_URL)
-    except:
+        requests.get(HEDGEDOC_URL, timeout=CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT)
+    except ConnectionError:
         if USE_INTERNAL_HEDGEDOC or HEDGEDOC_URL == 'http://localhost:3000':
             return 'http://hedgedoc:3000'
     return HEDGEDOC_URL
@@ -215,7 +215,7 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
         _, ext = os.path.splitext(logo)
         if ext.lower() not in CTFPAD_ACCEPTED_IMAGE_EXTENSIONS:
             return default_logo
-    except:
+    except ValueError:
         logo = default_logo
     return logo
 
@@ -274,7 +274,7 @@ def discord_send_message(js: dict) -> bool:
         if h.status_code not in (200, 204):
             raise Exception(f"Incorrect response, got {h.status_code}")
 
-    except Exception as e:
+    except Exception:
         return False
 
     return True
@@ -292,7 +292,8 @@ def generate_github_page_header(**kwargs) -> str:
     title = kwargs.setdefault("title", "Exported note")
     author = kwargs.setdefault("author", "Anonymous")
     tags = kwargs.setdefault("tags", "[]")
-    date = kwargs.setdefault("date", datetime.now()).strftime("%Y-%m-%d %H:%M %Z")
+    date = kwargs.setdefault("date", datetime.now()
+                             ).strftime("%Y-%m-%d %H:%M %Z")
     content = f"""---
 layout: post
 title: {title}

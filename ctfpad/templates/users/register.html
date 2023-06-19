@@ -1,4 +1,4 @@
-{%  extends 'ctfpad/main.html' %}
+{% extends 'ctfpad/main.html' %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
 	<div class="d-flex justify-content-center h-100">
 		<div class="user_card">
 			<div class="d-flex justify-content-center">
-			    <h3 id="form-title">Register a new member</h3>
+				<h3 id="form-title">Register a new member</h3>
 			</div>
 			<div class="d-flex justify-content-center form_container">
 				<form method="POST" action="{% url 'ctfpad:users-register' %}">
@@ -36,16 +36,16 @@
 						<span class="input-group-text"><i class="fas fa-key"></i></span>
 						{{form.api_key}}
 					</div>
-                    <div class="d-flex justify-content-center mt-3 login_container">
-                        <input class="btn btn-primary" type="submit" value="Create User">
-                      </div>
+					<div class="d-flex justify-content-center mt-3 login_container">
+						<input class="btn btn-primary" type="submit" value="Create User">
+					</div>
 				</form>
 			</div>
             {% include 'snippets/formerror.html' %}
 			<div class="mt-4">
 				{% if not request.user.is_authenticated %}
 				<div class="d-flex justify-content-center links">
-                    Already have an account? <a class="is-link" href="{% url 'ctfpad:user-login' %}">Log in here</a>
+					Already have an account? <a class="is-link" href="{% url 'ctfpad:user-login' %}">Log in here</a>
 				</div>
 				<div class="d-flex justify-content-center links">
 					No API key, <a class="is-link" href="{% url 'ctfpad:team-register' %}">create a team first here</a>
@@ -56,14 +56,9 @@
 	</div>
 </div>
 <script>
-var form_fields = document.getElementsByTagName('input')
-form_fields[1].placeholder='Username..';
-form_fields[2].placeholder='Email..';
-form_fields[3].placeholder='Enter password...';
-form_fields[4].placeholder='Re-enter Password...';
-
-for (var field in form_fields)
-    form_fields[field].className += ' form-control';
+	var form_fields = document.getElementsByTagName('input');
+	for (let field in form_fields)
+		form_fields[field].className += ' form-control';
 </script>
 
 <div class="row" style="margin-top: 200px;"></div>

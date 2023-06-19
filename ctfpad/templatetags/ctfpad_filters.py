@@ -1,6 +1,5 @@
 from collections import namedtuple
 from django import template
-from django.contrib import messages
 from django.utils.safestring import mark_safe
 import pytz
 import bleach

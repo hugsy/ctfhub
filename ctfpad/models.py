@@ -3,7 +3,7 @@ import uuid
 import os
 import hashlib
 from urllib.parse import quote
-from datetime import date, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 from collections import namedtuple, Counter
 from statistics import mean
@@ -11,7 +11,6 @@ import zipfile
 import requests
 import tempfile
 
-from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
@@ -27,7 +26,7 @@ from model_utils import Choices, FieldTracker
 from ctfpad.helpers import ctftime_ctfs
 
 from ctftools.settings import (
-    EXCALIDRAW_ROOM_ID_PATTERN, EXCALIDRAW_ROOM_KEY_PATTERN, HEDGEDOC_URL, SHORT_DATETIME_FORMAT,
+    EXCALIDRAW_ROOM_ID_PATTERN, EXCALIDRAW_ROOM_KEY_PATTERN, HEDGEDOC_URL,
     EXCALIDRAW_URL,
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT, STATIC_URL,
@@ -37,7 +36,7 @@ from ctftools.settings import (
 )
 from ctfpad.validators import challenge_file_max_size_validator
 from ctfpad.helpers import (
-    get_random_string_128, get_random_string_64, register_new_hedgedoc_user,
+    get_random_string_128, register_new_hedgedoc_user,
     create_new_note,
     get_file_magic,
     get_file_mime,
@@ -84,8 +83,10 @@ class Team(TimeStampedModel):
 
     @property
     def members(self):
-        members = sorted(self.member_set.filter(status="member"), key=lambda x: x.username)
-        members += sorted(self.member_set.filter(status="guest"), key=lambda x: x.username)
+        members = sorted(self.member_set.filter(
+            status="member"), key=lambda x: x.username)
+        members += sorted(self.member_set.filter(status="guest"),
+                          key=lambda x: x.username)
         return members
 
 
@@ -97,7 +98,8 @@ class Ctf(TimeStampedModel):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128)
-    created_by = models.ForeignKey("ctfpad.Member", on_delete=models.CASCADE, blank=True, null=True)
+    created_by = models.ForeignKey(
+        "ctfpad.Member", on_delete=models.CASCADE, blank=True, null=True)
     url = models.URLField(blank=True)
     description = models.TextField(blank=True)
     start_date = models.DateTimeField(blank=True, null=True)
@@ -109,7 +111,8 @@ class Ctf(TimeStampedModel):
     visibility = StatusField(choices_name="VISIBILITY")
     weight = models.FloatField(default=1.0)
     rating = models.FloatField(default=0.0)
-    note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
+    note_id = models.CharField(
+        default=create_new_note, max_length=38, blank=True)
 
     def __str__(self) -> str:
         return self.name
@@ -141,7 +144,8 @@ class Ctf(TimeStampedModel):
     @property
     def solved_challenges_as_percent(self):
         l = self.challenges.count()
-        if l == 0: return 0
+        if l == 0:
+            return 0
         return int(float(self.solved_challenges.count() / l) * 100)
 
     @property
@@ -154,12 +158,14 @@ class Ctf(TimeStampedModel):
 
     @property
     def scored_points_as_percent(self):
-        if self.total_points == 0: return 0
+        if self.total_points == 0:
+            return 0
         return int(float(self.scored_points / self.total_points) * 100)
 
     @property
     def duration(self):
-        if self.is_permanent: return 0
+        if self.is_permanent:
+            return 0
         return self.end_date - self.start_date
 
     @property
@@ -240,13 +246,15 @@ class Ctf(TimeStampedModel):
         fname = slugify(f"{self.name}.md")
         with tempfile.TemporaryFile() as fp:
             result = session.get(f"{HEDGEDOC_URL}{self.note_id}/download")
-            zip_file.writestr(zipfile.ZipInfo(filename=fname, date_time=ts), result.text)
+            zip_file.writestr(zipfile.ZipInfo(
+                filename=fname, date_time=ts), result.text)
 
         # add challenge notes
         for challenge in self.challenges:
             fname = slugify(f"{self.name}-{challenge.name}.md")
             with tempfile.TemporaryFile() as fp:
-                result = session.get(f"{HEDGEDOC_URL}{challenge.note_id}/download")
+                result = session.get(
+                    f"{HEDGEDOC_URL}{challenge.note_id}/download")
                 if result.status_code != requests.codes.ok:
                     continue
                 zinfo = zipfile.ZipInfo(filename=fname, date_time=ts)
@@ -441,15 +449,18 @@ class Member(TimeStampedModel):
     status = StatusField()
 
     @property
-    def username(self):
+    def username(self) -> str:
+        assert self.user
         return self.user.username
 
     @property
-    def email(self):
+    def email(self) -> str:
+        assert self.user
         return self.user.email
 
     @property
     def has_superpowers(self):
+        assert self.user
         return self.user.is_superuser
 
     def __str__(self):
@@ -499,7 +510,8 @@ class Member(TimeStampedModel):
             return self.avatar.url
         url = 'https://www.gravatar.com/avatar/{}?d={}'.format(
             hashlib.md5(self.email.encode()).hexdigest(),
-            quote(f'https://eu.ui-avatars.com/api/{self.username}/64/random/', safe='')
+            quote(
+                f'https://eu.ui-avatars.com/api/{self.username}/64/random/', safe='')
         )
         return url
 
@@ -593,8 +605,10 @@ class Challenge(TimeStampedModel):
     name = models.CharField(max_length=256)
     points = models.IntegerField(default=0)
     description = models.TextField(blank=True)
-    category = models.ForeignKey(ChallengeCategory, on_delete=models.DO_NOTHING, null=True)
-    note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
+    category = models.ForeignKey(
+        ChallengeCategory, on_delete=models.DO_NOTHING, null=True)
+    note_id = models.CharField(
+        default=create_new_note, max_length=38, blank=True)
     excalidraw_room_id = models.CharField(default=generate_excalidraw_room_id, validators=[
         RegexValidator(regex=EXCALIDRAW_ROOM_ID_PATTERN,
                        message=f'Please follow regex format {EXCALIDRAW_ROOM_ID_PATTERN}', code='nomatch')])
@@ -602,13 +616,16 @@ class Challenge(TimeStampedModel):
         RegexValidator(regex=EXCALIDRAW_ROOM_KEY_PATTERN,
                        message=f'Please follow regex format {EXCALIDRAW_ROOM_KEY_PATTERN}', code='nomatch')])
     ctf = models.ForeignKey(Ctf, on_delete=models.CASCADE)
-    last_update_by = models.ForeignKey(Member, on_delete=models.DO_NOTHING, null=True, related_name='last_updater')
+    last_update_by = models.ForeignKey(
+        Member, on_delete=models.DO_NOTHING, null=True, related_name='last_updater')
     flag = models.CharField(max_length=128, blank=True)
     flag_tracker = FieldTracker(fields=['flag', ])
     status = StatusField()
     solved_time = MonitorField(monitor='status', when=['solved', ])
-    solvers = models.ManyToManyField("ctfpad.Member", blank=True, related_name="solved_challenges")
-    tags = models.ManyToManyField("ctfpad.Tag", blank=True, related_name="challenges")
+    solvers = models.ManyToManyField(
+        "ctfpad.Member", blank=True, related_name="solved_challenges")
+    tags = models.ManyToManyField(
+        "ctfpad.Tag", blank=True, related_name="challenges")
 
     @property
     def solved(self) -> bool:
@@ -624,7 +641,9 @@ class Challenge(TimeStampedModel):
         return f"{HEDGEDOC_URL}{note_id}"
 
     def get_excalidraw_url(self, member=None) -> str:
-        # Ensure presence of a trailing slash at the end
+        """
+        Ensure presence of a trailing slash at the end
+        """
         url = os.path.join(EXCALIDRAW_URL, "")
         url += f"#room={self.excalidraw_room_id},{self.excalidraw_room_key}"
         return url
@@ -681,9 +700,13 @@ class ChallengeFile(TimeStampedModel):
         p = Path(CTF_CHALLENGE_FILE_ROOT) / self.name
         if p.exists():
             abs_path = str(p.absolute())
-            if not self.mime: self.mime = get_file_mime(p)
-            if not self.type: self.type = get_file_magic(p)
-            if not self.hash: self.hash = hashlib.sha256(open(abs_path, "rb").read()).hexdigest()
+            if not self.mime:
+                self.mime = get_file_mime(p)
+            if not self.type:
+                self.type = get_file_magic(p)
+            if not self.hash:
+                self.hash = hashlib.sha256(
+                    open(abs_path, "rb").read()).hexdigest()
             super(ChallengeFile, self).save()
         return
 
@@ -829,11 +852,13 @@ class CtfStats:
         for member in members:
             member.percent = round(mean(member.percents.values()), 2)
 
-        alltime_ranking = sorted(members, key=lambda x: x.rating_accu, reverse=True)
+        alltime_ranking = sorted(
+            members, key=lambda x: x.rating_accu, reverse=True)
 
         # last CTFs
         for ctf in ctfs:
-            ctf.ranking = sorted(ctf.member_percents.items(), key=lambda x: x[1], reverse=True)
+            ctf.ranking = sorted(ctf.member_percents.items(),
+                                 key=lambda x: x[1], reverse=True)
 
         return {'alltime': alltime_ranking, 'last_ctfs': ctfs[::-1]}
 
@@ -924,7 +949,8 @@ class SearchEngine:
                     "challenge",
                     entry.name,
                     description,
-                    reverse("ctfpad:challenges-detail", kwargs={"pk": entry.id})
+                    reverse("ctfpad:challenges-detail",
+                            kwargs={"pk": entry.id})
                 )
             )
         return results
@@ -975,7 +1001,8 @@ class SearchEngine:
                         "category",
                         challenge.name,
                         f"{challenge.name} - ({challenge.ctf})",
-                        reverse("ctfpad:challenges-detail", kwargs={"pk": challenge.id})
+                        reverse("ctfpad:challenges-detail",
+                                kwargs={"pk": challenge.id})
                     )
                 )
         return results
@@ -1000,7 +1027,8 @@ class SearchEngine:
                         "tag",
                         challenge.name,
                         f"{challenge.name} - ({challenge.ctf})",
-                        reverse("ctfpad:challenges-detail", kwargs={"pk": challenge.id})
+                        reverse("ctfpad:challenges-detail",
+                                kwargs={"pk": challenge.id})
                     )
                 )
         return results
@@ -1023,7 +1051,8 @@ class SearchEngine:
                         "ctftime",
                         entry["title"],
                         entry["description"],
-                        reverse("ctfpad:ctfs-import") + f"?ctftime_id={entry['id']}"
+                        reverse("ctfpad:ctfs-import") +
+                        f"?ctftime_id={entry['id']}"
                     )
                 )
         return results

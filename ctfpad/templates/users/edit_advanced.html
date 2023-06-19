@@ -2,23 +2,24 @@
 
 {% block content %}
 
-    <br/>
+<br />
 
-    {% include 'snippets/messages.html' %}
+{% include 'snippets/messages.html' %}
 
-    {% include 'snippets/formerror.html' %}
+{% include 'snippets/formerror.html' %}
 
-    <div class="row">
-        <div class="col-lg-4 offset-lg-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">
-                        <p class="card-header-title">Advanced settings for profile '{{ user.username }}'</p>
-                    </h5>
-                    <span class="align-right">
-                <small>For regular user settings update, <a href="{% url 'ctfpad:users-update' user.member.id %}">[click here]</a></small>
-            </span>
-                </div>
+<div class="row">
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">
+                    <p class="card-header-title">Advanced settings for profile '{{ user.username }}'</p>
+                </h5>
+                <span class="align-right">
+                    <small>For regular user settings update, <a
+                            href="{% url 'ctfpad:users-update' user.member.id %}">[click here]</a></small>
+                </span>
+            </div>
 
                 <div class="card-body">
                     <form class="form" method="POST" enctype="multipart/form-data">
@@ -53,6 +54,9 @@
                                        name="{{ form.current_password.html_name }}"
                                        placeholder="{{ form.current_password.label }}" class="form-control" required/>
                             </div>
+                            <input type="text" id="{{ form.username.id_for_label }}"
+                                name="{{ form.username.html_name }}" placeholder="{{ form.username.label }}"
+                                value="{{ form.username.value }}" class="form-control" />
                         </div>
 
                         <div class="card-footer text-muted">
@@ -66,11 +70,38 @@
                                     </button>
                                 </div>
                             </div>
+                            <input type="text" id="{{ form.email.id_for_label }}" name="{{ form.email.html_name }}"
+                                placeholder="{{ form.email.label }}" value="{{ form.email.value }}"
+                                class="form-control" />
                         </div>
-                    </form>
-                </div>
+
+                        <label class="label"><strong>Password</strong></label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-append">
+                                <span class="input-group-text">
+                                    <i class="fas fa-key"></i>
+                                </span>
+                            </div>
+                            <input type="password" id="{{ form.current_password.id_for_label }}"
+                                name="{{ form.current_password.html_name }}"
+                                placeholder="{{ form.current_password.label }}" class="form-control" required />
+                        </div>
+                    </div>
+
+                    <div class="card-footer text-muted">
+                        <div class="control card-footer-item">
+                            <button type="button" class="btn-primary btn-sm btn-block"
+                                onclick="this.form.submit();">Update
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-sm btn-block"
+                                onclick="window.history.back();">Cancel
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+</div>
 
 {% endblock %}
