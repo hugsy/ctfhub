@@ -2,33 +2,33 @@
 
 {% block content %}
 
-<br />
+    <br/>
 
-{% include 'snippets/formerror.html' %}
+    {% include 'snippets/formerror.html' %}
 
-<div class="row">
-    <div class="col-lg-6 offset-lg-3">
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4">
 
-        {% for message in messages %}
-        <p id="messages">{{ message }}</p>
-        {% endfor %}
+            {% for message in messages %}
+                <p id="messages">{{ message }}</p>
+            {% endfor %}
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">
-                    {% if form.name.value %}
-                    <p class="card-header-title">Updating Challenge {{ form.name.value }}</p>
-                    {% else %}
-                    <p class="card-header-title">New Challenge</p>
-                    {% endif %}
-                </h5>
-            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        {% if form.name.value %}
+                            <p class="card-header-title">Updating Challenge {{ form.name.value }}</p>
+                        {% else %}
+                            <p class="card-header-title">New Challenge</p>
+                        {% endif %}
+                    </h5>
+                </div>
 
-            <div class="card-body">
-                <form class="form" method="post">
-                    {% csrf_token %}
-                    <div class="modal-body">
-                        <div class="form-group">
+                <div class="card-body">
+                    <form class="form" method="post">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="form-group">
 
                                 <label class="label"><strong>Name</strong></label>
                                 <div class="input-group mb-3">
@@ -176,152 +176,11 @@
                                         </button>
                                     </div>
                                 </div>
-                                <input type="number" min="0" id="{{ form.points.id_for_label }}"
-                                    name="{{ form.points.html_name }}" placeholder="{{ form.points.label }}"
-                                    value="{{ form.points.value }}" class="form-control" />
                             </div>
-
-                            <label class="label"><strong>Category</strong></label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-folder-open"></i>
-                                    </span>
-                                </div>
-
-                                <select class="form-control" id="{{ form.category.id_for_label }}"
-                                    name="{{ form.category.html_name }}">
-                                    {%for choice in form.category%}{{ choice }}{%endfor%}
-                                </select>
-                            </div>
-
-                            <input type="hidden" id="{{ form.ctf.id_for_label }}" name="{{ form.ctf.html_name }}"
-                                value="{{ form.ctf.value }}" />
-                            <input type="hidden" id="{{ form.last_update_by.id_for_label }}"
-                                name="{{ form.last_update_by.html_name }}" value="{{ request.user.id }}" />
-
-                            <label class="label"><strong>Description</strong></label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-pen"></i>
-                                    </span>
-                                </div>
-                                <textarea id="{{ form.description.id_for_label }}"
-                                    name="{{ form.description.html_name }}" placeholder="{{ form.description.label }}"
-                                    value="{{ form.description.value }}"
-                                    class="form-control">{% if form.description %}{{ form.description.value }}{% endif %}</textarea>
-                            </div>
-
-                            {%if form.instance.creation_time%}
-                            <label class="label"><strong>Flag</strong></label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-flag"></i>
-                                    </span>
-                                </div>
-                                <input type="text" id="{{ form.flag.id_for_label }}" name="{{ form.flag.html_name }}"
-                                    placeholder="{{ form.flag.label }}" value="{{ form.flag.value }}"
-                                    class="form-control" />
-                            </div>
-
-                            {%if form.solvers %}
-                            <label class="label"><strong>Solvers</strong></label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-pen"></i>
-                                    </span>
-                                </div>
-                                <select multiple class="form-control" id="{{ form.solvers.id_for_label }}"
-                                    name="{{ form.solvers.html_name }}">
-                                    {%for solver in form.solvers%}
-                                    {{ solver }}
-                                    {%endfor%}
-                                </select>
-                            </div>
-                            {%endif%}
-                            {%endif%}
-
-                            {% if form.instance.creation_time %}
-                            <label class="label"><strong>HedgeDoc ID </strong></label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fab fa-markdown"></i>
-                                    </span>
-                                </div>
-                                <input id="{{ form.note_id.id_for_label }}" name="{{ form.note_id.html_name }}"
-                                    placeholder="{{ form.note_id.label }}" value="{{ form.note_id.value }}"
-                                    class="form-control" type="text" readonly>
-                            </div>
-
-                            <label class="label"><strong>Excalidraw Room ID </strong></label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fab fa-markdown"></i>
-                                    </span>
-                                </div>
-                                <input id="{{ form.excalidraw_room_id.id_for_label }}"
-                                    name="{{ form.excalidraw_room_id.html_name }}"
-                                    placeholder="{{ form.excalidraw_room_id.label }}"
-                                    value="{{ form.excalidraw_room_id.value }}" class="form-control" type="text"
-                                    readonly>
-                            </div>
-
-                            <label class="label"><strong>Excalidraw Room Key </strong></label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fab fa-markdown"></i>
-                                    </span>
-                                </div>
-                                <input id="{{ form.excalidraw_room_key.id_for_label }}"
-                                    name="{{ form.excalidraw_room_key.html_name }}"
-                                    placeholder="{{ form.excalidraw_room_key.label }}"
-                                    value="{{ form.excalidraw_room_key.value }}" class="form-control" type="text"
-                                    readonly>
-                            </div>
-
-                            <label class="label"><strong>Tags </strong></label>
-                            <div class="input-group mb-3">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">
-                                        <i class="fab fa-markdown"></i>
-                                    </span>
-                                </div>
-                                <select multiple class="form-control" id="{{ form.tags.id_for_label }}"
-                                    name="{{ form.tags.html_name }}">
-                                    {% for tag in form.tags %}
-                                    {{ tag }}
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="card-footer text-muted">
-                            <div class="control card-footer-item">
-                                {% if form.instance.creation_time %}
-                                <button type="button" class="btn-primary btn-sm btn-block"
-                                    onclick="this.form.submit();">Update Challenge
-                                </button>
-                                {% else %}
-                                <button type="button" class="btn-primary btn-sm btn-block"
-                                    onclick="this.form.submit();">Create Challenge
-                                </button>
-                                {% endif %}
-                                <button type="button" class="btn btn-secondary btn-sm btn-block"
-                                    onclick="window.history.back();">Cancel
-                                </button>
-                            </div>
-                        </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 {% endblock %}
