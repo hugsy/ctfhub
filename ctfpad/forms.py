@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 
@@ -134,6 +135,64 @@ class ChallengeUpdateForm(forms.ModelForm):
     def cleaned_tags(self):
         data = [x.lower() for x in self.cleaned_data['tags'].split()]
         return data
+
+
+class ChallengeImportForm(forms.Form):
+    FORMAT_CHOICES = (
+        ("RAW", "RAW"),
+        ("CTFd", "CTFd"),
+        ("rCTF", "rCTF"),
+    )
+    format = forms.ChoiceField(choices=FORMAT_CHOICES, initial='CTFd')
+    data = forms.CharField(widget=forms.Textarea)
+
+    def clean_data(self):
+        data = self.cleaned_data['data']
+
+        # Choose the cleaning method based on the format field.
+        if self.cleaned_data['format'] == 'RAW':
+            return self._clean_raw_data(data)
+        elif self.cleaned_data['format'] == 'CTFd':
+            return self._clean_ctfd_data(data)
+        elif self.cleaned_data['format'] == 'rCTF':
+            return self._clean_rctf_data(data)
+        else:
+            raise forms.ValidationError('Invalid data format.')
+
+    @staticmethod
+    def _clean_raw_data(data):
+        challenges = []
+        for line in data.splitlines():
+            parts = line.split('|')
+            if len(parts) != 2:
+                raise forms.ValidationError('RAW data line does not have exactly two parts.')
+            challenges.append({
+                'name': parts[0].strip(),
+                'category': parts[1].strip(),
+            })
+        return challenges
+
+    @staticmethod
+    def _clean_ctfd_data(data):
+        try:
+            json_data = json.loads(data)
+            if not json_data.get('success') or 'data' not in json_data:
+                raise ValidationError('Invalid JSON format. Please provide valid CTFd JSON data.')
+        except json.JSONDecodeError:
+            raise ValidationError('Invalid JSON format. Please provide valid CTFd JSON data.')
+
+        return json_data["data"]
+
+    @staticmethod
+    def _clean_rctf_data(data):
+        try:
+            json_data = json.loads(data)
+            if "successful" not in json_data.get('message') or 'data' not in json_data:
+                raise ValidationError('Invalid JSON format. Please provide valid rCTF JSON data.')
+        except json.JSONDecodeError:
+            raise ValidationError('Invalid JSON format. Please provide valid rCTF JSON data.')
+
+        return json_data["data"]
 
 
 class ChallengeSetFlagForm(ChallengeUpdateForm):

@@ -656,7 +656,7 @@ class Challenge(TimeStampedModel):
     def jitsi_url(self):
         return f"{JITSI_URL}/{self.ctf.id}--{self.id}"
 
-    def save(self):
+    def save(self, **kwargs):
         if self.flag_tracker.has_changed("flag"):
             self.status = "solved" if self.flag else "unsolved"
             self.solvers.add(self.last_update_by)
