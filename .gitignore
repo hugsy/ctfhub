@@ -10,3 +10,4 @@ external-repos/
 .env
 volumes
 .ruff_cache
+.idea/
