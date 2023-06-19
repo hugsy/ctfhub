@@ -1,20 +1,11 @@
-import json
-
-from django.http.request import HttpRequest
-from django.http.response import HttpResponse
-from ctfpad.decorators import only_if_authenticated_user
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView, FormView
-from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
-
-from ctfpad.decorators import user
+from django.views.generic import FormView
 
 from ctfpad.forms import (
     ChallengeCreateForm,
@@ -23,14 +14,12 @@ from ctfpad.forms import (
     ChallengeUpdateForm,
     ChallengeImportForm,
 )
-from ctfpad.models import Challenge, Ctf, ChallengeCategory
-from ctftools.settings import HEDGEDOC_URL
-
 from ctfpad.helpers import (
     export_challenge_note,
     generate_github_page_header,
 )
 from ctfpad.models import Challenge, Ctf
+from ctfpad.models import ChallengeCategory
 from ctftools.settings import HEDGEDOC_URL
 
 
