@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+
+  excalidraw:
+    # https://github.com/excalidraw/excalidraw/blob/master/docker-compose.yml
+    build:
+      # context: https://github.com/excalidraw/excalidraw.git#master
+      context: https://github.com/b310-digital/excalidraw.git#master
+      args:
+        - NODE_ENV=${EXCALIDRAW_NODE_ENV}
+    networks:
+      - ctfpad
+      - excalidraw
+    ports:
+      - 3001:80
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=${EXCALIDRAW_NODE_ENV}
+
+    healthcheck:
+      disable: true
+    stdin_open: true
+
+  excalidraw-room:
+    image: excalidraw/excalidraw-room
+    restart: always
+    networks:
+      - excalidraw
+    ports:
+      - 3002:80
+
+  excalidraw-storage-backend:
+    # repo https://gitlab.com/kiliandeca/excalidraw-storage-backend
+    image: kiliandeca/excalidraw-storage-backend
+    networks:
+      - excalidraw
+    ports:
+      - 3003:8080
+    restart: always
+    env_file:
+      - .env
+    environment:
+      STORAGE_URI: redis://:${REDIS_PASSWORD}@redis:6379
+      STORAGE_TTL: 2592000000
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    networks:
+      - excalidraw
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: always
+    volumes:
+      - redis-vol:/data
+
+networks:
+  excalidraw:
+    driver: bridge
+
+volumes:
+  redis-vol:

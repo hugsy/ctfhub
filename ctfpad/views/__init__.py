@@ -1,31 +1,31 @@
+import datetime
+from typing import Optional
+
 from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls.base import reverse, reverse_lazy
-from ctfpad.decorators import only_if_authenticated_user
+from django.core.paginator import Paginator
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from django.core.paginator import Paginator
-from django.shortcuts import redirect
+from django.urls.base import reverse
 
-import datetime
-
-from . import (
-    users,
-    teams,
-    ctfs,
-    challenges,
-    categories,
-    files,
-    tags,
-)
+from ctfpad.decorators import user
 
 from ..models import (
-    Ctf, CtfStats, SearchEngine, Team,
+    CtfStats,
     Member,
+    SearchEngine,
+    Team,
 )
 
+from . import (
+    categories,
+    challenges,
+    ctfs,
+    files,
+    tags,
+    teams,
+    users,
+)
 
 def index(request: HttpRequest) -> HttpResponse:
     """
@@ -41,7 +41,7 @@ def index(request: HttpRequest) -> HttpResponse:
     return redirect("ctfpad:dashboard")
 
 
-@only_if_authenticated_user
+@user.is_authenticated
 def dashboard(request: HttpRequest) -> HttpResponse:
     """Dashboard view: contains basic summary of all the info in the ctfpad
 
@@ -79,8 +79,8 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     return render(request, "ctfpad/dashboard/dashboard.html", context)
 
 
-@only_if_authenticated_user
-def generate_stats(request: HttpRequest, year: int = None) -> HttpResponse:
+@user.is_authenticated
+def generate_stats(request: HttpRequest, year: Optional[int] = None) -> HttpResponse:
     """Generate some statistics of the CTFPad
 
     Args:
@@ -106,7 +106,7 @@ def generate_stats(request: HttpRequest, year: int = None) -> HttpResponse:
     return render(request, "ctfpad/stats/detail.html", context)
 
 
-@only_if_authenticated_user
+@user.is_authenticated
 def search(request: HttpRequest) -> HttpResponse:
     """Search pattern(s) in database
 
@@ -135,7 +135,7 @@ def search(request: HttpRequest) -> HttpResponse:
     return render(request, "search/list.html", context)
 
 
-@only_if_authenticated_user
+@user.is_authenticated
 def toggle_dark_mode(request: HttpRequest) -> HttpResponse:
     """Toggle dark mode cookie for user
 

@@ -8,3 +8,5 @@ uploads/media/
 uploads/files/
 external-repos/
 .env
+volumes
+.ruff_cache
