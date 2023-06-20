@@ -3,10 +3,9 @@
 {% block content %}
 
 {% include 'snippets/messages.html' %}
+{% include 'snippets/formerror.html' %}
 
 <div class="row" style="margin-top: 100px;"></div>
-
-{{ form.errors }}
 
 <div class="row">
 	<div class="container h-100">
@@ -20,18 +19,12 @@
 					<form method="POST" action="{% url 'ctfpad:user-login' %}">
 						{% csrf_token %}
 						<div class="input-group mb-3">
-							<div class="input-group-append">
-								<span class="input-group-text"><i class="fas fa-user"></i></span>
-							</div>
-
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
 							<input type="text" name="username" placeholder="Username..." class="form-control">
 						</div>
 
 						<div class="input-group mb-2">
-							<div class="input-group-append">
-								<span class="input-group-text"><i class="fas fa-key"></i></span>
-							</div>
-
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
 							<input type="password" name="password" placeholder="Password..." class="form-control" >
 						</div>
 

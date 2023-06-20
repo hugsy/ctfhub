@@ -2,233 +2,212 @@
 
 {% block content %}
 
-<br />
+    <br/>
 
-{% include 'snippets/messages.html' %}
+    {% include 'snippets/messages.html' %}
 
-{% include 'snippets/formerror.html' %}
+    {% include 'snippets/formerror.html' %}
 
-<div class="row">
-    <div class="col-lg-6 offset-lg-3">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title">
-                    <p class="card-header-title">Settings for profile '{{ member.username }}'</p>
-                </h5>
-                <span class="align-right">
-                    <small>For advanced user settings update, <a
-                            href="{% url 'ctfpad:users-update-advanced' member.user.id %}">[click here]</a>
-                        or to change your password <a href="{% url 'ctfpad:users-update-password' %}">[click
-                            here]</a></small>
-                </span>
-            </div>
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <p class="card-header-title">Settings for profile '{{ member.username }}'</p>
+                    </h5>
+                    <span class="align-right">
+                <small>For advanced user settings update, <a
+                        href="{% url 'ctfpad:users-update-advanced' member.user.id %}">[click here]</a>
+                or to change your password <a href="{% url 'ctfpad:users-update-password' %}">[click here]</a></small>
+            </span>
+                </div>
 
-            <div class="card-body">
-                <form class="form" method="POST" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="modal-body">
+                <div class="card-body">
+                    <form class="form" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="modal-body">
 
-                        <label class="label"><strong>Avatar</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                            <label class="label"><strong>Avatar</strong></label>
+                            <div class="input-group mb-3">
                                 <span class="input-group-text">
                                     <i class="fas fa-user-circle"></i>
                                 </span>
+                                {{ form.avatar }}
                             </div>
 
-                            {{ form.avatar }}
-                        </div>
-
-                        <label class="label"><strong>Description</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                            <label class="label"><strong>Description</strong></label>
+                            <div class="input-group mb-3">
                                 <span class="input-group-text">
                                     <i class="fas fa-hat-cowboy-side"></i>
                                 </span>
+                                <textarea id="{{ form.description.id_for_label }}"
+                                          name="{{ form.description.html_name }}"
+                                          placeholder="{{ form.description.label }}"
+                                          class="form-control">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
                             </div>
-                            <textarea id="{{ form.description.id_for_label }}" name="{{ form.description.html_name }}"
-                                placeholder="{{ form.description.label }}" value="{{ form.description.value }}"
-                                class="form-control">{% if form.description.value %}
-                                    {{ form.description.value }}{% endif %}</textarea>
-                        </div>
 
-                        {% if not request.user.member.is_guest %}
-                        <label class="label"><strong>Current CTF</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
-                                <span class="input-group-text">
-                                    <i class="fas fa-flag"></i>
-                                </span>
-                            </div>
-                            <select class="form-control" id="{{ form.selected_ctf.id_for_label }}"
-                                name="{{ form.selected_ctf.html_name }}">
-                                {% for choice in form.selected_ctf %}
-                                {{ choice }}
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% else %}
-                        <input type="text" name="{{ form.selected_ctf.html_name }}"
-                            value="{{ form.selected_ctf.value }}" hidden />
-                        {% endif %}
-
-                        {% if not request.user.member.is_guest %}
-                        <label class="label"><strong>Status</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
-                                <span class="input-group-text">
-                                    <i class="fas fa-calendar-week"></i>
-                                </span>
-                            </div>
-                            <select class="form-control" id="{{ form.status.id_for_label }}"
-                                name="{{ form.status.html_name }}">
-                                {% for choice in form.status %}
-                                {{ choice }}
-                                {% endfor %}
-                            </select>
-                        </div>
-                        {% else %}
-                        <input type="text" name="{{ form.status.html_name }}" value="{{ form.status.value }}" hidden />
-                        {% endif %}
-
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label class="label"><strong>Country</strong></label>
+                            {% if not request.user.member.is_guest %}
+                                <label class="label"><strong>Current CTF</strong></label>
                                 <div class="input-group mb-3">
-                                    <div class="input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-flag"></i>
+                                    </span>
+                                    <select class="form-control" id="{{ form.selected_ctf.id_for_label }}"
+                                            name="{{ form.selected_ctf.html_name }}">
+                                        {% for choice in form.selected_ctf %}
+                                            {{ choice }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% else %}
+                                <input type="text" name="{{ form.selected_ctf.html_name }}"
+                                       value="{{ form.selected_ctf.value }}" hidden/>
+                            {% endif %}
+
+                            {% if not request.user.member.is_guest %}
+                                <label class="label"><strong>Status</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar-week"></i>
+                                    </span>
+                                    <select class="form-control" id="{{ form.status.id_for_label }}"
+                                            name="{{ form.status.html_name }}">
+                                        {% for choice in form.status %}
+                                            {{ choice }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            {% else %}
+                                <input type="text" name="{{ form.status.html_name }}" value="{{ form.status.value }}"
+                                       hidden/>
+                            {% endif %}
+
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label class="label"><strong>Country</strong></label>
+                                    <div class="input-group mb-3">
                                         <span class="input-group-text">
                                             <i class="fas fa-globe-asia"></i>
                                         </span>
+                                        <select class="form-control" id="{{ form.country.id_for_label }}"
+                                                name="{{ form.country.html_name }}">
+                                            {% for choice in form.country %}
+                                                {{ choice }}
+                                            {% endfor %}
+                                        </select>
                                     </div>
-
-                                    <select class="form-control" id="{{ form.country.id_for_label }}"
-                                        name="{{ form.country.html_name }}">
-                                        {% for choice in form.country %}
-                                        {{ choice }}
-                                        {% endfor %}
-                                    </select>
                                 </div>
-                            </div>
 
-                            <div class="form-group col-md-6">
-                                <label class="label"><strong>Timezone</strong></label>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-append">
+                                <div class="form-group col-md-6">
+                                    <label class="label"><strong>Timezone</strong></label>
+                                    <div class="input-group mb-3">
                                         <span class="input-group-text">
                                             <i class="fas fa-clock"></i>
                                         </span>
+                                        <select class="form-control" id="{{ form.timezone.id_for_label }}"
+                                                name="{{ form.timezone.html_name }}">
+                                            {% for choice in form.timezone %}
+                                                {{ choice }}
+                                            {% endfor %}
+                                        </select>
                                     </div>
-                                    <select class="form-control" id="{{ form.timezone.id_for_label }}"
-                                        name="{{ form.timezone.html_name }}">
-                                        {% for choice in form.timezone %}
-                                        {{ choice }}
-                                        {% endfor %}
-                                    </select>
                                 </div>
                             </div>
-                        </div>
 
-                        <label class="label"><strong><abbr title="You can use them to login on the pad directly">Pad
-                                    Credentials*</abbr></strong></label>
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="inputHedgedocLogin">Login</label>
+                            <label class="label"><strong><abbr title="You can use them to login on the pad directly">Pad
+                                Credentials*</abbr></strong></label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user-circle"></i>
+                                </span>
                                 <input type="text" class="form-control" id="inputHedgedocLogin"
-                                    value="{{ member.hedgedoc_username }}" class="form-control" readonly />
+                                       value="{{ member.hedgedoc_username }}" class="form-control" readonly/>
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control reveal" id="inputHedgedocPassword"
+                                       value="{{ member.hedgedoc_password }}" class="form-control" readonly/>
+                                <button class="btn btn-outline-secondary" onclick="toggle_input_password_visibility();"
+                                        type="button"><i class="far fa-eye-slash"></i></button>
                             </div>
-                            <div class="form-group col-md-6">
-                                <label for="inputHedgedocPassword">Password</label>
-                                <div class="input-group">
-                                    <input type="password" class="form-control reveal" id="inputHedgedocPassword"
-                                        value="{{ member.hedgedoc_password }}" class="form-control" readonly />
-                                    <span class="input-group-btn">
-                                        <button class="btn btn-default" onclick="toggle_input_password_visibility();"
-                                            type="button"><i class="far fa-eye-slash"></i></button>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
 
-                        <label class="label"><strong>Blog URL</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                            <label class="label"><strong>Blog URL</strong></label>
+                            <div class="input-group mb-3">
                                 <span class="input-group-text">
                                     <i class="fas fa-link"></i>
                                 </span>
+                                <input type="url" id="{{ form.blog_url.id_for_label }}"
+                                       name="{{ form.blog_url.html_name }}"
+                                       placeholder="{{ form.blog_url.label }}" value="{{ form.blog_url.value }}"
+                                       class="form-control"/>
                             </div>
-                            <input type="url" id="{{ form.blog_url.id_for_label }}" name="{{ form.blog_url.html_name }}"
-                                placeholder="{{ form.blog_url.label }}" value="{{ form.blog_url.value }}"
-                                class="form-control" />
-                        </div>
 
-                        <label class="label"><strong>Github</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                            <label class="label"><strong>Github</strong></label>
+                            <div class="input-group mb-3">
                                 <span class="input-group-text">
                                     <i class="fab fa-github"></i>
                                 </span>
+                                <input type="url" id="{{ form.github_url.id_for_label }}"
+                                       name="{{ form.github_url.html_name }}" placeholder="{{ form.github_url.label }}"
+                                       value="{{ form.github_url.value }}" class="form-control"/>
                             </div>
-                            <input type="url" id="{{ form.github_url.id_for_label }}"
-                                name="{{ form.github_url.html_name }}" placeholder="{{ form.github_url.label }}"
-                                value="{{ form.github_url.value }}" class="form-control" />
-                        </div>
 
-                        <label class="label"><strong>Twitter</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                            <label class="label"><strong>Twitter</strong></label>
+                            <div class="input-group mb-3">
                                 <span class="input-group-text">
                                     <i class="fab fa-twitter"></i>
                                 </span>
+                                <input type="url"
+                                       id={{ form.twitter_url.id_for_label }} name="{{ form.twitter_url.html_name }}"
+                                       placeholder="{{ form.twitter_url.label }}" value="{{ form.twitter_url.value }}"
+                                       class="form-control"/>
                             </div>
-                            <input type="url" id={{ form.twitter_url.id_for_label }}
-                                name="{{ form.twitter_url.html_name }}" placeholder="{{ form.twitter_url.label }}"
-                                value="{{ form.twitter_url.value }}" class="form-control" />
-                        </div>
 
-                        <label class="label"><strong>Member Since</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
+                            <label class="label"><strong>Member Since</strong></label>
+                            <div class="input-group mb-3">
                                 <span class="input-group-text">
                                     <i class="fas fa-calendar-week"></i>
                                 </span>
+                                <input type="date" id="{{ form.joined_time.id_for_label }}"
+                                       name="{{ form.joined_time.html_name }}"
+                                       placeholder="{{ form.joined_time.label }}"
+                                       value="{{ form.joined_time.value|date:'Y-m-d' }}" class="form-control">
                             </div>
-                            <input type="date" id="{{ form.joined_time.id_for_label }}"
-                                name="{{ form.joined_time.html_name }}" placeholder="{{ form.joined_time.label }}"
-                                value="{{ form.joined_time.value|date:'Y-m-d' }}" class="form-control">
+
+                            {% if request.user.member.has_superpowers %}
+                                <label class="label"><strong>Has Super-Powers?</strong></label>
+                                <div class="input-group mb-3">
+                                    <div class="custom-control custom-switch">
+                                        <input type="checkbox" class="custom-control-input"
+                                               id="{{ form.has_superpowers.id_for_label }}"
+                                               name="{{ form.has_superpowers.html_name }}"
+                                                {% if form.has_superpowers.value %}
+                                               &nbsp; checked
+                                                {% endif %}
+                                        >
+                                        <label class="custom-control-label"
+                                               for="{{ form.has_superpowers.id_for_label }}"></label>
+                                    </div>
+                                </div>
+                            {% endif %}
                         </div>
 
-                        {% if request.user.member.has_superpowers %}
-                        <label class="label"><strong>Has Super-Powers?</strong></label>
-                        <div class="input-group mb-3">
-                            <div class="input-group-append">
-                            </div>
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input"
-                                    id="{{ form.has_superpowers.id_for_label }}"
-                                    name="{{ form.has_superpowers.html_name }}" {% if form.has_superpowers.value %}
-                                    &nbsp; checked {% endif %}>
-                                <label class="custom-control-label"
-                                    for="{{ form.has_superpowers.id_for_label }}"></label>
+                        <div class="card-footer text-muted">
+                            <div class="control card-footer-item">
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-primary btn-sm"
+                                            onclick="this.form.submit();">
+                                        Update Settings
+                                    </button>
+                                    <button type="button" class="btn btn-secondary btn-sm"
+                                            onclick="window.history.back();">Cancel
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="card-footer text-muted">
-                        <div class="control card-footer-item">
-                            <button type="button" class="btn-primary btn-sm btn-block" onclick="this.form.submit();">
-                                Update Settings
-                            </button>
-                            <button type="button" class="btn btn-secondary btn-sm btn-block"
-                                onclick="window.history.back();">Cancel
-                            </button>
-                        </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 

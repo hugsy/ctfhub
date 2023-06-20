@@ -7,8 +7,7 @@
 {% include 'snippets/messages.html' %}
 {% load ctfpad_filters %}
 
-
-{{ form.errors }}
+{% include 'snippets/formerror.html' %}
 
 <div class="row">
     <div class="col-2"></div>
@@ -35,7 +34,7 @@
                 <div class="row">
                     <div class="col-10"><h5 class="card-title">Existing tags</h5></div>
                     <div class="col-2" style="text-align: right;">
-                        <a title="Add a tag" data-toggle="modal" data-target="#QuickAddTagModal" href="#">
+                        <a title="Add a tag" data-bs-toggle="modal" data-bs-target="#QuickAddTagModal" href="#">
                             <strong>
                                 <i class="fas fa-plus"></i>
                             </strong>
@@ -54,7 +53,7 @@
                     &nbsp;
 
                     <a href="{% url 'ctfpad:tags-delete' tag.id %}" title="Delete {{tag.name}}">
-                        <span class="badge badge-light" style="color:blue; font-weight: bold;" ><i class="fas fa-times"></i></span>
+                        <span class="badge text-bg-light" style="color:blue; font-weight: bold;" ><i class="fas fa-times"></i></span>
                     </a>
                 </button>
                 &nbsp; &nbsp;

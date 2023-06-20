@@ -1,29 +1,24 @@
 <div class="modal fade" id="QuickAddTagModal" tabindex="-1" aria-labelledby="QuickAddTagModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-	    <div class="modal-content">
+    <div class="modal-dialog">
+        <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="QuickAddTagModalLabel">Quick Add Tag</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" action="{% url 'ctfpad:tags-create' %}">
             {% csrf_token %}
                 <div class="modal-body">
                     <div class="form-group">
                         <div class="input-group mb-3">
-                            <div class="input-group-append">
-                                <span class="input-group-text"><i class="fas fa-folder-open"></i></span>
-                            </div>
+                            <span class="input-group-text"><i class="fas fa-folder-open"></i></span>
                             <input id="{{add_tag_form.name.id_for_label}}" name="{{add_tag_form.name.html_name }}" placeholder="{{add_tag_form.name.label}}"  class="form-control" type="text" value="" required>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-primary" onclick="this.form.submit();">Add a Tag</button>
                     </div>
                 </div>
             </form>
-	    </div>
-	</div>
+        </div>
+    </div>
 </div>

@@ -1,9 +1,3 @@
-body
-{
-    background: #ebeff5 !important;
-}
-
-
 div #total-player-registered
 {
     background-color: #4cb4c7;
@@ -70,7 +64,6 @@ div #current-ctf
     background: #f7ba5b !important;
     color: white !important;
     border: 0 !important;
-    border-radius: 0.25rem 0 0 0.25rem !important;
 }
 
 .input_user,
@@ -90,4 +83,13 @@ div #current-ctf
     background-color: rgba(78, 161, 78, 0.527);
     font-style: italic;
     text-decoration: line-through;
+}
+
+.progress {
+    height: 1.5rem;
+    font-size: 1rem;
+}
+
+.ratio-custom {
+    --bs-aspect-ratio: 47.75%;
 }

@@ -8,37 +8,51 @@
     <div class="row">
         <div class="col-6">
             <div class="row mb-3">
-                <div class="col-3">
-                    <a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:challenges-create' ctf=ctf.id %}">
-                        <strong>New challenge</strong>
-                    </a>
+                <div class="col-2">
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-success btn-sm" href="{% url 'ctfpad:challenges-create' ctf=ctf.id %}">
+                            <strong><i class="fas fa-plus-circle"></i></strong>
+                        </a>
+                    </div>
                 </div>
 
-                <div class="col-3">
-                    <a class="btn btn-success btn-sm btn-block" href="{% url 'ctfpad:challenges-import' ctf=ctf.id %}">
-                        <strong>Import challenges</strong>
-                    </a>
+                <div class="col-6">
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-success btn-sm" href="{% url 'ctfpad:challenges-import' ctf=ctf.id %}">
+                            <strong>Import challenges</strong>
+                        </a>
+                    </div>
                 </div>
 
-                <div class="col-3">
-                    <a class="btn btn-primary btn-sm btn-block" title="Add a category" data-toggle="modal" data-target="#QuickAddCategoryModal" href="#">
-                        <strong><i class="fas fa-folder-open" ></i></strong>
-                    </a>
+                <div class="col-2">
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary btn-sm" title="Add a category" data-bs-toggle="modal"
+                           data-bs-target="#QuickAddCategoryModal" href="#">
+                            <strong><i class="fas fa-folder-open"></i></strong>
+                        </a>
+                    </div>
                 </div>
 
-                <div class="col-3">
-                    <a  class="btn btn-primary btn-sm btn-block" title="Add a tag"   data-toggle="modal" data-target="#QuickAddTagModal" href="#">
-                        <strong><i class="fas fa-tag"></i></strong>
-                    </a>
+                <div class="col-2">
+                    <div class="d-grid gap-2">
+                        <a class="btn btn-primary btn-sm" title="Add a tag" data-bs-toggle="modal"
+                           data-bs-target="#QuickAddTagModal" href="#">
+                            <strong><i class="fas fa-tag"></i></strong>
+                        </a>
+                    </div>
                 </div>
+
             </div>
         </div>
         <div class="col-6">
-            <form id="gotoFilteredChallengeFormId" onsubmit="gotoFilteredChallenge()" class="input-group input-group-sm">
+            <form id="gotoFilteredChallengeFormId" onsubmit="gotoFilteredChallenge()"
+                  class="input-group input-group-sm">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="ChallengeFilter"><i class="fas fa-filter"></i></span>
                 </div>
-                <input id="ChallengeFilterPattern" onkeyup="filterChallenges()" type="text" class="form-control" placeholder="Filter challenges (name, category, points)..." aria-label="ChallengeFilter" aria-describedby="ChallengeFilter">
+                <input id="ChallengeFilterPattern" onkeyup="filterChallenges()" type="text" class="form-control"
+                       placeholder="Filter challenges (name, category, points)..." aria-label="ChallengeFilter"
+                       aria-describedby="ChallengeFilter">
             </form>
         </div>
     </div>
@@ -55,77 +69,70 @@
 
         {% for challenge in ctf.challenges %}
             {% if challenge.status == "solved" %}
-            <tr class="table-row ctf-completed-challenge-row" data-href="{% url 'ctfpad:challenges-detail' challenge.id %}">
-            {% else %}
-            <tr class="table-row" data-href="{% url 'ctfpad:challenges-detail' challenge.id %}">
+                <tr class="table-row ctf-completed-challenge-row"
+                    data-href="{% url 'ctfpad:challenges-detail' challenge.id %}">
+                    {% else %}
+                <tr class="table-row" data-href="{% url 'ctfpad:challenges-detail' challenge.id %}">
             {% endif %}
-                <td>
-                    <span class="badge badge-primary">{{challenge.category.name}}</span>
-                </td>
-                <td>{{challenge.name}}</td>
-                <td>{{challenge.points}}</td>
-                <td>{{challenge.last_modification_time|naturaltime}}</td>
-                <td><a href="{% url 'ctfpad:challenges-detail' challenge.id %}" title='Goto'><i class="fas fa-play"></i></a></td>
-                <td><a href="{% url 'ctfpad:challenges-edit' challenge.id %}" title='Update'><i class="fas fa-edit"></i></a></td>
-                <td><a href="{% url 'ctfpad:challenges-delete' challenge.id %}" title='Delete'><i class="fas fa-trash"></i></a></td>
-            </tr>
+        <td>
+            <span class="badge text-bg-primary">{{ challenge.category.name }}</span>
+        </td>
+        <td>{{ challenge.name }}</td>
+        <td>{{ challenge.points }}</td>
+        <td>{{ challenge.last_modification_time|naturaltime }}</td>
+        <td><a href="{% url 'ctfpad:challenges-detail' challenge.id %}" title='Goto'><i class="fas fa-play"></i></a>
+        </td>
+        <td><a href="{% url 'ctfpad:challenges-edit' challenge.id %}" title='Update'><i class="fas fa-edit"></i></a>
+        </td>
+        <td><a href="{% url 'ctfpad:challenges-delete' challenge.id %}" title='Delete'><i class="fas fa-trash"></i></a>
+        </td>
+        </tr>
         {% endfor %}
     </table>
 </div>
 
 
 <script>
-    function filterChallenges()
-    {
+    function filterChallenges() {
         let pattern = document.getElementById("ChallengeFilterPattern").value.toUpperCase();
         let table = document.getElementById("CtfChallengeTable");
         let rows = table.getElementsByTagName("tr");
 
-        for (let i=0; i<rows.length; i++)
-        {
+        for (let i = 0; i < rows.length; i++) {
             let bMatchedPattern = false;
-            for (let j=0; j<3; j++)
-            {
+            for (let j = 0; j < 3; j++) {
                 col = rows[i].getElementsByTagName("td")[j];
-                if (col)
-                {
+                if (col) {
                     txtValue = col.textContent || col.innerText;
-                    if (txtValue.toUpperCase().indexOf(pattern) > -1)
-                    {
+                    if (txtValue.toUpperCase().indexOf(pattern) > -1) {
                         bMatchedPattern = true;
                         break;
                     }
                 }
             }
-            if(bMatchedPattern)
-            {
+            if (bMatchedPattern) {
                 rows[i].style.display = "";
-            }
-            else
-            {
+            } else {
                 rows[i].style.display = "none";
             }
         }
     }
 
 
-    function gotoFilteredChallenge()
-    {
+    function gotoFilteredChallenge() {
         let table = document.getElementById("CtfChallengeTable");
         let rows = table.getElementsByTagName("tr");
 
         let visible_rows = 0;
         let visible_row_index = -1;
-        for (let i=0; i<rows.length; i++)
-        {
-            if (rows[i].style.display == "")
-            {
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i].style.display == "") {
                 visible_rows += 1;
                 visible_row_index = i;
             }
         }
 
-        if (visible_rows>1)
+        if (visible_rows > 1)
             return;
 
         let link_col = rows[visible_row_index].getElementsByTagName("td")[4];
