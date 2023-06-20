@@ -173,15 +173,15 @@
                             <div class="col-sm-8">
                                 {{ ctf.weight }}&nbsp;&nbsp;
                                 {% if ctf.weight <= 10 %}
-                                    <span class="badge badge-pill badge-light">Casual CTF</span>
+                                    <span class="badge rounded-pill text-bg-ligh">Casual CTF</span>
                                 {% elif ctf.weight <= 35 %}
-                                    <span class="badge badge-pill badge-info">Minor CTF</span>
+                                    <span class="badge rounded-pill text-bg-info">Minor CTF</span>
                                 {% elif ctf.weight <= 70 %}
-                                    <span class="badge badge-pill badge-warning">Important CTF</span>
+                                    <span class="badge rounded-pill text-bg-warning">Important CTF</span>
                                 {% elif ctf.weight <= 95 %}
-                                    <span class="badge badge-pill badge-danger">Major CTF</span>
+                                    <span class="badge rounded-pill text-bg-danger">Major CTF</span>
                                 {% elif ctf.weight <= 100 %}
-                                    <span class="badge badge-pill badge-dark">Unmissable CTF</span>
+                                    <span class="badge rounded-pill text-bg-dark">Unmissable CTF</span>
                                 {% endif %}
                             </div>
                         </div>

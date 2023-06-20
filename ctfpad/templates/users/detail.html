@@ -239,7 +239,7 @@
                                 <tr>
                                     <td><a href="{{ challenge.ctf.get_absolute_url }}">{{ challenge.ctf }}</a></td>
                                     <td><a href="{{ challenge.get_absolute_url }}">{{ challenge.name }}</a></td>
-                                    <td><span class="badge badge-primary">{{ challenge.category.name }}</span></td>
+                                    <td><span class="badge text-bg-primary">{{ challenge.category.name }}</span></td>
                                     <td>{{ challenge.points }}</td>
                                     <td>
                                         <abbr title='Local time: {{ challenge.solved_time| as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ challenge.solved_time | date:"Y/m/d H:i:s" }}</abbr>

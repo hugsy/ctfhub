@@ -52,13 +52,13 @@
                         <strong>{{ challenge.name }}</strong> ({{ challenge.points }} points)
                         &nbsp;
                         <a href="{% url 'ctfpad:search' %}?q=cat:category+{{ challenge.category|urlencode }}">
-                            <span class="badge badge-danger">{{ challenge.category }}</span>
+                            <span class="badge text-bg-danger">{{ challenge.category }}</span>
                         </a>
 
                         {% for tag in challenge.tags.all %}
                             &nbsp;
                             <a href="{% url 'ctfpad:search' %}?q=cat:tag+{{ tag|urlencode }}">
-                                <span class="badge badge-info">&nbsp;#{{ tag }}</span>
+                                <span class="badge text-bg-info">&nbsp;#{{ tag }}</span>
                             </a>
                         {% endfor %}
                     </li>
