@@ -3,7 +3,7 @@ import uuid
 import os
 import hashlib
 from urllib.parse import quote
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from collections import namedtuple, Counter
 from statistics import mean
@@ -11,6 +11,7 @@ import zipfile
 import requests
 import tempfile
 
+from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
@@ -23,7 +24,7 @@ from django.utils.functional import cached_property
 from model_utils.fields import MonitorField, StatusField
 from model_utils import Choices, FieldTracker
 
-from ctfpad.helpers import ctftime_ctfs
+from ctfpad.helpers import ctftime_ctfs, get_named_storage, get_challenge_upload_path
 
 from ctftools.settings import (
     EXCALIDRAW_ROOM_ID_PATTERN, EXCALIDRAW_ROOM_KEY_PATTERN, HEDGEDOC_URL,
@@ -432,7 +433,7 @@ class Member(TimeStampedModel):
 
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
-    avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
+    avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH, storage=get_named_storage("MEDIA"))
     description = models.TextField(blank=True)
     country = StatusField(choices_name='COUNTRIES')
     timezone = StatusField(choices_name='TIMEZONES')
@@ -673,8 +674,14 @@ class ChallengeFile(TimeStampedModel):
     CTF file model, for a file associated with a challenge
     """
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    file = models.FileField(null=True, upload_to=CTF_CHALLENGE_FILE_PATH,
-                            validators=[challenge_file_max_size_validator, ])
+    file = models.FileField(
+        null=True,
+        upload_to=get_challenge_upload_path,
+        storage=get_named_storage("MEDIA"),
+        validators=[
+            challenge_file_max_size_validator,
+        ],
+    )
     challenge = models.ForeignKey(Challenge, on_delete=models.CASCADE)
     mime = models.CharField(max_length=128)
     type = models.CharField(max_length=512)
@@ -692,22 +699,24 @@ class ChallengeFile(TimeStampedModel):
     def url(self):
         return self.file.url
 
+    def download_url(self):
+        return f"/challenges/{self.challenge.id}/files/{self.id}/download"
+
     def save(self):
-        # save() to commit files to proper location
         super(ChallengeFile, self).save()
 
-        # update missing properties
-        p = Path(CTF_CHALLENGE_FILE_ROOT) / self.name
-        if p.exists():
-            abs_path = str(p.absolute())
+        # Open the file using the storage backend.
+        with self.file.storage.open(self.file.name, "rb") as file:
+            # Compute and store additional metadata.
             if not self.mime:
-                self.mime = get_file_mime(p)
+                self.mime = get_file_mime(file)
             if not self.type:
-                self.type = get_file_magic(p)
+                self.type = get_file_magic(file)
             if not self.hash:
-                self.hash = hashlib.sha256(
-                    open(abs_path, "rb").read()).hexdigest()
-            super(ChallengeFile, self).save()
+                self.hash = hashlib.sha256(file.read()).hexdigest()
+
+        # Save the model again to store the additional metadata.
+        super(ChallengeFile, self).save()
         return
 
 

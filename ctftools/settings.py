@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.sites',
-    'model_utils',
+    'model_utils'
+    'django_sendfile',
     'ctfpad',
 ]
 
@@ -158,6 +159,40 @@ CTF_CHALLENGE_FILE_ROOT = MEDIA_ROOT / CTF_CHALLENGE_FILE_PATH
 USERS_FILE_URL = "/uploads/media/"
 USERS_FILE_PATH = "media/"
 USERS_FILE_ROOT = MEDIA_ROOT / USERS_FILE_PATH
+
+STORAGES = {
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "OPTIONS": {
+            "location": str(BASE_DIR / "static"),
+            "base_url": "/static/",
+        },
+    },
+    "MEDIA": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": str(BASE_DIR / "uploads"),
+            "base_url": "/uploads/",
+        },
+    },
+    "CHALLENGE_FILES": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": str(BASE_DIR / "uploads" / "files"),
+            "base_url": "/uploads/files/",
+        },
+    },
+    "USER_FILES": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": str(BASE_DIR / "uploads" / "media"),
+            "base_url": "/uploads/media/",
+        },
+    },
+}
+
+SENDFILE_BACKEND = "django_sendfile.backends.simple"
+SENDFILE_ROOT = str(BASE_DIR / "uploads/files")
 
 HEDGEDOC_URL = os.getenv("CTFPAD_HEDGEDOC_URL") or 'http://localhost:3000'
 USE_INTERNAL_HEDGEDOC = get_boolean("CTFPAD_HEDGEDOC_IS_INTERNAL")

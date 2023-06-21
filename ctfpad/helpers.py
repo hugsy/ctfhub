@@ -1,6 +1,8 @@
 from datetime import datetime
 from time import time
 from django.utils.crypto import get_random_string
+from django.core.files.storage import get_storage_class
+from django.conf import settings
 import magic
 import os
 import pathlib
@@ -336,3 +338,13 @@ def generate_excalidraw_room_id() -> str:
 
 def generate_excalidraw_room_key() -> str:
     return exrex.getone(EXCALIDRAW_ROOM_KEY_PATTERN)
+
+
+def get_named_storage(name):
+    config = settings.STORAGES[name]
+    storage_class = get_storage_class(config["BACKEND"])
+    return storage_class(**config["OPTIONS"])
+
+
+def get_challenge_upload_path(instance, filename):
+    return f"files/{instance.challenge.id}/{filename}"

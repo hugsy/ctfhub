@@ -1,4 +1,4 @@
-django >= 4
+django >= 4.2.2
 Pillow
 requests
 python-magic
@@ -7,3 +7,4 @@ django-model-utils
 bleach
 pytz
 exrex
+django-sendfile2

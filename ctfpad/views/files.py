@@ -1,12 +1,14 @@
 from pathlib import Path
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.generic import DeleteView, CreateView, DetailView
+from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
 from ctfpad.forms import ChallengeFileCreateForm
 from ctfpad.models import ChallengeFile
+from django_sendfile import sendfile
 
 
 class ChallengeFileCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -51,3 +53,10 @@ class ChallengeFileDetailView(LoginRequiredMixin, SuccessMessageMixin, DetailVie
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {'form': form})
 
+
+class ChallengeFileDownloadView(LoginRequiredMixin, View):
+    @staticmethod
+    def get(request, *args, **kwargs):
+        challenge_file = get_object_or_404(ChallengeFile, pk=kwargs["pk"])
+
+        return sendfile(request, challenge_file.file.path, mimetype=challenge_file.mime)

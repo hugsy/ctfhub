@@ -73,6 +73,8 @@ urlpatterns = [
          name="challenge-files-detail"),
     path("challenges/<uuid:challenge_id>/files/<uuid:pk>/delete/", views.files.ChallengeFileDeleteView.as_view(),
          name="challenge-files-delete"),
+    path("challenges/<uuid:challenge_id>/files/<uuid:pk>/download", views.files.ChallengeFileDownloadView.as_view(),
+         name="challenge-file-download"),
 
     # categories
     path("categories/create/", views.categories.CategoryCreateView.as_view(), name="categories-create"),
