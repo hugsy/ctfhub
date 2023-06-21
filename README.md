@@ -3,7 +3,7 @@
 </p>
 
 <h2 align="center"><b>CTFPad</b></h2>
-<h3 align="center">Where CTF happen</h3>
+<h3 align="center">Where CTFs happen</h3>
 
 <p align="center">
   <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
@@ -67,6 +67,9 @@ $ nano scripts/proxy/.env
 $ docker compose -f scripts/proxy/docker-compose.yml -f ./docker-compose.yml up -d --build
 ```
 
+## Gallery 
+
+Check out the [docs](docs/gallery.md)
 
 ## Contribution
 
