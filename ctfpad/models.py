@@ -627,6 +627,8 @@ class Challenge(TimeStampedModel):
         "ctfpad.Member", blank=True, related_name="solved_challenges")
     tags = models.ManyToManyField(
         "ctfpad.Tag", blank=True, related_name="challenges")
+    working_on_it = models.ManyToManyField(
+        "ctfpad.Member", blank=True, related_name="working_on_challenges")
 
     @property
     def solved(self) -> bool:
@@ -656,6 +658,9 @@ class Challenge(TimeStampedModel):
     @cached_property
     def jitsi_url(self):
         return f"{JITSI_URL}/{self.ctf.id}--{self.id}"
+
+    def get_users_working_on_challenge(self):
+        return self.working_on_it
 
     def save(self, **kwargs):
         if self.flag_tracker.has_changed("flag"):

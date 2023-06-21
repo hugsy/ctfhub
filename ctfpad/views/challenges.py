@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http.response import HttpResponse
+from django.views import View
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
@@ -153,7 +154,7 @@ class ChallengeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         if "solvers" in form.cleaned_data:
 
             if (len(form.cleaned_data["solvers"]) > 0 and not form.cleaned_data["flag"]) or \
-                    (len(form.cleaned_data["solvers"]) == 0 and form.cleaned_data["flag"]):
+               (len(form.cleaned_data["solvers"]) == 0 and form.cleaned_data["flag"]):
                 messages.error(
                     self.request, "Cannot set flag without solver(s)")
                 return redirect("ctfpad:challenges-detail", self.object.id)
@@ -214,3 +215,17 @@ class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
             content, content_type="text/markdown; charset=utf-8")
         response["Content-Length"] = len(content)
         return response
+
+
+class ChallengeWorkOn(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        challenge_id = self.kwargs.get("pk")
+        challenge = Challenge.objects.get(id=challenge_id)
+
+        # Add the current user to the challenge's working_on_it field
+        if challenge.working_on_it.contains(request.user.member):
+            challenge.working_on_it.remove(request.user.member)
+        else:
+            challenge.working_on_it.add(request.user.member)
+
+        return redirect(reverse("ctfpad:ctfs-detail", kwargs={"pk": challenge.ctf.id}))

@@ -47,9 +47,7 @@
         <div class="col-6">
             <form id="gotoFilteredChallengeFormId" onsubmit="gotoFilteredChallenge()"
                   class="input-group input-group-sm">
-                <div class="input-group-prepend">
-                    <span class="input-group-text" id="ChallengeFilter"><i class="fas fa-filter"></i></span>
-                </div>
+                <span class="input-group-text" id="ChallengeFilter"><i class="fas fa-filter"></i></span>
                 <input id="ChallengeFilterPattern" onkeyup="filterChallenges()" type="text" class="form-control"
                        placeholder="Filter challenges (name, category, points)..." aria-label="ChallengeFilter"
                        aria-describedby="ChallengeFilter">
@@ -62,6 +60,8 @@
             <th>Name</th>
             <th>Points</th>
             <th>Last Modified</th>
+            <th>Working on it</th>
+            <th></th>
             <th></th>
             <th></th>
             <th></th>
@@ -80,11 +80,17 @@
         <td>{{ challenge.name }}</td>
         <td>{{ challenge.points }}</td>
         <td>{{ challenge.last_modification_time|naturaltime }}</td>
+        <td>{% for member in challenge.working_on_it.all %}
+            <span class="badge rounded-pill text-bg-primary">{{ member }}</span>{% endfor %}</td>
         <td><a href="{% url 'ctfpad:challenges-detail' challenge.id %}" title='Goto'><i class="fas fa-play"></i></a>
         </td>
         <td><a href="{% url 'ctfpad:challenges-edit' challenge.id %}" title='Update'><i class="fas fa-edit"></i></a>
         </td>
-        <td><a href="{% url 'ctfpad:challenges-delete' challenge.id %}" title='Delete'><i class="fas fa-trash"></i></a>
+        <td><a href="{% url 'ctfpad:challenges-delete' challenge.id %}" title='Delete'><i
+                class="fas fa-trash"></i></a>
+        </td>
+        <td><a href="{% url 'ctfpad:challenges-workon' challenge.id %}" title='Work On'><i
+                class="fas {% if request.user.member in challenge.working_on_it.all %}fa-minus-circle{% else %}fa-plus-circle{% endif %}"></i></a>
         </td>
         </tr>
         {% endfor %}
