@@ -98,30 +98,38 @@ def check_note_id(id: str) -> bool:
     return res.status_code == requests.codes.found
 
 
-def get_file_magic(fpath: pathlib.Path) -> str:
-    """Returns the file description from its magic number (ex. 'PE32+ executable (console) x86-64, for MS Windows' )
+def get_file_magic(file) -> str:
+    """
+    Returns the file description from its magic number (ex. 'PE32+ executable (console) x86-64, for MS Windows' )
 
     Args:
-        fpath (pathlib.Path): path object to the file
+        file: File-like object
 
     Returns:
         str: the file description, or "" if the file doesn't exist on FS
     """
-    abspath = str(fpath.absolute())
-    return magic.from_file(abspath) if fpath.exists() else "Data"
+    try:
+        file.seek(0)  # Ensure file is read from beginning
+        return magic.from_buffer(file.read())
+    except Exception as e:
+        return "Data"
 
 
-def get_file_mime(fpath: pathlib.Path) -> str:
-    """Returns the mime type associated to the file (ex. 'appication/pdf')
+def get_file_mime(file) -> str:
+    """
+    Returns the mime type associated to the file (ex. 'appication/pdf')
 
     Args:
-        fpath (pathlib.Path): path object to the file
+        file: File-like object
 
     Returns:
         str: the file mime type, or "application/octet-stream" if the file doesn't exist on FS
     """
-    abspath = str(fpath.absolute())
-    return magic.from_file(abspath, mime=True) if fpath.exists() else "application/octet-stream"
+    try:
+        file.seek(0)  # Ensure file is read from beginning
+        return magic.from_buffer(file.read(), mime=True)
+    except Exception as e:
+        return "application/octet-stream"
 
 
 def ctftime_parse_date(date: str) -> datetime:
