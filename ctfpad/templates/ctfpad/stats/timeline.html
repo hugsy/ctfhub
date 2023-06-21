@@ -19,7 +19,7 @@ new Chart(document.getElementById("timeline_chart"), {
                         {% for rating in member.ratings.values %}{{ rating }}, {% endfor %}
                     ],
                     fill: false,
-                    lineTension: 0,
+                    tension: 0,
                     borderColor: generate_random_color({{forloop.counter}}),
                 },
             {% endfor %}

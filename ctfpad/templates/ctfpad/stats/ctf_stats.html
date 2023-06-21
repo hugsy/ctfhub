@@ -23,17 +23,19 @@ new Chart(document.getElementById("ctf-stats"), {
                         {% for accu in member.challs.values %}{{ accu|floatformat:".2" }}, {% endfor %}
                     ],
                     fill: false,
-                    lineTension: 0,
+                    tension: 0,
                     borderColor: generate_random_color({{forloop.counter}}),
                 },
             {% endfor %}
         ]
     },
     options: {
-        tooltips: {
-            callbacks: {
-                title: function(tooltipItems, data) {
-                    return challengeNames[tooltipItems[0].index];
+        plugins: {
+            tooltip: {
+                callbacks: {
+                    title: function(context) {
+                        return challengeNames[context[0].dataIndex];
+                    }
                 }
             }
         },
