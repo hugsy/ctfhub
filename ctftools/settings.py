@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'django.contrib.sites',
-    'model_utils'
+    'model_utils',
     'django_sendfile',
     'ctfpad',
 ]
