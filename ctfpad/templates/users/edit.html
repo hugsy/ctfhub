@@ -16,10 +16,10 @@
                         <p class="card-header-title">Settings for profile '{{ member.username }}'</p>
                     </h5>
                     <span class="align-right">
-                <small>For advanced user settings update, <a
-                        href="{% url 'ctfpad:users-update-advanced' member.user.id %}">[click here]</a>
-                or to change your password <a href="{% url 'ctfpad:users-update-password' %}">[click here]</a></small>
-            </span>
+                        <small>For advanced user settings update, <a
+                            href="{% url 'ctfpad:users-update-advanced' member.user.id %}">[click here]</a>
+                            or to change your password <a href="{% url 'ctfpad:users-update-password' %}">[click here]</a></small>
+                    </span>
                 </div>
 
                 <div class="card-body">
@@ -179,9 +179,9 @@
                                         <input type="checkbox" class="custom-control-input"
                                                id="{{ form.has_superpowers.id_for_label }}"
                                                name="{{ form.has_superpowers.html_name }}"
-                                                {% if form.has_superpowers.value %}
-                                               &nbsp; checked
-                                                {% endif %}
+                                               {% if form.has_superpowers.value %}
+                                                   &nbsp; checked
+                                               {% endif %}
                                         >
                                         <label class="custom-control-label"
                                                for="{{ form.has_superpowers.id_for_label }}"></label>

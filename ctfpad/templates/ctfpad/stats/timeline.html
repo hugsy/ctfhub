@@ -3,30 +3,30 @@
     <div class="card card-body">
         <canvas id="timeline_chart"></canvas>
         <script>
-new Chart(document.getElementById("timeline_chart"), {
-    type: "line",
-    data: {
-        labels: [
-            {% for ctf in ranking_stats.alltime.0.ratings %}
-                "{{ ctf.name }}",
-            {% endfor %}
-        ],
-        datasets: [
-            {% for member in ranking_stats.alltime %}
-                {
-                    label: "{{ member.username }}",
-                    data: [
-                        {% for rating in member.ratings.values %}{{ rating }}, {% endfor %}
+            new Chart(document.getElementById("timeline_chart"), {
+                type: "line",
+                data: {
+                    labels: [
+                        {% for ctf in ranking_stats.alltime.0.ratings %}
+                            "{{ ctf.name }}",
+                        {% endfor %}
                     ],
-                    fill: false,
-                    lineTension: 0,
-                    borderColor: generate_random_color({{forloop.counter}}),
+                    datasets: [
+                        {% for member in ranking_stats.alltime %}
+                            {
+                                label: "{{ member.username }}",
+                                data: [
+                                    {% for rating in member.ratings.values %}{{ rating }}, {% endfor %}
+                                ],
+                                fill: false,
+                                lineTension: 0,
+                                borderColor: generate_random_color({{forloop.counter}}),
+                            },
+                        {% endfor %}
+                    ]
                 },
-            {% endfor %}
-        ]
-    },
-    options: {}
-});
+                options: {}
+            });
         </script>
     </div>
 </div>

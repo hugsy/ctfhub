@@ -1,57 +1,57 @@
 <br>
 
 <div class="row">
-	<div class="col-md-3">
-		<div class="col-md">
-			<div class="card text-center text-white  mb-3" id="total-player-registered">
-			  	<div class="card-header">
-			  		<h5 class="card-title">Members</h5>
-			  	</div>
-			  	<div class="card-body">
-			    	<h3 class="card-title">{{members | length}}</h3>
-			  	</div>
-			</div>
-		</div>
-	</div>
+    <div class="col-md-3">
+        <div class="col-md">
+            <div class="card text-center text-white  mb-3" id="total-player-registered">
+                <div class="card-header">
+                    <h5 class="card-title">Members</h5>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{members | length}}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div class="col-md-3">
-		<div class="col-md">
-			<div class="card text-center text-white  mb-3" id="total-ctf-played">
-			  	<div class="card-header">
-			  		<h5 class="card-title">Played CTFs</h5>
-			  	</div>
-			  	<div class="card-body">
-			    	<h3 class="card-title">{{nb_ctf_played}}</h3>
-			  	</div>
-			</div>
-		</div>
-	</div>
+    <div class="col-md-3">
+        <div class="col-md">
+            <div class="card text-center text-white  mb-3" id="total-ctf-played">
+                <div class="card-header">
+                    <h5 class="card-title">Played CTFs</h5>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">{{nb_ctf_played}}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
 
-	<div class="col">
-		<div class="col-md">
-			<div class="card text-center text-white  mb-3" id="current-ctf">
-			  	<div class="card-header">
-			  		<h5 class="card-title">Currently running CTF(s): {{current_ctfs | length}} {% if current_ctfs|length == 0 %}😴{% endif %}</h5>
-			  	</div>
-			  	<div class="card-body">
-				  	<ul>
-					  {% for ctf in current_ctfs %}
-						<li>
-							<strong><a href="{% url 'ctfpad:ctfs-detail' ctf.id %}">{{ctf.name | upper}}</a></strong>
-							(ends in {{ctf.end_date | timeuntil}})
-						</li>
-					  {% empty %}
-					  <li>
-					  	<h5 class="card-title">No CTF
-						{% if next_ctf %}
-						<small>(next up: <a href="{% url 'ctfpad:ctfs-detail' next_ctf.id %}">{{next_ctf}}</a>, in {{next_ctf.start_date|timeuntil}})</small>
-						{% endif %}
-						</h5>
-					  </li>
-					  {% endfor %}
-				  	</ul>
-			  	</div>
-			</div>
-		</div>
-	</div>
+    <div class="col">
+        <div class="col-md">
+            <div class="card text-center text-white  mb-3" id="current-ctf">
+                <div class="card-header">
+                    <h5 class="card-title">Currently running CTF(s): {{current_ctfs | length}} {% if current_ctfs|length == 0 %}😴{% endif %}</h5>
+                </div>
+                <div class="card-body">
+                    <ul>
+                        {% for ctf in current_ctfs %}
+                            <li>
+                                <strong><a href="{% url 'ctfpad:ctfs-detail' ctf.id %}">{{ctf.name | upper}}</a></strong>
+                                (ends in {{ctf.end_date | timeuntil}})
+                            </li>
+                        {% empty %}
+                            <li>
+                                <h5 class="card-title">No CTF
+                                    {% if next_ctf %}
+                                        <small>(next up: <a href="{% url 'ctfpad:ctfs-detail' next_ctf.id %}">{{next_ctf}}</a>, in {{next_ctf.start_date|timeuntil}})</small>
+                                    {% endif %}
+                                </h5>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

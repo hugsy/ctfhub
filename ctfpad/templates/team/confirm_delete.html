@@ -2,29 +2,29 @@
 
 {% block content %}
 
-<br/>
+    <br/>
 
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <h1 class="display-4">Delete TEAM '{{team.name}}' ?</h1>
-        <p class="lead">
-            <i class="fas fa-exclamation-triangle"></i>
-            This action will effectively purgely all stored data of the team, recursively deleting all associated resources (i.e. team members, CTFs, challenges, flags, files, etc.).
-            It cannot be recovered.
-            <i class="fas fa-exclamation-triangle"></i>
-            <br><br>
-            Confirm deletion?
-        </p>
-        <div>
-            <form method="POST" action="{% url 'ctfpad:team-delete' %}">
-                {% csrf_token %}
-                <div class="modal-footer">
-                    <a type="button" class="btn btn-secondary" href="{% url 'ctfpad:dashboard' %}">Cancel</a>
-                    <button type="submit" class="btn btn-danger">Confirm</button>
-                </div>
-            </form>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Delete TEAM '{{team.name}}' ?</h1>
+            <p class="lead">
+                <i class="fas fa-exclamation-triangle"></i>
+                This action will effectively purgely all stored data of the team, recursively deleting all associated resources (i.e. team members, CTFs, challenges, flags, files, etc.).
+                It cannot be recovered.
+                <i class="fas fa-exclamation-triangle"></i>
+                <br><br>
+                Confirm deletion?
+            </p>
+            <div>
+                <form method="POST" action="{% url 'ctfpad:team-delete' %}">
+                    {% csrf_token %}
+                    <div class="modal-footer">
+                        <a type="button" class="btn btn-secondary" href="{% url 'ctfpad:dashboard' %}">Cancel</a>
+                        <button type="submit" class="btn btn-danger">Confirm</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
 {% endblock %}

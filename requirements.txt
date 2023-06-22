@@ -7,3 +7,4 @@ django-model-utils
 bleach
 pytz
 exrex
+djhtml

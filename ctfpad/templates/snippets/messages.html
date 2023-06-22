@@ -2,41 +2,41 @@
     <div class="col-md-2"></div>
     <div class="col-md-8">
         {% for message in messages %}
-        {% if message.level == 20 %}
-        <div class="alert alert-info alert-dismissible show fade">
-            <strong>INFO</strong>&nbsp;&nbsp;
-            {{message}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            {% if message.level == 20 %}
+                <div class="alert alert-info alert-dismissible show fade">
+                    <strong>INFO</strong>&nbsp;&nbsp;
+                    {{message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
 
-        {% elif message.level == 25%}
-        <div class="alert alert-success alert-dismissible show fade">
-            <strong>SUCCESS</strong>&nbsp;&nbsp;
-            {{message}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            {% elif message.level == 25%}
+                <div class="alert alert-success alert-dismissible show fade">
+                    <strong>SUCCESS</strong>&nbsp;&nbsp;
+                    {{message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
 
-        {% elif message.level == 30 %}
-        <div class="alert alert-warning alert-dismissible show fade">
-            <strong>WARNING</strong>&nbsp;&nbsp;
-            {{message}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            {% elif message.level == 30 %}
+                <div class="alert alert-warning alert-dismissible show fade">
+                    <strong>WARNING</strong>&nbsp;&nbsp;
+                    {{message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
 
-        {% elif message.level == 40 %}
-        <div class="alert alert-danger alert-dismissible show fade">
-            <strong>ERROR</strong>&nbsp;&nbsp;
-            {{message}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+            {% elif message.level == 40 %}
+                <div class="alert alert-danger alert-dismissible show fade">
+                    <strong>ERROR</strong>&nbsp;&nbsp;
+                    {{message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
 
-        {% else %}
-        <div class="alert alert-primary alert-dismissible show fade">
-            <strong>{{message.tags|upper}}</strong>&nbsp;&nbsp;
-            {{message}}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endif %}
+            {% else %}
+                <div class="alert alert-primary alert-dismissible show fade">
+                    <strong>{{message.tags|upper}}</strong>&nbsp;&nbsp;
+                    {{message}}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
         {% endfor %}
     </div>
     <div class="col-md-2"></div>

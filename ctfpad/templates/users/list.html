@@ -2,83 +2,83 @@
 
 {% block content %}
 
-{% load ctfpad_filters %}
-<br/>
+    {% load ctfpad_filters %}
+    <br/>
 
 
-{% include 'snippets/messages.html' %}
+    {% include 'snippets/messages.html' %}
 
 
-<div class="row">
+    <div class="row">
 
-    <div class="col-md-2"></div>
+        <div class="col-md-2"></div>
 
-    <div class="col">
-        <div class="card card-body">
-        {% if object_list %}
-            <table class="table table-sm table-hover">
-                <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Best category</th>
-                    <th scope="col">Member Since</th>
-                    <th scope="col">Blog</th>
-                    <th scope="col">Twitter</th>
-                    <th scope="col">Github</th>
-                    <th scope="col"></th>
-                    {% if request.user.member.has_superpowers %}
-                    <th scope="col"></th>
-                    {% endif %}
-                </tr>
-                </thead>
-                <tbody>
-                {% for member in page_obj %}
-                <tr>
-                    <th scope="row">
-                        <a href="mailto:{{member.email}}">
-                            {{member.username}}
-                        </a>
-                    </td>
-                    <td>{% best_category member %}</td>
-                    <td>{{member.joined_time | date:'Y'}}</td>
-                    <td>{% if member.blog_url%}<a href="{{member.blog_url}}"><i class="fas fa-blog"></i></i></a>{% endif %}</td>
-                    <td>{% if member.twitter_url%}<a href="{{member.twitter_url}}"><i class="fab fa-twitter"></i></a>{% endif %}</td>
-                    <td>{% if member.github_url%}<a href="{{member.github_url}}"><i class="fab fa-github"></i></a>{% endif %}</td>
-                    <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
-                    {% if request.user.member.has_superpowers %}
-                    <td>
-                        <a class="btn btn-sm btn-danger" href="{% url 'ctfpad:users-delete' member.id %}">Delete</a>
-                    </td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+        <div class="col">
+            <div class="card card-body">
+                {% if object_list %}
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th scope="col">Best category</th>
+                                <th scope="col">Member Since</th>
+                                <th scope="col">Blog</th>
+                                <th scope="col">Twitter</th>
+                                <th scope="col">Github</th>
+                                <th scope="col"></th>
+                                {% if request.user.member.has_superpowers %}
+                                    <th scope="col"></th>
+                                {% endif %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for member in page_obj %}
+                                <tr>
+                                    <th scope="row">
+                                        <a href="mailto:{{member.email}}">
+                                            {{member.username}}
+                                        </a>
+                                    </td>
+                                    <td>{% best_category member %}</td>
+                                    <td>{{member.joined_time | date:'Y'}}</td>
+                                    <td>{% if member.blog_url%}<a href="{{member.blog_url}}"><i class="fas fa-blog"></i></i></a>{% endif %}</td>
+                                    <td>{% if member.twitter_url%}<a href="{{member.twitter_url}}"><i class="fab fa-twitter"></i></a>{% endif %}</td>
+                                    <td>{% if member.github_url%}<a href="{{member.github_url}}"><i class="fab fa-github"></i></a>{% endif %}</td>
+                                    <td><a class="btn btn-sm btn-success" href="{% url 'ctfpad:users-detail' member.id %}">View</a></td>
+                                    {% if request.user.member.has_superpowers %}
+                                        <td>
+                                            <a class="btn btn-sm btn-danger" href="{% url 'ctfpad:users-delete' member.id %}">Delete</a>
+                                        </td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
 
-            <nav aria-label="Member page navigation">
-                {% if is_paginated %}
-                <nav>
-                   <ul class="pagination">
-                       {% if current_page.has_previous %}
-                           <li class="page-item"><a class="page-link" href="?page={{ current_page.previous_page_number }}">Previous</a></li>
-                       {% endif %}
-                       {% for page in paginator.page_range %}
-                           <li class="page-item {% if page == current_page.number %}active{% endif %}">
-                               <a class="page-link" href="?page={{ page }}">{{ page }}</a>
-                           </li>
-                       {% endfor %}
-                       {% if current_page.has_next %}
-                           <li class="page-item"><a class="page-link" href="?page={{ current_page.next_page_number }}">Next</a></li>
-                       {% endif %}
-                   </ul>
-               </nav>
-               {% endif %}
-            </nav>
-            {% endif %}
+                    <nav aria-label="Member page navigation">
+                        {% if is_paginated %}
+                            <nav>
+                                <ul class="pagination">
+                                    {% if current_page.has_previous %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ current_page.previous_page_number }}">Previous</a></li>
+                                    {% endif %}
+                                    {% for page in paginator.page_range %}
+                                        <li class="page-item {% if page == current_page.number %}active{% endif %}">
+                                            <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                                        </li>
+                                    {% endfor %}
+                                    {% if current_page.has_next %}
+                                        <li class="page-item"><a class="page-link" href="?page={{ current_page.next_page_number }}">Next</a></li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                        {% endif %}
+                    </nav>
+                {% endif %}
+            </div>
         </div>
-    </div>
 
-    <div class="col-md-2"></div>
-</div>
+        <div class="col-md-2"></div>
+    </div>
 
 {% endblock %}

@@ -3,76 +3,76 @@
 
 <div class="row">
     <div class="col">
-    <h5>List of registered CTFs</h5>
-    {% if object_list %}
-        <div class="row">
-            <div class="col">
-                <small>* All times are in UTC (hover for local time)</small>
+        <h5>List of registered CTFs</h5>
+        {% if object_list %}
+            <div class="row">
+                <div class="col">
+                    <small>* All times are in UTC (hover for local time)</small>
+                </div>
+                <div class="col" style="text-align: right;">
+                    <a href="{% url 'ctfpad:ctfs-create'%}" title="Add a CTF"><strong><i class="fas fa-plus"></i></strong></a>
+                </div>
             </div>
-            <div class="col" style="text-align: right;">
-                <a href="{% url 'ctfpad:ctfs-create'%}" title="Add a CTF"><strong><i class="fas fa-plus"></i></strong></a>
-            </div>
-        </div>
-        <table class="table table-sm table-hover">
-            <thead>
-            <tr>
-                <th scope="col">CTF</th>
-                <th scope="col"><abbr title="Hover to convert to your local time">Date (in UTC)</abbr></th>
-                <th scope="col">Duration</th>
-                <th scope="col">Weight</th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for ctf in page_obj %}
-            <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}">
-                <td scope="row">
-                    <a href="{{ ctf.get_absolute_url }}">{{ctf.name}}</a>
-                </td>
-                {% if ctf.is_permanent %}
-                <td>♾</td>
-                <td>♾</td>
-                {% else %}
-                <td>
-                    <abbr title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start_date | date:"Y/m/d H:i:s"}}</abbr>
-                    &nbsp;→&nbsp;
-                    <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
-                </td>
-                <td>{{ ctf.duration | naturaltime}}</td>
-                {% endif %}
-                <td>{{ ctf.weight | floatformat:"-2" }}</td>
-                <td><a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Edit"><i class="fas fa-edit"></i></a></td>
-                <td><a href="{% url 'ctfpad:ctfs-delete' ctf.id %}" title="Delete"><i class="fas fa-trash"></i></a></td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">CTF</th>
+                        <th scope="col"><abbr title="Hover to convert to your local time">Date (in UTC)</abbr></th>
+                        <th scope="col">Duration</th>
+                        <th scope="col">Weight</th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ctf in page_obj %}
+                        <tr class="table-row" data-href="{% url 'ctfpad:ctfs-detail' ctf.id %}">
+                            <td scope="row">
+                                <a href="{{ ctf.get_absolute_url }}">{{ctf.name}}</a>
+                            </td>
+                            {% if ctf.is_permanent %}
+                                <td>♾</td>
+                                <td>♾</td>
+                            {% else %}
+                                <td>
+                                    <abbr title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start_date | date:"Y/m/d H:i:s"}}</abbr>
+                                    &nbsp;→&nbsp;
+                                    <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
+                                </td>
+                                <td>{{ ctf.duration | naturaltime}}</td>
+                            {% endif %}
+                            <td>{{ ctf.weight | floatformat:"-2" }}</td>
+                            <td><a href="{% url 'ctfpad:ctfs-edit' ctf.id %}" title="Edit"><i class="fas fa-edit"></i></a></td>
+                            <td><a href="{% url 'ctfpad:ctfs-delete' ctf.id %}" title="Delete"><i class="fas fa-trash"></i></a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
-        <nav aria-label="CTF Page navigation">
-            {% if is_paginated %}
-            <nav>
-               <ul class="pagination">
-                   {% if current_page.has_previous %}
-                       <li class="page-item"><a class="page-link" href="?page={{ current_page.previous_page_number }}">Previous</a></li>
-                   {% endif %}
-                   {% for page in paginator.page_range %}
-                       <li class="page-item {% if page == current_page.number %}active{% endif %}">
-                           <a class="page-link" href="?page={{ page }}">{{ page }}</a>
-                       </li>
-                   {% endfor %}
-                   {% if current_page.has_next %}
-                       <li class="page-item"><a class="page-link" href="?page={{ current_page.next_page_number }}">Next</a></li>
-                   {% endif %}
-               </ul>
-           </nav>
-           {% endif %}
-        </nav>
+            <nav aria-label="CTF Page navigation">
+                {% if is_paginated %}
+                    <nav>
+                        <ul class="pagination">
+                            {% if current_page.has_previous %}
+                                <li class="page-item"><a class="page-link" href="?page={{ current_page.previous_page_number }}">Previous</a></li>
+                            {% endif %}
+                            {% for page in paginator.page_range %}
+                                <li class="page-item {% if page == current_page.number %}active{% endif %}">
+                                    <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                                </li>
+                            {% endfor %}
+                            {% if current_page.has_next %}
+                                <li class="page-item"><a class="page-link" href="?page={{ current_page.next_page_number }}">Next</a></li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                {% endif %}
+            </nav>
         {% else %}
-        <h4>No CTF found</h4>
-        <br>
-        Try importing from <a href="https://ctftime.org">CTFTime</a> or <a href="{% url 'ctfpad:ctfs-create'%}">create new one</a>.
-        <br>
+            <h4>No CTF found</h4>
+            <br>
+            Try importing from <a href="https://ctftime.org">CTFTime</a> or <a href="{% url 'ctfpad:ctfs-create'%}">create new one</a>.
+            <br>
         {% endif %}
     </div>
 </div>

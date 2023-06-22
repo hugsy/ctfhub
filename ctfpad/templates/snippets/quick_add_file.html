@@ -6,7 +6,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form id="QuickAddForm" method="POST" action="{% url 'ctfpad:challenge-files-add' challenge.id %}" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
+                {% csrf_token %}
                 <div class="modal-body">
                     <div class="form-group">
                         <div class="input-group mb-3">
