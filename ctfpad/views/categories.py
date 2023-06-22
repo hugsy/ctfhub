@@ -9,7 +9,9 @@ from ctfpad.forms import CategoryCreateForm
 from ctfpad.models import ChallengeCategory
 
 
-class CategoryCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, CreateView):
+class CategoryCreateView(
+    LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, CreateView
+):
     model = ChallengeCategory
     template_name = "ctfpad/categories/create.html"
     login_url = "/users/login/"
@@ -23,7 +25,7 @@ class CategoryCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMix
     def get(self, request, *args, **kwargs):
         assert self.form_class
         form = self.form_class(initial=self.initial)
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def form_valid(self, form: CategoryCreateForm):
         category_name = form.instance.name.strip().lower()
@@ -31,6 +33,7 @@ class CategoryCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMix
         return super().form_valid(form)
 
     def get_success_url(self):
-        redirect_to = self.request.META.get(
-            "HTTP_REFERER") or reverse("ctfpad:dashboard")
+        redirect_to = self.request.META.get("HTTP_REFERER") or reverse(
+            "ctfpad:dashboard"
+        )
         return redirect_to

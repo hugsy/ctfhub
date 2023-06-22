@@ -27,6 +27,7 @@ from . import (
     users,
 )
 
+
 def index(request: HttpRequest) -> HttpResponse:
     """
     Redirects to the dashboard
@@ -65,10 +66,14 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         start_date__lte=now,
         end_date__gt=now,
     )
-    next_ctf = member.public_ctfs.filter(
-        end_date__isnull=False,
-        start_date__gt=now,
-    ).order_by("start_date").first()
+    next_ctf = (
+        member.public_ctfs.filter(
+            end_date__isnull=False,
+            start_date__gt=now,
+        )
+        .order_by("start_date")
+        .first()
+    )
     context = {
         "members": members,
         "latest_ctfs": latest_ctfs[:10],
@@ -101,7 +106,7 @@ def generate_stats(request: HttpRequest, year: Optional[int] = None) -> HttpResp
         "ctf_stats": stats.ctf_stats(),
         "ranking_stats": stats.ranking_stats(),
         "year_stats": stats.year_stats(),
-        "year_pick": year
+        "year_pick": year,
     }
     return render(request, "ctfpad/stats/detail.html", context)
 
@@ -123,7 +128,7 @@ def search(request: HttpRequest) -> HttpResponse:
 
     search = SearchEngine(q)
     paginator = Paginator(search.results, 25)
-    page_number = request.GET.get('page')
+    page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     context = {
         "q": q,
@@ -149,7 +154,7 @@ def toggle_dark_mode(request: HttpRequest) -> HttpResponse:
     redirect_to = request.META.get("HTTP_REFERER") or reverse("ctfpad:dashboard")
     res = redirect(redirect_to)
     if val:
-        res.set_cookie('theme', 'dark')
+        res.set_cookie("theme", "dark")
     else:
-        res.set_cookie('theme', 'light')
+        res.set_cookie("theme", "light")
     return res

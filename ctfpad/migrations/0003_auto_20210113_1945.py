@@ -6,25 +6,28 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ctfpad', '0002_auto_20210102_1139'),
+        ("ctfpad", "0002_auto_20210102_1139"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='challenge',
-            name='whiteboard_id',
+            model_name="challenge",
+            name="whiteboard_id",
             field=models.UUIDField(default=uuid.uuid4),
         ),
         migrations.AddField(
-            model_name='ctf',
-            name='whiteboard_access_token',
-            field=models.CharField(default=ctfpad.helpers.get_random_string_64, max_length=64),
+            model_name="ctf",
+            name="whiteboard_access_token",
+            field=models.CharField(
+                default=ctfpad.helpers.get_random_string_64, max_length=64
+            ),
         ),
         migrations.AlterField(
-            model_name='challenge',
-            name='note_id',
-            field=models.CharField(blank=True, default=ctfpad.helpers.create_new_note, max_length=38),
+            model_name="challenge",
+            name="note_id",
+            field=models.CharField(
+                blank=True, default=ctfpad.helpers.create_new_note, max_length=38
+            ),
         ),
     ]

@@ -1,1 +1,1 @@
-default_app_config = 'ctfpad.apps.CtfpadConfig'
+default_app_config = "ctfpad.apps.CtfpadConfig"

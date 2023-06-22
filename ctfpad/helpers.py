@@ -1,29 +1,35 @@
-from datetime import datetime
-from time import time
-from django.utils.crypto import get_random_string
-import magic
 import os
 import pathlib
-import requests
 import smtplib
-import exrex
-
+import uuid
+from datetime import datetime
 from functools import lru_cache
-from uuid import uuid4
+from time import time
+
+import django.core.mail
+import django.utils.crypto
+import exrex
+import magic
+import requests
 
 from ctftools.settings import (
-    CTFPAD_DOMAIN, CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT, CTFPAD_PORT, CTFPAD_USE_SSL,
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
     CTFPAD_DEFAULT_CTF_LOGO,
-    HEDGEDOC_URL,
-    USE_INTERNAL_HEDGEDOC,
-    STATIC_URL,
+    CTFPAD_DOMAIN,
+    CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT,
+    CTFPAD_PORT,
+    CTFPAD_USE_SSL,
     CTFTIME_API_EVENTS_URL,
     CTFTIME_USER_AGENT,
-    EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD,
     DISCORD_WEBHOOK_URL,
+    EMAIL_HOST,
+    EMAIL_HOST_PASSWORD,
+    EMAIL_HOST_USER,
     EXCALIDRAW_ROOM_ID_PATTERN,
     EXCALIDRAW_ROOM_KEY_PATTERN,
+    HEDGEDOC_URL,
+    STATIC_URL,
+    USE_INTERNAL_HEDGEDOC,
 )
 
 
@@ -46,8 +52,8 @@ def which_hedgedoc() -> str:
     try:
         requests.get(HEDGEDOC_URL, timeout=CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT)
     except ConnectionError:
-        if USE_INTERNAL_HEDGEDOC or HEDGEDOC_URL == 'http://localhost:3000':
-            return 'http://hedgedoc:3000'
+        if USE_INTERNAL_HEDGEDOC or HEDGEDOC_URL == "http://localhost:3000":
+            return "http://hedgedoc:3000"
     return HEDGEDOC_URL
 
 
@@ -63,9 +69,9 @@ def register_new_hedgedoc_user(username: str, password: str) -> bool:
         bool: if the register action succeeded, returns True; False in any other cases
     """
     res = requests.post(
-        which_hedgedoc() + '/register',
-        data={'email': username, 'password': password},
-        allow_redirects=False
+        which_hedgedoc() + "/register",
+        data={"email": username, "password": password},
+        allow_redirects=False,
     )
 
     if res.status_code != requests.codes.found:
@@ -75,16 +81,16 @@ def register_new_hedgedoc_user(username: str, password: str) -> bool:
 
 
 def create_new_note() -> str:
-    """"Returns a unique note ID so that the note will be automatically created when accessed for the first time
+    """ "Returns a unique note ID so that the note will be automatically created when accessed for the first time
 
     Returns:
         str: the string ID of the new note
     """
-    return f"/{uuid4()}"
+    return f"/{uuid.uuid4()}"
 
 
 def check_note_id(id: str) -> bool:
-    """"Checks if a specific note exists from its ID.
+    """ "Checks if a specific note exists from its ID.
 
     Args:
         id (str): the identifier to check
@@ -119,7 +125,11 @@ def get_file_mime(fpath: pathlib.Path) -> str:
         str: the file mime type, or "application/octet-stream" if the file doesn't exist on FS
     """
     abspath = str(fpath.absolute())
-    return magic.from_file(abspath, mime=True) if fpath.exists() else "application/octet-stream"
+    return (
+        magic.from_file(abspath, mime=True)
+        if fpath.exists()
+        else "application/octet-stream"
+    )
 
 
 def ctftime_parse_date(date: str) -> datetime:
@@ -144,8 +154,8 @@ def ctftime_ctfs(running=True, future=True) -> list:
 
     result = []
     for ctf in ctfs:
-        start = ctf['start']
-        finish = ctf['finish']
+        start = ctf["start"]
+        finish = ctf["finish"]
 
         if running and start < now < finish:
             result.append(ctf)
@@ -162,12 +172,16 @@ def ctftime_fetch_ctfs(limit=100) -> list:
     Returns:
         list: JSON output from CTFTime
     """
+    start = time() - (3600 * 24 * 60)
+    end = time() + (3600 * 24 * 7 * 26)
     res = requests.get(
-        f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time() - (3600 * 24 * 60):.0f}&finish={time() + (3600 * 24 * 7 * 26):.0f}",
-        headers={"user-agent": CTFTIME_USER_AGENT})
+        f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={start:.0f}&finish={end:.0f}",
+        headers={"user-agent": CTFTIME_USER_AGENT},
+    )
     if res.status_code != requests.codes.ok:
         raise RuntimeError(
-            f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
+            f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}"
+        )
 
     result = []
     for ctf in res.json():
@@ -193,7 +207,8 @@ def ctftime_get_ctf_info(ctftime_id: int) -> dict:
     res = requests.get(url, headers={"user-agent": CTFTIME_USER_AGENT})
     if res.status_code != requests.codes.ok:
         raise RuntimeError(
-            f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}")
+            f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}"
+        )
     result = res.json()
     return result
 
@@ -222,7 +237,7 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     return default_logo
 
 
-def send_mail(recipients: list, subject: str, body: str) -> bool:
+def send_mail(recipients: list[str], subject: str, body: str) -> bool:
     """[summary]
 
     Args:
@@ -235,12 +250,8 @@ def send_mail(recipients: list, subject: str, body: str) -> bool:
     """
     if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
         try:
-            send_mail(
-                subject,
-                body,
-                EMAIL_HOST_USER,
-                recipients,
-                fail_silently=False
+            django.core.mail.send_mail(
+                subject, body, EMAIL_HOST_USER, recipients, fail_silently=False
             )
             return True
         except smtplib.SMTPException:
@@ -249,18 +260,19 @@ def send_mail(recipients: list, subject: str, body: str) -> bool:
 
 
 def get_random_string_64() -> str:
-    return get_random_string(64)
+    return django.utils.crypto.get_random_string(64)
 
 
 def get_random_string_128() -> str:
-    return get_random_string(128)
+    return django.utils.crypto.get_random_string(128)
 
 
 def discord_send_message(js: dict) -> bool:
     """Send a notification on a Discord channel
 
     Args:
-        js (dict): The JSON data to pass to the webhook. See https://discord.com/developers/docs/resources/channel for details
+        js (dict): The JSON data to pass to the webhook. See https://discord.com/developers/docs/resources/channel for
+        details
 
     Raises:
         Exception: [description]
@@ -294,8 +306,7 @@ def generate_github_page_header(**kwargs) -> str:
     title = kwargs.setdefault("title", "Exported note")
     author = kwargs.setdefault("author", "Anonymous")
     tags = kwargs.setdefault("tags", "[]")
-    date = kwargs.setdefault("date", datetime.now()
-                             ).strftime("%Y-%m-%d %H:%M %Z")
+    date = kwargs.setdefault("date", datetime.now()).strftime("%Y-%m-%d %H:%M %Z")
     content = f"""---
 layout: post
 title: {title}
@@ -308,20 +319,25 @@ date: {date}
     return content
 
 
-def export_challenge_note(member, note_id: uuid4) -> str:
+def export_challenge_note(member, note_id: uuid.UUID) -> str:
     """Export a challenge note. `member` is required for privilege requirements
 
     Args:
         member (Member): [description]
-        note_id (uuid.uuid4): [description]
+        note_id (uuid.UUID): [description]
 
     Returns:
         str: The body of the note if successful; an empty string otherwise
     """
     result = ""
     with requests.Session() as session:
-        h = session.post(f"{HEDGEDOC_URL}/login",
-                         data={"email": member.hedgedoc_username, "password": member.hedgedoc_password})
+        h = session.post(
+            f"{HEDGEDOC_URL}/login",
+            data={
+                "email": member.hedgedoc_username,
+                "password": member.hedgedoc_password,
+            },
+        )
         if h.status_code == requests.codes.ok:
             h2 = session.get(f"{HEDGEDOC_URL}{note_id}/download")
             if h2.status_code == requests.codes.ok:

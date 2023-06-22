@@ -18,7 +18,9 @@ class ChallengeFileCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateVie
     success_message = "File added!"
 
     def get_success_url(self):
-        return reverse("ctfpad:challenges-detail", kwargs={'pk': self.object.challenge.id})
+        return reverse(
+            "ctfpad:challenges-detail", kwargs={"pk": self.object.challenge.id}
+        )
 
 
 class ChallengeFileDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -29,7 +31,9 @@ class ChallengeFileDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteVie
     success_message = "File deleted!"
 
     def get_success_url(self):
-        return reverse("ctfpad:challenges-detail", kwargs={'pk': self.object.challenge.id})
+        return reverse(
+            "ctfpad:challenges-detail", kwargs={"pk": self.object.challenge.id}
+        )
 
     def post(self, request, *args, **kwargs):
         fpath = Path(self.get_object().file.path)
@@ -49,5 +53,4 @@ class ChallengeFileDetailView(LoginRequiredMixin, SuccessMessageMixin, DetailVie
 
     def get(self, request, *args, **kwargs):
         form = self.form_class(initial=self.initial)
-        return render(request, self.template_name, {'form': form})
-
+        return render(request, self.template_name, {"form": form})

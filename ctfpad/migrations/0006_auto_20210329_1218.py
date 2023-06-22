@@ -3,23 +3,29 @@
 from django.db import migrations
 import model_utils.fields
 
+
 def set_default_timezone(apps, schema_editor):
-    Member = apps.get_model('ctfpad', 'Member')
+    Member = apps.get_model("ctfpad", "Member")
     for member in Member.objects.all():
-        member.timezone = 'UTC'
+        member.timezone = "UTC"
         member.save()
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('ctfpad', '0005_auto_20210204_1921'),
+        ("ctfpad", "0005_auto_20210204_1921"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='member',
-            name='timezone',
-            field=model_utils.fields.StatusField(choices=[(0, 'dummy')], default='UTC', max_length=100, no_check_for_status=True),
+            model_name="member",
+            name="timezone",
+            field=model_utils.fields.StatusField(
+                choices=[(0, "dummy")],
+                default="UTC",
+                max_length=100,
+                no_check_for_status=True,
+            ),
         ),
         migrations.RunPython(set_default_timezone),
     ]

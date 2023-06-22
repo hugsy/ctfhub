@@ -6,20 +6,31 @@ import model_utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ctfpad', '0004_ctf_note_id'),
+        ("ctfpad", "0004_ctf_note_id"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='member',
-            name='status',
-            field=model_utils.fields.StatusField(choices=[(0, 'dummy')], default='member', max_length=100, no_check_for_status=True),
+            model_name="member",
+            name="status",
+            field=model_utils.fields.StatusField(
+                choices=[(0, "dummy")],
+                default="member",
+                max_length=100,
+                no_check_for_status=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='member',
-            name='selected_ctf',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='players', related_query_name='player', to='ctfpad.ctf'),
+            model_name="member",
+            name="selected_ctf",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="players",
+                related_query_name="player",
+                to="ctfpad.ctf",
+            ),
         ),
     ]

@@ -5,15 +5,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ctfpad', '0003_auto_20210113_1945'),
+        ("ctfpad", "0003_auto_20210113_1945"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ctf',
-            name='note_id',
-            field=models.CharField(blank=True, default=ctfpad.helpers.create_new_note, max_length=38),
+            model_name="ctf",
+            name="note_id",
+            field=models.CharField(
+                blank=True, default=ctfpad.helpers.create_new_note, max_length=38
+            ),
         ),
     ]
