@@ -1,0 +1,18 @@
+repos:
+  - repo: https://github.com/rtts/djhtml
+    rev: '3.0.6'
+    hooks:
+      - id: djhtml
+        files: ctfpad/templates/.*\.html$
+
+      - id: djcss
+        files: static/css/.*\.css$
+
+      - id: djjs
+        files: static/js/.*\.js$
+
+  - repo: https://github.com/psf/black
+    rev: stable
+    hooks:
+      - id: black
+        language_version: python3.10
