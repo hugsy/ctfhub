@@ -12,6 +12,8 @@ jobs:
       postgres:
         image: postgres
         env:
+          POSTGRES_DB: ctfpad
+          POSTGRES_USER: ctfpad
           POSTGRES_PASSWORD: ctfpad
         options: >-
           --health-cmd pg_isready
@@ -29,7 +31,7 @@ jobs:
           echo CTFPAD_DOMAIN=localhost >> $GITHUB_ENV
           echo CTFPAD_PORT=8000 >> $GITHUB_ENV
           echo CTFPAD_DB_NAME=ctfpad >> $GITHUB_ENV
-          echo CTFPAD_DB_USER=postgres >> $GITHUB_ENV
+          echo CTFPAD_DB_USER=ctfpad >> $GITHUB_ENV
           echo CTFPAD_DB_PASSWORD=ctfpad >> $GITHUB_ENV
           echo CTFPAD_DB_HOST=localhost >> $GITHUB_ENV
           echo CTFPAD_DB_PORT=5432 >> $GITHUB_ENV
@@ -43,5 +45,7 @@ jobs:
       - run: |
           python -m pip install pip --user --upgrade
           python -m pip install -r requirements.txt --user --upgrade
+
+      - run: |
           python manage.py migrate
           python manage.py test ctfpad
