@@ -29,7 +29,7 @@ jobs:
           echo CTFPAD_DOMAIN=localhost >> $GITHUB_ENV
           echo CTFPAD_PORT=8000 >> $GITHUB_ENV
           echo CTFPAD_DB_NAME=ctfpad >> $GITHUB_ENV
-          echo CTFPAD_DB_USER=root >> $GITHUB_ENV
+          echo CTFPAD_DB_USER=postgres >> $GITHUB_ENV
           echo CTFPAD_DB_PASSWORD=ctfpad >> $GITHUB_ENV
           echo CTFPAD_DB_HOST=localhost >> $GITHUB_ENV
           echo CTFPAD_DB_PORT=5432 >> $GITHUB_ENV
