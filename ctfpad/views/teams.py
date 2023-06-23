@@ -9,19 +9,21 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from ctfpad.mixins import RequireSuperPowersMixin
 
+MESSAGE_SUCCESS_TEAM_CREATED: str = "Team successfully created"
+MESSAGE_ERROR_MULTIPLE_TEAM_CREATE: str = "Only one team can be created"
 
 class TeamCreateView(SuccessMessageMixin, CreateView):
     model = Team
     template_name = "team/create.html"
     form_class = TeamCreateUpdateForm
     success_url = reverse_lazy("ctfpad:dashboard")
-    success_message = "Team successfully created"
+    success_message = MESSAGE_SUCCESS_TEAM_CREATED
 
     def dispatch(self, request, *args, **kwargs):
         if Team.objects.all().count():
-            messages.error(self.request, "Only one team can be created")
+            messages.error(self.request, MESSAGE_ERROR_MULTIPLE_TEAM_CREATE)
             return redirect("ctfpad:home")
-        if request.method.lower() in self.http_method_names:
+        if request.method and request.method.lower() in self.http_method_names:
             handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
         else:
             handler = self.http_method_not_allowed
@@ -37,7 +39,7 @@ class TeamUpdateView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessage
     model = Team
     success_url = reverse_lazy('ctfpad:dashboard')
     template_name = "team/edit.html"
-    login_url = "/users/login/"
+    login_url = reverse_lazy("ctfpad:user-login")
     form_class = TeamCreateUpdateForm
     redirect_field_name = "redirect_to"
     success_message = "Team successfully edited"
@@ -47,6 +49,6 @@ class TeamDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessage
     model = Team
     success_url = reverse_lazy('ctfpad:team-register')
     template_name = "team/confirm_delete.html"
-    login_url = "/users/login/"
+    login_url = reverse_lazy("ctfpad:user-login")
     redirect_field_name = "redirect_to"
     success_message = "Team successfully deleted"

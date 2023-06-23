@@ -95,11 +95,19 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
             messages.error(self.request, "A team must be registered first!")
             return redirect("ctfpad:team-register")
 
+        # validate passwords
+        if form.cleaned_data["password1"] != form.cleaned_data["password2"]:
+            messages.error(self.request, "Password mismatch")
+            return self.form_invalid(form)
+                    
         # validate api_key
         team = teams.first()
+        if not team:
+            return redirect("ctfpad:team-register")
+        
         if team.api_key != form.cleaned_data["api_key"]:
             messages.error(self.request, f"The API key for team '{team.name}' is invalid")
-            return redirect("ctfpad:home")
+            return self.form_invalid(form)
 
         # validate user uniqueness
         user_cnt = User.objects.all().count()
@@ -107,7 +115,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         if users.count() > 0:
             form.errors["name"] = "UsernameAlreadyExistError"
             messages.error(self.request, "Username already exists, try logging in instead")
-            return redirect("ctfpad:home")
+            return self.form_invalid(form)
 
         # create the django user
         user = User.objects.create_user(
