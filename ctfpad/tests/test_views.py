@@ -2,7 +2,6 @@ import uuid
 from typing import Union
 
 import django.contrib.messages.api
-from django.contrib.auth.models import User
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -70,6 +69,17 @@ class TestTeamView(TestCase):
         self.assertEquals(response.status_code, 302)
         self.assertEquals(Team.objects.all().count(), 1)
         self.assertEquals(response.url, reverse("ctfpad:dashboard"))
+
+        response = self.client.get(response.url)
+        self.assertEquals(response.status_code, 302)
+        self.assertTrue(response.url.startswith(reverse("ctfpad:user-login")))
+
+        response = self.client.get(response.url)
+        self.assertEquals(response.status_code, 200)
+        messages = get_messages(response)
+        self.assertEqual(len(messages), 2)
+        self.assertTrue("successfully created!" in messages[0])
+        self.assertEqual("You must be authenticated!", messages[1])
 
         #
         # Create a second team, expect failure
@@ -142,6 +152,7 @@ class TestAdminView(TestCase):
         url = reverse("ctfpad:users-register")
         response = self.client.post(url, data)
         self.assertEquals(response.status_code, 302)
+        self.assertEquals(response.url, reverse("ctfpad:user-login"))
         response = self.client.get(response.url)
         self.assertEquals(response.status_code, 200)
         messages = get_messages(response)
@@ -189,6 +200,18 @@ class TestAdminView(TestCase):
 
 
 class TestMemberView(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.team, self.admin = MockTeamWithAdmin()
+
+
+class TestCtfView(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.team, self.admin = MockTeamWithAdmin()
+
+
+class TestChallengeView(TestCase):
     def setUp(self):
         self.client = Client()
         self.team, self.admin = MockTeamWithAdmin()
