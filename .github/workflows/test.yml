@@ -23,6 +23,19 @@ jobs:
         ports:
           - 5432:5432
 
+      hedgedoc:
+        image: quay.io/hedgedoc/hedgedoc:alpine
+        env:
+          CMD_DB_URL: postgres://ctfpad:ctfpad@localhost:5432/ctfpad
+          CMD_ALLOW_ANONYMOUS: false
+          CMD_ALLOW_FREEURL: true
+          CMD_IMAGE_UPLOAD_TYPE: filesystem
+          CMD_DOMAIN: localhost
+          CMD_PORT: 3000
+          CMD_URL_ADDPORT: true
+          CMD_PROTOCOL_USESSL: false
+        ports:
+          - 3000:3000
     steps:
       - uses: actions/checkout@v3
 
