@@ -142,6 +142,8 @@ class TestAdminView(TestCase):
         url = reverse("ctfpad:users-register")
         response = self.client.post(url, data)
         self.assertEquals(response.status_code, 302)
+        response = self.client.get(response.url)
+        self.assertEquals(response.status_code, 200)
         messages = get_messages(response)
         self.assertIn(f"Member '{data['username']}' successfully created", messages)
 
