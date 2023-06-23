@@ -26,7 +26,7 @@ jobs:
       hedgedoc:
         image: quay.io/hedgedoc/hedgedoc:alpine
         env:
-          CMD_DB_URL: postgres://ctfpad:ctfpad@localhost:5432/ctfpad
+          CMD_DB_URL: postgres://ctfpad:ctfpad@postgres:5432/ctfpad
           CMD_ALLOW_ANONYMOUS: false
           CMD_ALLOW_FREEURL: true
           CMD_IMAGE_UPLOAD_TYPE: filesystem
