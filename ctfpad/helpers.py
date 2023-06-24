@@ -8,10 +8,8 @@ from functools import lru_cache
 
 import django.core.mail
 import django.utils.crypto
-import exrex
 import magic
 import requests
-from django.utils.crypto import get_random_string
 
 from ctftools.settings import (
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
