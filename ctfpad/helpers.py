@@ -1,16 +1,22 @@
 import os
 import pathlib
 import smtplib
+import time
 import uuid
+
 from datetime import datetime
 from functools import lru_cache
-from time import time
 
 import django.core.mail
 import django.utils.crypto
 import exrex
 import magic
 import requests
+
+import exrex
+import magic
+import requests
+from django.utils.crypto import get_random_string
 
 from ctftools.settings import (
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
@@ -49,11 +55,10 @@ def which_hedgedoc() -> str:
     Returns:
         str: the base HedgeDoc URL
     """
-    try:
-        requests.get(HEDGEDOC_URL, timeout=CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT)
-    except ConnectionError:
-        if USE_INTERNAL_HEDGEDOC or HEDGEDOC_URL == "http://localhost:3000":
-            return "http://hedgedoc:3000"
+    if USE_INTERNAL_HEDGEDOC:
+        return "http://hedgedoc:3000"
+
+    requests.get(HEDGEDOC_URL, timeout=CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT)
     return HEDGEDOC_URL
 
 
@@ -172,8 +177,8 @@ def ctftime_fetch_ctfs(limit=100) -> list:
     Returns:
         list: JSON output from CTFTime
     """
-    start = time() - (3600 * 24 * 60)
-    end = time() + (3600 * 24 * 7 * 26)
+    start = time.time() - (3600 * 24 * 60)
+    end = time.time() + (3600 * 24 * 7 * 26)
     res = requests.get(
         f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={start:.0f}&finish={end:.0f}",
         headers={"user-agent": CTFTIME_USER_AGENT},
@@ -238,7 +243,7 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
 
 
 def send_mail(recipients: list[str], subject: str, body: str) -> bool:
-    """[summary]
+    """Wrapper to easily send an email
 
     Args:
         recipients (list): [description]
