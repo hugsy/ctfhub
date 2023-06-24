@@ -26,8 +26,8 @@ from model_utils import Choices, FieldTracker
 from ctfpad.helpers import ctftime_ctfs
 
 from ctftools.settings import (
-    EXCALIDRAW_ROOM_ID_PATTERN,
-    EXCALIDRAW_ROOM_KEY_PATTERN,
+    EXCALIDRAW_ROOM_ID_REGEX,
+    EXCALIDRAW_ROOM_KEY_REGEX,
     HEDGEDOC_URL,
     EXCALIDRAW_URL,
     CTF_CHALLENGE_FILE_PATH,
@@ -1249,8 +1249,8 @@ class Challenge(TimeStampedModel):
         default=generate_excalidraw_room_id,
         validators=[
             RegexValidator(
-                regex=EXCALIDRAW_ROOM_ID_PATTERN,
-                message=f"Please follow regex format {EXCALIDRAW_ROOM_ID_PATTERN}",
+                regex=EXCALIDRAW_ROOM_ID_REGEX,
+                message=f"Please follow regex format {EXCALIDRAW_ROOM_ID_REGEX}",
                 code="nomatch",
             )
         ],
@@ -1259,8 +1259,8 @@ class Challenge(TimeStampedModel):
         default=generate_excalidraw_room_key,
         validators=[
             RegexValidator(
-                regex=EXCALIDRAW_ROOM_KEY_PATTERN,
-                message=f"Please follow regex format {EXCALIDRAW_ROOM_KEY_PATTERN}",
+                regex=EXCALIDRAW_ROOM_KEY_REGEX,
+                message=f"Please follow regex format {EXCALIDRAW_ROOM_KEY_REGEX}",
                 code="nomatch",
             )
         ],
