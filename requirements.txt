@@ -8,3 +8,4 @@ bleach
 pytz
 pre-commit
 black
+django-rename-app

@@ -1,0 +1,62 @@
+{% load ctfhub_filters %}
+<div class="row" style="margin-top: 50px;"></div>
+<footer class="footer mt-auto py-3 bg-{% theme_cookie %}">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 h-200 text-lg-start my-auto">
+        <ul class="list-inline mb-3">
+          <li class="list-inline-item"><a href="https://github.com/hugsy/ctfhub/" target="_blank">Github</a></li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item"><a href="https://github.com/hugsy/ctfhub/issues" target="_blank">Submit a bug</a>
+          </li>
+          <li class="list-inline-item">&sdot;</li>
+          <li class="list-inline-item"><a href="#"
+                                          onclick="(new bootstrap.Modal(document.getElementById('shorcutHelpModal'))).toggle();">Shortcuts</a></li>
+        </li>
+      </ul>
+      <p class="text-muted small mb-3 mb-lg-0">CTFHub
+        {% if DEBUG %}<span class="badge text-bg-danger">{{VERSION}} (DEV)</span>
+        {%else%}<span class="badge text-bg-info">{{VERSION}}</span>{% endif %}
+        by <a href="https://github.com/hugsy" target="_blank">hugsy</a>
+      </p>
+    </div>
+
+    <div class="col-lg-8 h-100 text-center text-lg-end my-auto">
+      <ul class="list-inline mb-0">
+        {% if request.user.member.team.blog_url %}
+          <li class="list-inline-item me-3">
+            <a href="{{request.user.member.team.blog_url}}" target="_blank">
+              <i class="fas fa-blog fa-2x fa-fw"></i>
+            </a>
+          </li>
+        {% endif %}
+
+        {% if request.user.member.team.twitter_url %}
+          <li class="list-inline-item mr-3">
+            <a href="{{request.user.member.team.twitter_url}}" target="_blank">
+              <i class="fab fa-twitter fa-2x fa-fw"></i>
+            </a>
+          </li>
+        {% endif %}
+
+        {% if request.user.member.team.github_url %}
+          <li class="list-inline-item mr-3">
+            <a href="{{request.user.member.team.github_url}}" target="_blank">
+              <i class="fab fa-github fa-2x fa-fw"></i>
+            </a>
+          </li>
+        {% endif %}
+
+        {% if request.user.member.team.youtube_url %}
+          <li class="list-inline-item mr-3">
+            <a href="{{request.user.member.team.youtube_url}}" target="_blank">
+              <i class="fab fa-youtube fa-2x fa-fw"></i>
+            </a>
+          </li>
+        {% endif %}
+
+      </ul>
+    </div>
+  </div>
+</div>
+</footer>
