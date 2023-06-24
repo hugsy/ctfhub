@@ -6,7 +6,15 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import widgets
 
-from ctfpad.models import Challenge, ChallengeCategory, ChallengeFile, Ctf, Member, Tag, Team
+from ctfpad.models import (
+    Challenge,
+    ChallengeCategory,
+    ChallengeFile,
+    Ctf,
+    Member,
+    Tag,
+    Team,
+)
 
 
 class UserUpdateForm(UserChangeForm):
@@ -17,7 +25,9 @@ class UserUpdateForm(UserChangeForm):
             "email",
         ]
 
-    current_password = forms.CharField(label="Current password", widget=forms.PasswordInput, required=True)
+    current_password = forms.CharField(
+        label="Current password", widget=forms.PasswordInput, required=True
+    )
 
 
 class TeamCreateUpdateForm(forms.ModelForm):
@@ -38,20 +48,25 @@ class TeamCreateUpdateForm(forms.ModelForm):
 class MemberCreateForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = [
-            "username",
-            "email",
-            "password1",
-            "password2",
-            "api_key"
-        ]
+        fields = ["username", "email", "password1", "password2", "api_key"]
 
-    username = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Username'}))
-    email = forms.CharField(required=True, widget=forms.TextInput(attrs={'placeholder': 'Email address'}))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Password'}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder': 'Repeat the password'}))
-    api_key = forms.CharField(required=True, label="api_key",
-                              widget=forms.TextInput(attrs={'placeholder': 'Team API key'}))
+    username = forms.CharField(
+        required=True, widget=forms.TextInput(attrs={"placeholder": "Username"})
+    )
+    email = forms.CharField(
+        required=True, widget=forms.TextInput(attrs={"placeholder": "Email address"})
+    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Password"})
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"placeholder": "Repeat the password"})
+    )
+    api_key = forms.CharField(
+        required=True,
+        label="api_key",
+        widget=forms.TextInput(attrs={"placeholder": "Team API key"}),
+    )
 
 
 class MemberUpdateForm(forms.ModelForm):
@@ -73,8 +88,8 @@ class MemberUpdateForm(forms.ModelForm):
     has_superpowers = forms.BooleanField(required=False, label="Has Super-Powers?")
 
     def clean(self):
-        status = self.cleaned_data['status'].strip().lower()
-        if status == "guest" and not self.cleaned_data['selected_ctf']:
+        status = self.cleaned_data["status"].strip().lower()
+        if status == "guest" and not self.cleaned_data["selected_ctf"]:
             raise ValidationError("Guests MUST have a selected_ctf")
         return super(MemberUpdateForm, self).clean()
 
@@ -133,7 +148,7 @@ class ChallengeUpdateForm(forms.ModelForm):
         ]
 
     def cleaned_tags(self):
-        data = [x.lower() for x in self.cleaned_data['tags'].split()]
+        data = [x.lower() for x in self.cleaned_data["tags"].split()]
         return data
 
 
@@ -143,43 +158,51 @@ class ChallengeImportForm(forms.Form):
         ("CTFd", "CTFd"),
         ("rCTF", "rCTF"),
     )
-    format = forms.ChoiceField(choices=FORMAT_CHOICES, initial='CTFd')
+    format = forms.ChoiceField(choices=FORMAT_CHOICES, initial="CTFd")
     data = forms.CharField(widget=forms.Textarea)
 
     def clean_data(self):
-        data = self.cleaned_data['data']
+        data = self.cleaned_data["data"]
 
         # Choose the cleaning method based on the format field.
-        if self.cleaned_data['format'] == 'RAW':
+        if self.cleaned_data["format"] == "RAW":
             return self._clean_raw_data(data)
-        elif self.cleaned_data['format'] == 'CTFd':
+        elif self.cleaned_data["format"] == "CTFd":
             return self._clean_ctfd_data(data)
-        elif self.cleaned_data['format'] == 'rCTF':
+        elif self.cleaned_data["format"] == "rCTF":
             return self._clean_rctf_data(data)
         else:
-            raise forms.ValidationError('Invalid data format.')
+            raise forms.ValidationError("Invalid data format.")
 
     @staticmethod
     def _clean_raw_data(data):
         challenges = []
         for line in data.splitlines():
-            parts = line.split('|')
+            parts = line.split("|")
             if len(parts) != 2:
-                raise forms.ValidationError('RAW data line does not have exactly two parts.')
-            challenges.append({
-                'name': parts[0].strip(),
-                'category': parts[1].strip(),
-            })
+                raise forms.ValidationError(
+                    "RAW data line does not have exactly two parts."
+                )
+            challenges.append(
+                {
+                    "name": parts[0].strip(),
+                    "category": parts[1].strip(),
+                }
+            )
         return challenges
 
     @staticmethod
     def _clean_ctfd_data(data):
         try:
             json_data = json.loads(data)
-            if not json_data.get('success') or 'data' not in json_data:
-                raise ValidationError('Invalid JSON format. Please provide valid CTFd JSON data.')
+            if not json_data.get("success") or "data" not in json_data:
+                raise ValidationError(
+                    "Invalid JSON format. Please provide valid CTFd JSON data."
+                )
         except json.JSONDecodeError:
-            raise ValidationError('Invalid JSON format. Please provide valid CTFd JSON data.')
+            raise ValidationError(
+                "Invalid JSON format. Please provide valid CTFd JSON data."
+            )
 
         return json_data["data"]
 
@@ -187,10 +210,14 @@ class ChallengeImportForm(forms.Form):
     def _clean_rctf_data(data):
         try:
             json_data = json.loads(data)
-            if "successful" not in json_data.get('message') or 'data' not in json_data:
-                raise ValidationError('Invalid JSON format. Please provide valid rCTF JSON data.')
+            if "successful" not in json_data.get("message") or "data" not in json_data:
+                raise ValidationError(
+                    "Invalid JSON format. Please provide valid rCTF JSON data."
+                )
         except json.JSONDecodeError:
-            raise ValidationError('Invalid JSON format. Please provide valid rCTF JSON data.')
+            raise ValidationError(
+                "Invalid JSON format. Please provide valid rCTF JSON data."
+            )
 
         return json_data["data"]
 

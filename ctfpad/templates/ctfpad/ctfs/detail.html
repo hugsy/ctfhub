@@ -92,29 +92,29 @@
                                 <div class="col-sm-2" style="text-align: center;">
                                     <strong><i class="fas fa-address-card" title="CTF credentials"
                                                style="font-size: x-large;"></i></i></strong>
-                                </div>
-                                <div class="col-sm-8">
-                                    <code>{{ ctf.team_login }}</code>&nbsp;/&nbsp;<code
-                                        id="ctf_password">{{ ctf.team_password }}</code>
-                                    &nbsp;
-                                    <i class="fas fa-paste"
-                                       style="font-size: x-large;"
-                                       title="Copy password to Clipboard"
-                                       id="ctf_password_clipboard_icon"
-                                       onclick="navigator.clipboard.writeText(document.getElementById('ctf_password').innerText).then(function(){
-                                    let x = document.getElementById('ctf_password_clipboard_icon');
-                                    let o = x.title;
-                                    x.title ='Copied to clipboard!';
-                                    {
-                                        let p = new bootstrap.Tooltip(x);
-                                        p.toggle();
-                                        setTimeout(function(){p.toggle();}, 3000);
-                                        x.title = o;
-                                    }
-                                }, function(){alert('Failed to copy to clipboard')});"
-                                    ></i>
-                                </div>
                             </div>
+                            <div class="col-sm-8">
+                                <code>{{ ctf.team_login }}</code>&nbsp;/&nbsp;<code
+                                    id="ctf_password">{{ ctf.team_password }}</code>
+                                &nbsp;
+                                <i class="fas fa-paste"
+                                   style="font-size: x-large;"
+                                   title="Copy password to Clipboard"
+                                   id="ctf_password_clipboard_icon"
+                                   onclick="navigator.clipboard.writeText(document.getElementById('ctf_password').innerText).then(function(){
+                                            let x = document.getElementById('ctf_password_clipboard_icon');
+                                            let o = x.title;
+                                            x.title ='Copied to clipboard!';
+                                            {
+                                            let p = new bootstrap.Tooltip(x);
+                                            p.toggle();
+                                            setTimeout(function(){p.toggle();}, 3000);
+                                            x.title = o;
+                                            }
+                                            }, function(){alert('Failed to copy to clipboard')});"
+                                ></i>
+                            </div>
+                        </div>
                         </li>
                     {% endif %}
 
@@ -123,8 +123,8 @@
                             <div class="row">
                                 <div class="col-sm-2" style="text-align: center;">
                                     <strong><abbr title='Time in UTC, Hover for local time'><i
-                                            class="fas fa-calendar-day"
-                                            style="font-size: x-large;"></i></abbr>&nbsp;</strong>
+                                        class="fas fa-calendar-day"
+                                        style="font-size: x-large;"></i></abbr>&nbsp;</strong>
                                 </div>
 
                                 <div class="col-sm-8">
@@ -196,12 +196,12 @@
                             <div class="col-sm-8">
                                 {% if ctf.url %}
                                     <a href="{{ ctf.url }}" target="_blank"><strong>Website</strong>&nbsp;<i
-                                            class="fas fa-external-link-alt"></i></a>&nbsp;|&nbsp;
+                                        class="fas fa-external-link-alt"></i></a>&nbsp;|&nbsp;
                                 {% endif %}
 
                                 {% if ctf.ctftime_id %}
                                     <a href="{{ ctf.ctftime_url }}" target="_blank"><strong>CTFTime</strong>&nbsp;<i
-                                            class="fas fa-external-link-alt"></i></a>&nbsp;|&nbsp;
+                                        class="fas fa-external-link-alt"></i></a>&nbsp;|&nbsp;
                                 {% endif %}
 
                                 <a href="{{ ctf.jitsi_url }}" target="_blank">

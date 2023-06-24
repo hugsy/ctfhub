@@ -2,35 +2,35 @@
 
 {% block content %}
 
-<br/>
+    <br/>
 
-<div class="row">
-    <div class="col-1"></div>
-    <div class="col-10">
-        <div class="jumbotron jumbotron-fluid">
-            <div class="container">
-                <h1 class="display-4">Delete tag '{{tag.name}}' ?</h1>
-                <p class="lead">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    This action cannot be recovered.
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <br><br>
-                    Confirm deletion?
-                </p>
-                <div>
-                    <form method="POST" action="#">
-                        {% csrf_token %}
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-10">
+            <div class="jumbotron jumbotron-fluid">
+                <div class="container">
+                    <h1 class="display-4">Delete tag '{{tag.name}}' ?</h1>
+                    <p class="lead">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        This action cannot be recovered.
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <br><br>
+                        Confirm deletion?
+                    </p>
+                    <div>
+                        <form method="POST" action="#">
+                            {% csrf_token %}
                             <div class="modal-footer">
                                 <a type="button" class="btn btn-secondary" href="#" onclick="window.location=document.referrer;">Cancel</a>
                                 <button type="submit" class="btn btn-danger">Confirm</button>
                             </div>
                         </form>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="col-1"></div>
     </div>
-    <div class="col-1"></div>
-</div>
 
 
 

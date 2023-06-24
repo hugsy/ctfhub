@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ctfpad', '0006_auto_20210329_1218'),
+        ("ctfpad", "0006_auto_20210329_1218"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ctf',
-            name='rating',
+            model_name="ctf",
+            name="rating",
             field=models.FloatField(default=0.0),
         ),
     ]

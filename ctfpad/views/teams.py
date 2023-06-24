@@ -22,20 +22,24 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
             messages.error(self.request, "Only one team can be created")
             return redirect("ctfpad:home")
         if request.method.lower() in self.http_method_names:
-            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+            handler = getattr(
+                self, request.method.lower(), self.http_method_not_allowed
+            )
         else:
             handler = self.http_method_not_allowed
         return handler(request, *args, **kwargs)
 
     def get_success_message(self, cleaned_data):
         msg = f"Team '{self.object.name}' successfully created!"
-        msg+= f"Use the API key '{self.object.api_key}' to register new members."
+        msg += f"Use the API key '{self.object.api_key}' to register new members."
         return msg
 
 
-class TeamUpdateView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, UpdateView):
+class TeamUpdateView(
+    LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, UpdateView
+):
     model = Team
-    success_url = reverse_lazy('ctfpad:dashboard')
+    success_url = reverse_lazy("ctfpad:dashboard")
     template_name = "team/edit.html"
     login_url = "/users/login/"
     form_class = TeamCreateUpdateForm
@@ -43,9 +47,11 @@ class TeamUpdateView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessage
     success_message = "Team successfully edited"
 
 
-class TeamDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView):
+class TeamDeleteView(
+    LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView
+):
     model = Team
-    success_url = reverse_lazy('ctfpad:team-register')
+    success_url = reverse_lazy("ctfpad:team-register")
     template_name = "team/confirm_delete.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"

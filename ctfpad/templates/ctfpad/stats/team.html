@@ -2,14 +2,14 @@
 {% load ctfpad_filters %}
 <div class="row">
     <div class="col-md-4">
-		<div class="card card-body">
+        <div class="card card-body">
             <h5>{{team.name}}</h5>
             <ul class="list-group">
                 <li class="list-group-item list-group-item-action" style="text-align: center;">
                     {% if team.avatar %}
-                    <img width="75px" height="75px" src="{{team.avatar.url}}" alt="{{team.name|lower}}_avatar" class="rounded-circle">
+                        <img width="75px" height="75px" src="{{team.avatar.url}}" alt="{{team.name|lower}}_avatar" class="rounded-circle">
                     {% else %}
-                    <img width="75px" height="75px" src="{% static 'images/blank-avatar.png' %}" alt="default_avatar" class="rounded-circle">
+                        <img width="75px" height="75px" src="{% static 'images/blank-avatar.png' %}" alt="default_avatar" class="rounded-circle">
                     {% endif %}
                 </li>
 
@@ -24,37 +24,37 @@
                 </li>
 
                 {% if request.user.member.has_superpowers %}
-                <li class="list-group-item list-group-item-action">
-                    <strong>API Key:</strong>
-                    <code>{{team.api_key}}</code>
-                </li>
+                    <li class="list-group-item list-group-item-action">
+                        <strong>API Key:</strong>
+                        <code>{{team.api_key}}</code>
+                    </li>
                 {% endif %}
 
                 <li class="list-group-item list-group-item-action">
                     <strong>Links:</strong><br>
                     ●&nbsp;
                     {% if team.blog_url %}
-                    <a href="{{team.blog_url}}" target="_blank"><i class="fas fa-blog fa-fw"></i></a>&nbsp;●&nbsp;
+                        <a href="{{team.blog_url}}" target="_blank"><i class="fas fa-blog fa-fw"></i></a>&nbsp;●&nbsp;
                     {% endif %}
 
                     {% if team.github_url %}
-                    <a href="{{team.github_url}}" target="_blank"><i class="fab fa-github fa-fw"></i></a>&nbsp;●&nbsp;
+                        <a href="{{team.github_url}}" target="_blank"><i class="fab fa-github fa-fw"></i></a>&nbsp;●&nbsp;
                     {% endif %}
 
                     {% if team.twitter_url %}
-                    <a href="{{team.twitter_url}}" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>&nbsp;●&nbsp;
+                        <a href="{{team.twitter_url}}" target="_blank"><i class="fab fa-twitter fa-fw"></i></a>&nbsp;●&nbsp;
                     {% endif %}
 
                     {% if team.youtube_url %}
-                    <a href="{{team.youtube_url}}" target="_blank"><i class="fab fa-youtube fa-fw"></i></a>&nbsp;●&nbsp;
+                        <a href="{{team.youtube_url}}" target="_blank"><i class="fab fa-youtube fa-fw"></i></a>&nbsp;●&nbsp;
                     {% endif %}
                 </li>
 
                 {% if team.ctftime_id > 0 %}
-                <li class="list-group-item list-group-item-action">
-                    View team on
-                    <a href="https://ctftime.org/team/{{team.ctftime_id}}"><strong>CTFTime</strong> <i class="fas fa-external-link-alt"></i></a>
-                </li>
+                    <li class="list-group-item list-group-item-action">
+                        View team on
+                        <a href="https://ctftime.org/team/{{team.ctftime_id}}"><strong>CTFTime</strong> <i class="fas fa-external-link-alt"></i></a>
+                    </li>
                 {% endif %}
             </ul>
         </div>
@@ -65,60 +65,60 @@
             <h5>Members</h5>
             <table class="table table-sm table-hover">
                 <thead>
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Country</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Master Skill</th>
-                    <th scope="col">Member Since</th>
-                    <th scope="col">Social Media</th>
-                    <th scope="col"></th>
-                    {% if request.user.member.has_superpowers %}
-                    <th scope="col"></th>
-                    {% endif %}
-                </tr>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Master Skill</th>
+                        <th scope="col">Member Since</th>
+                        <th scope="col">Social Media</th>
+                        <th scope="col"></th>
+                        {% if request.user.member.has_superpowers %}
+                            <th scope="col"></th>
+                        {% endif %}
+                    </tr>
                 </thead>
                 <tbody>
-                {% for member in members %}
-                <tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
-                    <td>
-                        <img width="25px" height="25px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
-                    </td>
-                    <td>
-                        <a href="{% url 'ctfpad:users-detail' member.id %}">{{member.username}}</a>
-                    </td>
-                    <td style="text-align: center;"><img height="25px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
-                    <td>
-                        {% if not member.is_active %}
-                        Inactive
-                        {% else %}
-                        {{member.status | title}}
-                        {% endif %}
-                    </td>
-                    <td>{% best_category member year_pick %}</td>
-                    <td>{{member.joined_time | date:'Y'}}</td>
-                    <td>
-                        &nbsp;●&nbsp;<a href="mailto:{{member.email}}" target="_blank"><i class="fas fa-envelope"></i></a>
-                    {% if member.blog_url%}
-                        &nbsp;●&nbsp;<a href="{{member.blog_url}}" target="_blank"><i class="fas fa-blog"></i></a>
-                    {% endif %}
-                    {% if member.twitter_url%}
-                        &nbsp;●&nbsp;<a href="{{member.twitter_url}}" target="_blank"><i class="fab fa-twitter"></i></a>
-                    {% endif %}
-                    {% if member.github_url%}
-                        &nbsp;●&nbsp;<a href="{{member.github_url}}" target="_blank"><i class="fab fa-github"></i></a>
-                    {% endif %}
-                    &nbsp;●
-                    </td>
-                    {% if request.user.member.has_superpowers or request.user.id == member.user.id %}
-                    <td><a href="{% url 'ctfpad:users-update' member.user.id %}" title="Edit"><strong><i class="fas fa-edit"></i></strong></a></td>
-                    {% endif %}
-                    {% if request.user.member.has_superpowers %}
-                    <td><a href="{% url 'ctfpad:users-delete' member.user.id %}" title="Delete"><strong><i class="fas fa-trash"></i></strong></a></td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
+                    {% for member in members %}
+                        <tr class="table-row" data-href="{% url 'ctfpad:users-detail' member.id %}">
+                            <td>
+                                <img width="25px" height="25px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
+                            </td>
+                            <td>
+                                <a href="{% url 'ctfpad:users-detail' member.id %}">{{member.username}}</a>
+                            </td>
+                            <td style="text-align: center;"><img height="25px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
+                            <td>
+                                {% if not member.is_active %}
+                                    Inactive
+                                {% else %}
+                                    {{member.status | title}}
+                                {% endif %}
+                            </td>
+                            <td>{% best_category member year_pick %}</td>
+                            <td>{{member.joined_time | date:'Y'}}</td>
+                            <td>
+                                &nbsp;●&nbsp;<a href="mailto:{{member.email}}" target="_blank"><i class="fas fa-envelope"></i></a>
+                                {% if member.blog_url%}
+                                    &nbsp;●&nbsp;<a href="{{member.blog_url}}" target="_blank"><i class="fas fa-blog"></i></a>
+                                {% endif %}
+                                {% if member.twitter_url%}
+                                    &nbsp;●&nbsp;<a href="{{member.twitter_url}}" target="_blank"><i class="fab fa-twitter"></i></a>
+                                {% endif %}
+                                {% if member.github_url%}
+                                    &nbsp;●&nbsp;<a href="{{member.github_url}}" target="_blank"><i class="fab fa-github"></i></a>
+                                {% endif %}
+                                &nbsp;●
+                            </td>
+                            {% if request.user.member.has_superpowers or request.user.id == member.user.id %}
+                                <td><a href="{% url 'ctfpad:users-update' member.user.id %}" title="Edit"><strong><i class="fas fa-edit"></i></strong></a></td>
+                            {% endif %}
+                            {% if request.user.member.has_superpowers %}
+                                <td><a href="{% url 'ctfpad:users-delete' member.user.id %}" title="Delete"><strong><i class="fas fa-trash"></i></strong></a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>

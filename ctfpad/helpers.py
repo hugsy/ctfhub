@@ -1,10 +1,17 @@
 import os
 import pathlib
 import smtplib
+import time
+import uuid
+
 from datetime import datetime
 from functools import lru_cache
-from time import time
-from uuid import uuid4
+
+import django.core.mail
+import django.utils.crypto
+import exrex
+import magic
+import requests
 
 import exrex
 import magic
@@ -84,7 +91,7 @@ def create_new_note() -> str:
     Returns:
         str: the string ID of the new note
     """
-    return f"/{uuid4()}"
+    return f"/{uuid.uuid4()}"
 
 
 def check_note_id(id: str) -> bool:
@@ -170,8 +177,10 @@ def ctftime_fetch_ctfs(limit=100) -> list:
     Returns:
         list: JSON output from CTFTime
     """
+    start = time.time() - (3600 * 24 * 60)
+    end = time.time() + (3600 * 24 * 7 * 26)
     res = requests.get(
-        f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={time() - (3600 * 24 * 60):.0f}&finish={time() + (3600 * 24 * 7 * 26):.0f}",
+        f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={start:.0f}&finish={end:.0f}",
         headers={"user-agent": CTFTIME_USER_AGENT},
     )
     if res.status_code != requests.codes.ok:
@@ -233,8 +242,8 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     return default_logo
 
 
-def send_mail(recipients: list, subject: str, body: str) -> bool:
-    """[summary]
+def send_mail(recipients: list[str], subject: str, body: str) -> bool:
+    """Wrapper to easily send an email
 
     Args:
         recipients (list): [description]
@@ -246,7 +255,9 @@ def send_mail(recipients: list, subject: str, body: str) -> bool:
     """
     if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
         try:
-            send_mail(subject, body, EMAIL_HOST_USER, recipients, fail_silently=False)
+            django.core.mail.send_mail(
+                subject, body, EMAIL_HOST_USER, recipients, fail_silently=False
+            )
             return True
         except smtplib.SMTPException:
             pass
@@ -254,18 +265,19 @@ def send_mail(recipients: list, subject: str, body: str) -> bool:
 
 
 def get_random_string_64() -> str:
-    return get_random_string(64)
+    return django.utils.crypto.get_random_string(64)
 
 
 def get_random_string_128() -> str:
-    return get_random_string(128)
+    return django.utils.crypto.get_random_string(128)
 
 
 def discord_send_message(js: dict) -> bool:
     """Send a notification on a Discord channel
 
     Args:
-        js (dict): The JSON data to pass to the webhook. See https://discord.com/developers/docs/resources/channel for details
+        js (dict): The JSON data to pass to the webhook. See https://discord.com/developers/docs/resources/channel for
+        details
 
     Raises:
         Exception: [description]
@@ -312,12 +324,12 @@ date: {date}
     return content
 
 
-def export_challenge_note(member, note_id: uuid4) -> str:
+def export_challenge_note(member, note_id: uuid.UUID) -> str:
     """Export a challenge note. `member` is required for privilege requirements
 
     Args:
         member (Member): [description]
-        note_id (uuid.uuid4): [description]
+        note_id (uuid.UUID): [description]
 
     Returns:
         str: The body of the note if successful; an empty string otherwise

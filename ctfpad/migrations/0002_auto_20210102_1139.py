@@ -5,20 +5,24 @@ import model_utils.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('ctfpad', '0001_initial'),
+        ("ctfpad", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ctf',
-            name='weight',
+            model_name="ctf",
+            name="weight",
             field=models.FloatField(default=1),
         ),
         migrations.AlterField(
-            model_name='member',
-            name='country',
-            field=model_utils.fields.StatusField(choices=[(0, 'dummy')], default='Afghanistan', max_length=100, no_check_for_status=True),
+            model_name="member",
+            name="country",
+            field=model_utils.fields.StatusField(
+                choices=[(0, "dummy")],
+                default="Afghanistan",
+                max_length=100,
+                no_check_for_status=True,
+            ),
         ),
     ]

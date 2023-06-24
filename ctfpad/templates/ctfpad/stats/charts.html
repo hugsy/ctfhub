@@ -1,50 +1,50 @@
 <div class="row" id="stats">
-	<div class="col-md-4">
+    <div class="col-md-4">
         <div class="card card-body">
             <canvas id="chart1" width="33%" height="20%"></canvas>
             <script>
-new Chart(document.getElementById("chart1"),
-{
-	type: "bar",
-	data:
-	{
-		labels: [
-            {% for member in player_activity %}
-                "{{member.username}}",
-            {% endfor %}
-        ],
-		datasets: [
-            {
-                data: [
-                    {% for member in player_activity %}
-                        {{member.play_count}},
-                    {% endfor %}
-                ],
-                fill: false,
-                borderWidth: 1,
-                backgroundColor: [{% for member in player_activity %}generate_random_color({{forloop.counter}}), {% endfor %}]
-            },
-        ]
-	},
-	options: {
-        legend: {
-            display: false
-        },
-        title: {
-            display: true,
-            text: "Most active players*"
-        },
-		scales: {
-            yAxes: [
-                {
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }
-            ]
-		}
-	}
-});
+                new Chart(document.getElementById("chart1"),
+                    {
+                        type: "bar",
+                        data:
+                        {
+                            labels: [
+                                {% for member in player_activity %}
+                                    "{{member.username}}",
+                                {% endfor %}
+                            ],
+                            datasets: [
+                                {
+                                    data: [
+                                        {% for member in player_activity %}
+                                            {{member.play_count}},
+                                        {% endfor %}
+                                    ],
+                                    fill: false,
+                                    borderWidth: 1,
+                                    backgroundColor: [{% for member in player_activity %}generate_random_color({{forloop.counter}}), {% endfor %}]
+                                },
+                            ]
+                        },
+                        options: {
+                            legend: {
+                                display: false
+                            },
+                            title: {
+                                display: true,
+                                text: "Most active players*"
+                            },
+                            scales: {
+                                yAxes: [
+                                    {
+                                        ticks: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                ]
+                            }
+                        }
+                    });
             </script>
             <small>*: at least one solve in a CTF</small>
         </div>
@@ -52,67 +52,67 @@ new Chart(document.getElementById("chart1"),
 
 
     <div class="col-md-4">
-		<div class="card card-body">
+        <div class="card card-body">
             <canvas id="chart2" width="33%" height="20%"></canvas>
             <script>
-new Chart(document.getElementById("chart2"), {
-    type: "doughnut",
-    data: {
-        labels: [
-            {% for category in category_stats %}
-                "{{category.category__name|lower}}",
-            {% endfor %}
-        ],
-        datasets: [{
-            data: [
-                {% for category in category_stats %}
-                    {{category.category__count}},
-                {% endfor %}
-            ],
-            backgroundColor: [{% for _ in category_stats %}generate_random_color({{forloop.counter}}), {% endfor %}]
-        }]
-    },
-    options: {
-        title: {
-            display: true,
-            text: "Most solved categories"
-        }
-    }
-});
+                new Chart(document.getElementById("chart2"), {
+                    type: "doughnut",
+                    data: {
+                        labels: [
+                            {% for category in category_stats %}
+                                "{{category.category__name|lower}}",
+                            {% endfor %}
+                        ],
+                        datasets: [{
+                            data: [
+                                {% for category in category_stats %}
+                                    {{category.category__count}},
+                                {% endfor %}
+                            ],
+                            backgroundColor: [{% for _ in category_stats %}generate_random_color({{forloop.counter}}), {% endfor %}]
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: "Most solved categories"
+                        }
+                    }
+                });
             </script>
         </div>
     </div>
 
 
     <div class="col-md-4">
-		<div class="card card-body">
+        <div class="card card-body">
             <canvas id="chart3" width="33%" height="20%"></canvas>
             <script>
-new Chart(document.getElementById("chart3"), {
-    type: "line",
-    data: {
-        labels: [
-            {% for month, _ in ctf_stats.monthly_counts %}"{{month}}",{% endfor %}
-        ],
-        datasets: [{
-            data: [
-                {% for _, count in ctf_stats.monthly_counts %}{{count}},{% endfor %}
-            ],
-            fill: false,
-            borderColor: "rgb(75, 192, 192)",
-            lineTension: 0.1
-        }]
-    },
-    options: {
-        legend: {
-            display: false
-        },
-        title: {
-            display: true,
-            text: "Number of CTFs played"
-        }
-    }
-});
+                new Chart(document.getElementById("chart3"), {
+                    type: "line",
+                    data: {
+                        labels: [
+                            {% for month, _ in ctf_stats.monthly_counts %}"{{month}}",{% endfor %}
+                        ],
+                        datasets: [{
+                            data: [
+                                {% for _, count in ctf_stats.monthly_counts %}{{count}},{% endfor %}
+                            ],
+                            fill: false,
+                            borderColor: "rgb(75, 192, 192)",
+                            lineTension: 0.1
+                        }]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: "Number of CTFs played"
+                        }
+                    }
+                });
             </script>
         </div>
     </div>

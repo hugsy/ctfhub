@@ -5,7 +5,13 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView, UpdateView, DeleteView, CreateView
+from django.views.generic import (
+    ListView,
+    DetailView,
+    UpdateView,
+    DeleteView,
+    CreateView,
+)
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Q
@@ -16,14 +22,11 @@ from ctftools.settings import (
 
 from ctfpad.forms import (
     CategoryCreateForm,
-    CtfCreateUpdateForm, TagCreateForm,
+    CtfCreateUpdateForm,
+    TagCreateForm,
 )
 from ctfpad.models import Ctf, Team
-from ctfpad.helpers import (
-    ctftime_ctfs,
-    ctftime_get_ctf_info,
-    ctftime_parse_date
-)
+from ctfpad.helpers import ctftime_ctfs, ctftime_get_ctf_info, ctftime_parse_date
 
 
 class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
@@ -36,17 +39,19 @@ class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx |= {
-            "ctftime_ctfs": ctftime_ctfs(running=True, future=True)
-        }
+        ctx |= {"ctftime_ctfs": ctftime_ctfs(running=True, future=True)}
         return ctx
 
     def get_queryset(self):
         qs = super(CtfListView, self).get_queryset()
-        return qs.filter(Q(visibility="public") | Q(created_by=self.request.user.member)).order_by('-start_date')
+        return qs.filter(
+            Q(visibility="public") | Q(created_by=self.request.user.member)
+        ).order_by("-start_date")
 
 
-class CtfCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, CreateView):
+class CtfCreateView(
+    LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, CreateView
+):
     model = Ctf
     template_name = "ctfpad/ctfs/create.html"
     login_url = "/users/login/"
@@ -68,12 +73,12 @@ class CtfCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, C
 
     def get(self, request, *args, **kwargs):
         form = self.form_class(initial=self.initial)
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def form_valid(self, form):
         if Ctf.objects.filter(name=form.instance.name, visibility="public").count() > 0:
             form.errors["name"] = "CtfAlreadyExistError"
-            return render(self.request, self.template_name, {'form': form})
+            return render(self.request, self.template_name, {"form": form})
 
         if form.instance.ctftime_id:
             ctf = ctftime_get_ctf_info(form.instance.ctftime_id)
@@ -88,7 +93,7 @@ class CtfCreateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, C
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.pk})
+        return reverse("ctfpad:ctfs-detail", kwargs={"pk": self.object.pk})
 
 
 class CtfImportView(CtfCreateView):
@@ -112,7 +117,7 @@ class CtfImportView(CtfCreateView):
             initial["weight"] = ctf["weight"]
 
         form = self.form_class(initial=initial)
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
 
 class CtfDetailView(LoginRequiredMixin, DetailView):
@@ -134,7 +139,9 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
         return ctx
 
 
-class CtfUpdateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, UpdateView):
+class CtfUpdateView(
+    LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, UpdateView
+):
     model = Ctf
     form_class = CtfCreateUpdateForm
     template_name = "ctfpad/ctfs/create.html"
@@ -144,24 +151,30 @@ class CtfUpdateView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, U
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx |= {
-            "team": Team.objects.first()
-        }
+        ctx |= {"team": Team.objects.first()}
         return ctx
 
     def get_success_url(self):
-        return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.pk})
+        return reverse("ctfpad:ctfs-detail", kwargs={"pk": self.object.pk})
 
     def form_valid(self, form):
-        if "visibility" in form.changed_data and self.request.user.member != form.instance.created_by:
-            messages.error(self.request, f"Visibility can only by updated by {form.instance.created_by}")
-            return render(self.request, self.template_name, {'form': form})
+        if (
+            "visibility" in form.changed_data
+            and self.request.user.member != form.instance.created_by
+        ):
+            messages.error(
+                self.request,
+                f"Visibility can only by updated by {form.instance.created_by}",
+            )
+            return render(self.request, self.template_name, {"form": form})
         return super().form_valid(form)
 
 
-class CtfDeleteView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, DeleteView):
+class CtfDeleteView(
+    LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, DeleteView
+):
     model = Ctf
-    success_url = reverse_lazy('ctfpad:dashboard')
+    success_url = reverse_lazy("ctfpad:dashboard")
     template_name = "ctfpad/ctfs/confirm_delete.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"

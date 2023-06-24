@@ -5,9 +5,7 @@ from django.dispatch import receiver
 
 from ctfpad.models import Challenge, Ctf
 from ctfpad.helpers import discord_send_message, get_current_site
-from ctftools.settings import (
-    DISCORD_BOT_NAME
-)
+from ctftools.settings import DISCORD_BOT_NAME
 
 # formatted with the ctf name
 NEW_CTF_MESSAGES = [
@@ -30,7 +28,9 @@ SCORED_FLAG_MESSAGES = [
 
 
 @receiver(post_save, sender=Ctf, dispatch_uid="ctf_create_notify_discord")
-def discord_notify_ctf_creation(sender, instance: Ctf, created: bool, **kwargs: dict) -> bool:
+def discord_notify_ctf_creation(
+    sender, instance: Ctf, created: bool, **kwargs: dict
+) -> bool:
     if not created:
         return False
 
@@ -40,24 +40,33 @@ def discord_notify_ctf_creation(sender, instance: Ctf, created: bool, **kwargs: 
     root = get_current_site()
     url = f"{root}{instance.get_absolute_url()}"
     msg = random.choice(NEW_CTF_MESSAGES).format(instance.name)
-    date_and_time = f"Permanent CTF" if instance.is_permanent else f"Date: {instance.start_date} - {instance.end_date}"
+    date_and_time = (
+        f"Permanent CTF"
+        if instance.is_permanent
+        else f"Date: {instance.start_date} - {instance.end_date}"
+    )
     defaults = {
         "username": DISCORD_BOT_NAME,
         "content": msg,
-        "embeds": [{
-            "url": url,
-            "description": f"""
+        "embeds": [
+            {
+                "url": url,
+                "description": f"""
 `{instance.created_by.username}` added the team for `{instance.name}`!
 {date_and_time}
 Link: [{url}]({url})
 """,
-        }]}
+            }
+        ],
+    }
     data = kwargs.setdefault("json", defaults)
     return discord_send_message(data)
 
 
 @receiver(post_save, sender=Challenge, dispatch_uid="discord_notify_scored_challenge")
-def discord_notify_scored_challenge(sender, instance: Challenge, created: bool, **kwargs: dict) -> bool:
+def discord_notify_scored_challenge(
+    sender, instance: Challenge, created: bool, **kwargs: dict
+) -> bool:
     if created:
         return False
 
@@ -83,12 +92,15 @@ def discord_notify_scored_challenge(sender, instance: Challenge, created: bool, 
     js = {
         "username": DISCORD_BOT_NAME,
         "content": msg,
-        "embeds": [{
-            "url": challenge_url,
-            "description": f"""
+        "embeds": [
+            {
+                "url": challenge_url,
+                "description": f"""
 `{instance.last_update_by.username}` scored {points} with `{instance.name}` (ctf:[`{instance.ctf.name}`]({ctf_url}), category:`{instance.category.name}`)!
 
 Flag: `{instance.flag}`
 """,
-        }]}
+            }
+        ],
+    }
     return discord_send_message(js)

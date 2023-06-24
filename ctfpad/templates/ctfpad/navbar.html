@@ -37,13 +37,13 @@
                         <div class="dropdown-divider"></div>
                         {% if request.user.member.has_superpowers %}
                             <a class="dropdown-item" href="{% url 'ctfpad:team-edit' request.user.member.team.id %}"><i
-                                    class="fas fa-cogs"></i> Settings</a>
+                                class="fas fa-cogs"></i> Settings</a>
                         {% endif %}
                         <a class="dropdown-item" href="{% url 'ctfpad:users-update' request.user.member.id %}"><i
-                                class="far fa-address-card"></i> Profile</a>
+                            class="far fa-address-card"></i> Profile</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="{% url 'ctfpad:user-logout' %}"><i
-                                class="fas fa-sign-out-alt"></i> Logout</a>
+                            class="fas fa-sign-out-alt"></i> Logout</a>
                     {% endif %}
                 </div>
             </li>
@@ -63,12 +63,12 @@
                         <input class="form-check-input" type="checkbox" role="switch" id="toggleDarkMode"
                                name="darkModeCookie" checked onchange="this.form.submit();">
                         <label class="form-check-label" for="toggleDarkMode"><span
-                                class="color: white;">☀</span></label>
+                            class="color: white;">☀</span></label>
                     {% else %}
                         <input class="form-check-input" type="checkbox" role="switch" id="toggleDarkMode"
                                name="darkModeCookie" onchange="this.form.submit();">
                         <label class="form-check-label" for="toggleDarkMode"><span
-                                class="color: white;">🌙</span></label>
+                            class="color: white;">🌙</span></label>
                     {% endif %}
                 </div>
             </li>
