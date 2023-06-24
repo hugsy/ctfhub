@@ -2,7 +2,7 @@ import uuid
 
 import django.contrib.messages.api
 
-from ctfpad.models import Member, Team
+from ctfhub.models import Member, Team
 
 
 def get_messages(response) -> list[str]:

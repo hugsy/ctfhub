@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from django.test import Client
 
-from ctfpad.tests.utils import MockTeamWithMembers
+from ctfhub.tests.utils import MockTeamWithMembers
 
 
 class TestMemberView(TestCase):

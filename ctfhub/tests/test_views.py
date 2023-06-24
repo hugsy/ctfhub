@@ -3,8 +3,8 @@ from typing import Union
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from ctfpad.models import Team
-from ctfpad.tests.utils import (
+from ctfhub.models import Team
+from ctfhub.tests.utils import (
     MockTeam,
     MockTeamWithMembers,
     get_messages,
@@ -20,7 +20,7 @@ class TestTeamView(TestCase):
         return super().tearDown()
 
     def test_team_register_get(self):
-        url = reverse("ctfpad:team-register")
+        url = reverse("ctfhub:team-register")
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "team/create.html")
@@ -29,7 +29,7 @@ class TestTeamView(TestCase):
         #
         # Create a first team, expect success
         #
-        url = reverse("ctfpad:team-register")
+        url = reverse("ctfhub:team-register")
         response = self.client.post(
             url,
             {
@@ -39,11 +39,11 @@ class TestTeamView(TestCase):
         )
         self.assertEquals(response.status_code, 302)
         self.assertEquals(Team.objects.all().count(), 1)
-        self.assertEquals(response.url, reverse("ctfpad:dashboard"))
+        self.assertEquals(response.url, reverse("ctfhub:dashboard"))
 
         response = self.client.get(response.url)
         self.assertEquals(response.status_code, 302)
-        self.assertTrue(response.url.startswith(reverse("ctfpad:user-login")))
+        self.assertTrue(response.url.startswith(reverse("ctfhub:user-login")))
 
         response = self.client.get(response.url)
         self.assertEquals(response.status_code, 200)
@@ -64,7 +64,7 @@ class TestTeamView(TestCase):
         )
         self.assertEquals(response.status_code, 302)
         self.assertEquals(Team.objects.all().count(), 1)
-        self.assertEquals(response.url, reverse("ctfpad:home"))
+        self.assertEquals(response.url, reverse("ctfhub:home"))
         return
 
     def test_team_edit(self):
@@ -73,32 +73,32 @@ class TestTeamView(TestCase):
         #
         team = MockTeam()
         url = reverse(
-            "ctfpad:team-edit",
+            "ctfhub:team-edit",
             args=[
                 team.pk,
             ],
         )
         response = self.client.get(url)
         self.assertEquals(response.status_code, 302)
-        assert response.url.startswith(reverse("ctfpad:user-login"))
+        assert response.url.startswith(reverse("ctfhub:user-login"))
 
         response = self.client.post(url, {"email": "new.email@test.com"})
         self.assertEquals(response.status_code, 302)
-        assert response.url.startswith(reverse("ctfpad:user-login"))
+        assert response.url.startswith(reverse("ctfhub:user-login"))
 
     def test_team_delete(self):
         #
         # Should fail, no admin
         #
         team = MockTeam()
-        url = reverse("ctfpad:team-delete")
+        url = reverse("ctfhub:team-delete")
         response = self.client.get(url)
         self.assertEquals(response.status_code, 302)
-        assert response.url.startswith(reverse("ctfpad:user-login"))
+        assert response.url.startswith(reverse("ctfhub:user-login"))
 
         response = self.client.post(url, {"id": team.pk})
         self.assertEquals(response.status_code, 302)
-        assert response.url.startswith(reverse("ctfpad:user-login"))
+        assert response.url.startswith(reverse("ctfhub:user-login"))
 
 
 class TestAdminView(TestCase):
@@ -107,7 +107,7 @@ class TestAdminView(TestCase):
         self.team = MockTeam()
 
     def test_admin_get(self):
-        url = reverse("ctfpad:users-register")
+        url = reverse("ctfhub:users-register")
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "users/register.html")
@@ -120,17 +120,17 @@ class TestAdminView(TestCase):
             "password2": "testtesttest",
             "api_key": self.team.api_key,
         }
-        url = reverse("ctfpad:users-register")
+        url = reverse("ctfhub:users-register")
         response = self.client.post(url, data)
         self.assertEquals(response.status_code, 302)
-        self.assertEquals(response.url, reverse("ctfpad:user-login"))
+        self.assertEquals(response.url, reverse("ctfhub:user-login"))
         response = self.client.get(response.url)
         self.assertEquals(response.status_code, 200)
         messages = get_messages(response)
         self.assertIn(f"Member '{data['username']}' successfully created", messages)
 
     def test_admin_post_missing_fields(self):
-        url = reverse("ctfpad:users-register")
+        url = reverse("ctfhub:users-register")
         response = self.client.post(url, {})
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "users/register.html")
@@ -144,7 +144,7 @@ class TestAdminView(TestCase):
             "password2": "TESTTESTTEST",
             "api_key": 1234,
         }
-        url = reverse("ctfpad:users-register")
+        url = reverse("ctfhub:users-register")
         response = self.client.post(url, data)
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "users/register.html")
@@ -153,7 +153,7 @@ class TestAdminView(TestCase):
         self.assertIn("Password mismatch", messages)
 
     def test_admin_post_bad_api_key(self):
-        url = reverse("ctfpad:users-register")
+        url = reverse("ctfhub:users-register")
         data: dict[str, Union[str, int]] = {
             "username": "testuser",
             "email": "admin@test.com",

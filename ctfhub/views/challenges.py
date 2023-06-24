@@ -179,7 +179,7 @@ class ChallengeSetFlagView(ChallengeUpdateView):
     def form_valid(self, form):
         if form.instance.ctf.is_finished:
             messages.error(self.request, "Cannot score when CTF is over")
-            return redirect("ctfpad:challenges-detail", self.object.id)
+            return redirect("ctfhub:challenges-detail", self.object.id)
 
         if form.instance.ctf.flag_prefix and "flag" in form.cleaned_data:
             if not form.cleaned_data["flag"].startswith(form.instance.ctf.flag_prefix):

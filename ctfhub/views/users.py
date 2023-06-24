@@ -112,7 +112,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         # validate api_key
         team = teams.first()
         if not team:
-            return redirect("ctfpad:team-register")
+            return redirect("ctfhub:team-register")
 
         if team.api_key != form.cleaned_data["api_key"]:
             messages.error(

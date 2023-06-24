@@ -12,9 +12,9 @@ jobs:
       postgres:
         image: postgres
         env:
-          POSTGRES_DB: ctfpad
-          POSTGRES_USER: ctfpad
-          POSTGRES_PASSWORD: ctfpad
+          POSTGRES_DB: ctfhub
+          POSTGRES_USER: ctfhub
+          POSTGRES_PASSWORD: ctfhub
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -26,7 +26,7 @@ jobs:
       hedgedoc:
         image: quay.io/hedgedoc/hedgedoc:alpine
         env:
-          CMD_DB_URL: postgres://ctfpad:ctfpad@postgres:5432/ctfpad
+          CMD_DB_URL: postgres://ctfhub:ctfhub@postgres:5432/ctfhub
           CMD_ALLOW_ANONYMOUS: false
           CMD_ALLOW_FREEURL: true
           CMD_IMAGE_UPLOAD_TYPE: filesystem
@@ -46,9 +46,9 @@ jobs:
           echo CTFPAD_PROTOCOL=http >> $GITHUB_ENV
           echo CTFPAD_DOMAIN=localhost >> $GITHUB_ENV
           echo CTFPAD_PORT=8000 >> $GITHUB_ENV
-          echo CTFPAD_DB_NAME=ctfpad >> $GITHUB_ENV
-          echo CTFPAD_DB_USER=ctfpad >> $GITHUB_ENV
-          echo CTFPAD_DB_PASSWORD=ctfpad >> $GITHUB_ENV
+          echo CTFPAD_DB_NAME=ctfhub >> $GITHUB_ENV
+          echo CTFPAD_DB_USER=ctfhub >> $GITHUB_ENV
+          echo CTFPAD_DB_PASSWORD=ctfhub >> $GITHUB_ENV
           echo CTFPAD_DB_HOST=localhost >> $GITHUB_ENV
           echo CTFPAD_DB_PORT=5432 >> $GITHUB_ENV
           echo CTFPAD_HEDGEDOC_URL=http://localhost:3000 >> $GITHUB_ENV
@@ -70,4 +70,4 @@ jobs:
 
       - name: Execute Tests
         run: |
-          python manage.py test ctfpad
+          python manage.py test ctfhub

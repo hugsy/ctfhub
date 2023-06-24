@@ -17,13 +17,13 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
     model = Team
     template_name = "team/create.html"
     form_class = TeamCreateUpdateForm
-    success_url = reverse_lazy("ctfpad:dashboard")
+    success_url = reverse_lazy("ctfhub:dashboard")
     success_message = MESSAGE_SUCCESS_TEAM_CREATED
 
     def dispatch(self, request, *args, **kwargs):
         if Team.objects.all().count():
             messages.error(self.request, MESSAGE_ERROR_MULTIPLE_TEAM_CREATE)
-            return redirect("ctfpad:home")
+            return redirect("ctfhub:home")
         if request.method and request.method.lower() in self.http_method_names:
             handler = getattr(
                 self, request.method.lower(), self.http_method_not_allowed
@@ -44,7 +44,7 @@ class TeamUpdateView(
     model = Team
     success_url = reverse_lazy("ctfhub:dashboard")
     template_name = "team/edit.html"
-    login_url = reverse_lazy("ctfpad:user-login")
+    login_url = reverse_lazy("ctfhub:user-login")
     form_class = TeamCreateUpdateForm
     redirect_field_name = "redirect_to"
     success_message = "Team successfully edited"
@@ -56,6 +56,6 @@ class TeamDeleteView(
     model = Team
     success_url = reverse_lazy("ctfhub:team-register")
     template_name = "team/confirm_delete.html"
-    login_url = reverse_lazy("ctfpad:user-login")
+    login_url = reverse_lazy("ctfhub:user-login")
     redirect_field_name = "redirect_to"
     success_message = "Team successfully deleted"
