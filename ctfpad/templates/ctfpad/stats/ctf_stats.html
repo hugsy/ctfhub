@@ -6,39 +6,39 @@
             <div id="wrapper-chart-ctf-stats">
                 <canvas id="ctf-stats"></canvas>
                 <script>
-const challengeNames = [{% for chall in team_timeline.0.challs %}'{{ chall.name|escapejs|lower }}', {% endfor %}];
-new Chart(document.getElementById("ctf-stats"), {
-    type: "line",
-    data: {
-        labels: [
-            {% for chall in team_timeline.0.challs %}
-                '{{ chall.solved_time|date:"D H:i" }}',
-            {% endfor %}
-        ],
-        datasets: [
-            {% for member in team_timeline %}
-                {
-                    label: "{{ member.username }}",
-                    data: [
-                        {% for accu in member.challs.values %}{{ accu|floatformat:".2" }}, {% endfor %}
-                    ],
-                    fill: false,
-                    lineTension: 0,
-                    borderColor: generate_random_color({{forloop.counter}}),
-                },
-            {% endfor %}
-        ]
-    },
-    options: {
-        tooltips: {
-            callbacks: {
-                title: function(tooltipItems, data) {
-                    return challengeNames[tooltipItems[0].index];
-                }
-            }
-        },
-    }
-});
+                    const challengeNames = [{% for chall in team_timeline.0.challs %}'{{ chall.name|escapejs|lower }}', {% endfor %}];
+                    new Chart(document.getElementById("ctf-stats"), {
+                        type: "line",
+                        data: {
+                            labels: [
+                                {% for chall in team_timeline.0.challs %}
+                                    '{{ chall.solved_time|date:"D H:i" }}',
+                                {% endfor %}
+                            ],
+                            datasets: [
+                                {% for member in team_timeline %}
+                                    {
+                                        label: "{{ member.username }}",
+                                        data: [
+                                            {% for accu in member.challs.values %}{{ accu|floatformat:".2" }}, {% endfor %}
+                                        ],
+                                        fill: false,
+                                        lineTension: 0,
+                                        borderColor: generate_random_color({{forloop.counter}}),
+                                    },
+                                {% endfor %}
+                            ]
+                        },
+                        options: {
+                            tooltips: {
+                                callbacks: {
+                                    title: function(tooltipItems, data) {
+                                        return challengeNames[tooltipItems[0].index];
+                                    }
+                                }
+                            },
+                        }
+                    });
                 </script>
             </div>
         </div>

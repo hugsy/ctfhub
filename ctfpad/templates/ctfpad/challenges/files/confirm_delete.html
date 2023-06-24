@@ -2,28 +2,28 @@
 
 {% block content %}
 
-<br/>
+    <br/>
 
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <h1 class="display-4">Delete file '{{challengefile.name}}' ?</h1>
-        <p class="lead">
-            <i class="fas fa-exclamation-triangle"></i>
-            It cannot be recovered.
-            <i class="fas fa-exclamation-triangle"></i>
-            <br><br>
-            Confirm deletion?
-        </p>
-        <div>
-            <form method="POST" action="{% url 'ctfpad:challenge-files-delete' challengefile.challenge.id challengefile.id %}">
-                {% csrf_token %}
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-4">Delete file '{{challengefile.name}}' ?</h1>
+            <p class="lead">
+                <i class="fas fa-exclamation-triangle"></i>
+                It cannot be recovered.
+                <i class="fas fa-exclamation-triangle"></i>
+                <br><br>
+                Confirm deletion?
+            </p>
+            <div>
+                <form method="POST" action="{% url 'ctfpad:challenge-files-delete' challengefile.challenge.id challengefile.id %}">
+                    {% csrf_token %}
                     <div class="modal-footer">
                         <a type="button" class="btn btn-secondary" href="{% url 'ctfpad:challenges-detail' challengefile.challenge.id %}">Cancel</a>
                         <button type="submit" class="btn btn-danger">Confirm</button>
                     </div>
                 </form>
+            </div>
         </div>
     </div>
-</div>
 
 {% endblock %}

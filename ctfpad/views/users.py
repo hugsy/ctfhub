@@ -22,7 +22,12 @@ from django.views.generic import (
 )
 
 from ctfpad.decorators import user
-from ctfpad.forms import MemberCreateForm, MemberMarkAsSelectedForm, MemberUpdateForm, UserUpdateForm
+from ctfpad.forms import (
+    MemberCreateForm,
+    MemberMarkAsSelectedForm,
+    MemberUpdateForm,
+    UserUpdateForm,
+)
 from ctfpad.helpers import get_random_string_128
 from ctfpad.mixins import RequireSuperPowersMixin
 from ctfpad.models import Member, Team
@@ -50,7 +55,7 @@ def logout(request: HttpRequest) -> HttpResponse:
 
 class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = User
-    success_url = reverse_lazy('ctfpad:dashboard')
+    success_url = reverse_lazy("ctfpad:dashboard")
     template_name = "users/edit_advanced.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
@@ -59,7 +64,10 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if not request.user.member.has_superpowers and self.object.pk != request.user.id:
+        if (
+            not request.user.member.has_superpowers
+            and self.object.pk != request.user.id
+        ):
             raise Http404()
         return super().get(request, *args, **kwargs)
 
@@ -71,9 +79,11 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         return super().form_valid(form)
 
 
-class UserPasswordUpdateView(LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView):
+class UserPasswordUpdateView(
+    LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView
+):
     model = User
-    success_url = reverse_lazy('ctfpad:user-logout')
+    success_url = reverse_lazy("ctfpad:user-logout")
     template_name = "users/edit_advanced_change_password.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
@@ -99,14 +109,16 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         if form.cleaned_data["password1"] != form.cleaned_data["password2"]:
             messages.error(self.request, "Password mismatch")
             return self.form_invalid(form)
-                    
+
         # validate api_key
         team = teams.first()
         if not team:
             return redirect("ctfpad:team-register")
-        
+
         if team.api_key != form.cleaned_data["api_key"]:
-            messages.error(self.request, f"The API key for team '{team.name}' is invalid")
+            messages.error(
+                self.request, f"The API key for team '{team.name}' is invalid"
+            )
             return self.form_invalid(form)
 
         # validate user uniqueness
@@ -114,7 +126,9 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         users = User.objects.filter(username=form.cleaned_data["username"])
         if users.count() > 0:
             form.errors["name"] = "UsernameAlreadyExistError"
-            messages.error(self.request, "Username already exists, try logging in instead")
+            messages.error(
+                self.request, "Username already exists, try logging in instead"
+            )
             return self.form_invalid(form)
 
         # create the django user
@@ -145,7 +159,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
 
 class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = Member
-    success_url = reverse_lazy('ctfpad:dashboard')
+    success_url = reverse_lazy("ctfpad:dashboard")
     template_name = "users/edit.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
@@ -154,20 +168,26 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if not request.user.member.has_superpowers and self.object.pk != request.user.member.id:
+        if (
+            not request.user.member.has_superpowers
+            and self.object.pk != request.user.member.id
+        ):
             raise Http404()
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        if 'form' not in kwargs:
-            kwargs['form'] = self.get_form()
-        kwargs['form'].initial['has_superpowers'] = self.get_object().has_superpowers
+        if "form" not in kwargs:
+            kwargs["form"] = self.get_form()
+        kwargs["form"].initial["has_superpowers"] = self.get_object().has_superpowers
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        if self.request.user.member.has_superpowers and 'has_superpowers' in form.cleaned_data:
+        if (
+            self.request.user.member.has_superpowers
+            and "has_superpowers" in form.cleaned_data
+        ):
             member = self.get_object()
-            if form.cleaned_data['has_superpowers'] == True:
+            if form.cleaned_data["has_superpowers"] == True:
                 # any superuser can make another user become a superuser
                 member.user.is_superuser = True
             else:
@@ -182,15 +202,18 @@ class MemberMarkAsSelectedView(MemberUpdateView):
     form_class = MemberMarkAsSelectedForm
 
     def get_success_url(self):
-        return reverse("ctfpad:ctfs-detail", kwargs={'pk': self.object.selected_ctf.id})
+        member: Member = self.object
+        return reverse("ctfpad:ctfs-detail", kwargs={"pk": member.selected_ctf.id})
 
     def get_success_message(self, cleaned_data):
         return f"CTF {cleaned_data['selected_ctf']} mark as Current"
 
 
-class MemberDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView):
+class MemberDeleteView(
+    LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView
+):
     model = Member
-    success_url = reverse_lazy('ctfpad:dashboard')
+    success_url = reverse_lazy("ctfpad:dashboard")
     template_name = "users/confirm_delete.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"

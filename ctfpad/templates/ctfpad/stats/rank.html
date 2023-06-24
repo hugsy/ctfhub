@@ -36,23 +36,23 @@
                 </div>
                 <table class="table table-hover">
                     <thead>
-                    <tr>
-                        <th scope="col">Rank</th>
-                        <th scope="col">Member</th>
-                        <th scope="col">Rating*</th>
-                        <th scope="col">Scored %</th>
-                        <th scope="col">Best category</th>
-                    </tr>
+                        <tr>
+                            <th scope="col">Rank</th>
+                            <th scope="col">Member</th>
+                            <th scope="col">Rating*</th>
+                            <th scope="col">Scored %</th>
+                            <th scope="col">Best category</th>
+                        </tr>
                     </thead>
                     <tbody>
                         {% for member in ranking_stats.alltime %}
-                        <tr>
-                            <th scope="row">{{ forloop.counter | ordinal }}</th>
-                            <td><a href="{% url 'ctfpad:users-detail' member.id %}">{{ member.username }}</a></td>
-                            <td>{{ member.rating_accu }}</td>
-                            <td>{{ member.percent }}</td>
-                            <td>{% best_category member year_pick %}</td>
-                        </tr>
+                            <tr>
+                                <th scope="row">{{ forloop.counter | ordinal }}</th>
+                                <td><a href="{% url 'ctfpad:users-detail' member.id %}">{{ member.username }}</a></td>
+                                <td>{{ member.rating_accu }}</td>
+                                <td>{{ member.percent }}</td>
+                                <td>{% best_category member year_pick %}</td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>
@@ -67,29 +67,29 @@
             <h5>Last CTFs</h5>
             <table class="table table-hover">
                 <thead>
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col">1st</th>
-                    <th scope="col">2nd</th>
-                    <th scope="col">3rd</th>
-                    <th scope="col">4th</th>
-                </tr>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">1st</th>
+                        <th scope="col">2nd</th>
+                        <th scope="col">3rd</th>
+                        <th scope="col">4th</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for ctf in ranking_stats.last_ctfs|slice:":15" %}
-                    <tr>
-                        <td style="vertical-align: middle;"><a href="{% url 'ctfpad:ctfs-detail' ctf.id %}">{{ctf}}</a></td>
-                        {% for member, percent in ctf.ranking|slice:":4" %}
-                        <td style="vertical-align: middle;">
-                            {% if percent > 0 %}
-                                <a href="{% url 'ctfpad:users-detail' member.id %}"><img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle"></a>
-                                &nbsp;{{percent|floatformat:"0"}}&#x25;
-                            {% else %}
-                                &nbsp;
-                            {% endif %}
-                        </td>
-                        {% endfor %}
-                    </tr>
+                        <tr>
+                            <td style="vertical-align: middle;"><a href="{% url 'ctfpad:ctfs-detail' ctf.id %}">{{ctf}}</a></td>
+                            {% for member, percent in ctf.ranking|slice:":4" %}
+                                <td style="vertical-align: middle;">
+                                    {% if percent > 0 %}
+                                        <a href="{% url 'ctfpad:users-detail' member.id %}"><img width="30px" height="30px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle"></a>
+                                        &nbsp;{{percent|floatformat:"0"}}&#x25;
+                                    {% else %}
+                                        &nbsp;
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>

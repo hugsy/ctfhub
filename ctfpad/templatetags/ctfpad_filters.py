@@ -32,10 +32,10 @@ def as_time_accumulator_graph(items):
 
 @register.simple_tag(takes_context=True)
 def theme_cookie(context):
-    request = context['request']
-    value = request.COOKIES.get('theme', 'light')
-    if value not in ('light', 'dark'):
-        value = 'light'
+    request = context["request"]
+    value = request.COOKIES.get("theme", "light")
+    if value not in ("light", "dark"):
+        value = "light"
     return value
 
 
@@ -52,8 +52,8 @@ def html_sanitize(html):
     return bleach.linkify(
         bleach.clean(
             html,
-            tags=['a', 'br', 'hr'],
-            protocols=['http', 'https'],
+            tags=["a", "br", "hr"],
+            protocols=["http", "https"],
             strip=True,
         )
     )
@@ -62,6 +62,10 @@ def html_sanitize(html):
 @register.filter(is_safe=True, needs_autoescape=False)
 def as_tick_or_cross(b):
     if b:
-        return mark_safe("""<strong><i class="fas fa-check" style="color: green;"></i><strong>""")
+        return mark_safe(
+            """<strong><i class="fas fa-check" style="color: green;"></i><strong>"""
+        )
     else:
-        return mark_safe("""<strong><i class="fas fa-times" style="color: red;"></i><strong>""")
+        return mark_safe(
+            """<strong><i class="fas fa-times" style="color: red;"></i><strong>"""
+        )

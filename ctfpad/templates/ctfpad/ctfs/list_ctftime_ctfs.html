@@ -15,32 +15,32 @@
 
         <table class="table table-sm table-hover">
             <thead>
-            <tr>
-                <th scope="col">CTF</th>
-                <th scope="col"><abbr title="Hover for local time">Date (in UTC)</abbr></th>
-                <th scope="col">Duration</th>
-                <th scope="col">Weight</th>
-                <th scope="col">Import</th>
-            </tr>
+                <tr>
+                    <th scope="col">CTF</th>
+                    <th scope="col"><abbr title="Hover for local time">Date (in UTC)</abbr></th>
+                    <th scope="col">Duration</th>
+                    <th scope="col">Weight</th>
+                    <th scope="col">Import</th>
+                </tr>
             </thead>
             <tbody>
-            {% for ctf in ctftime_ctfs %}
-            <tr>
-                <td scope="row">
-                    <a href="https://ctftime.org/event/{{ctf.id}}" target="_blank">{{ctf.title}} <i class="fas fa-external-link-alt"></i></a>
-                </td>
-                <td>
-                    <abbr title='Local time: {{ ctf.start | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start | date:"Y/m/d H:i:s"}}</abbr>
-                    &nbsp;→&nbsp;
-                    <abbr title='Local time: {{ ctf.finish | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.finish | date:"Y/m/d H:i:s"}}</abbr>
-                </td>
-                <td>
-                    {{ ctf.duration|naturaltime}}
-                </td>
-                <td>{{ ctf.weight | floatformat:"-2" }}</td>
-                <td><a href="{% url 'ctfpad:ctfs-import' %}?ctftime_id={{ctf.id|urlencode}}"><i class="fas fa-file-import"></i></a></td>
-            </tr>
-            {% endfor %}
+                {% for ctf in ctftime_ctfs %}
+                    <tr>
+                        <td scope="row">
+                            <a href="https://ctftime.org/event/{{ctf.id}}" target="_blank">{{ctf.title}} <i class="fas fa-external-link-alt"></i></a>
+                        </td>
+                        <td>
+                            <abbr title='Local time: {{ ctf.start | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start | date:"Y/m/d H:i:s"}}</abbr>
+                            &nbsp;→&nbsp;
+                            <abbr title='Local time: {{ ctf.finish | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.finish | date:"Y/m/d H:i:s"}}</abbr>
+                        </td>
+                        <td>
+                            {{ ctf.duration|naturaltime}}
+                        </td>
+                        <td>{{ ctf.weight | floatformat:"-2" }}</td>
+                        <td><a href="{% url 'ctfpad:ctfs-import' %}?ctftime_id={{ctf.id|urlencode}}"><i class="fas fa-file-import"></i></a></td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>

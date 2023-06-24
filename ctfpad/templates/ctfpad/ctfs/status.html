@@ -6,35 +6,35 @@
     <div class="col">
         <div class="col-md">
             <div class="card text-center text-white mb-3"
-            {% if ctf.is_running %}
-                style="background-color: #56c74c;"
-            {% elif ctf.is_finished %}
-                style="background-color: #15708f;"
-            {% else %}
-                style="background-color: #da94d4;"
-            {% endif %}
+                 {% if ctf.is_running %}
+                     style="background-color: #56c74c;"
+                 {% elif ctf.is_finished %}
+                     style="background-color: #15708f;"
+                 {% else %}
+                     style="background-color: #da94d4;"
+                 {% endif %}
             >
-                  <div class="card-header">
-                      <h5 class="card-title">{{ctf.name | upper}}{%if ctf.is_private %} (Private){% endif %}</h5>
-                  </div>
-                  <div class="card-body">
+                <div class="card-header">
+                    <h5 class="card-title">{{ctf.name | upper}}{%if ctf.is_private %} (Private){% endif %}</h5>
+                </div>
+                <div class="card-body">
                     <h5 class="card-title">
-                    {% if ctf.is_permanent %}
-                    Permanent CTF
-                    {% else %}
-                        {% if ctf.is_running %}
-                        <script>
-                            setInterval(() => { document.getElementById("countdown").innerHTML = `${timeuntil("{{ ctf.end_date|as_local_datetime_for_member:request.user.member|date:'c' }}")} `; }, 1000);
-                        </script>
-                        <p id="countdown" style="margin-bottom: 0;"></p>
-                        {% elif ctf.is_finished %}
-                        Ended {{ ctf.end_date | timesince }} ago
+                        {% if ctf.is_permanent %}
+                            Permanent CTF
                         {% else %}
-                        Starts in {{ ctf.start_date | timeuntil }}
+                            {% if ctf.is_running %}
+                                <script>
+                                    setInterval(() => { document.getElementById("countdown").innerHTML = `${timeuntil("{{ ctf.end_date|as_local_datetime_for_member:request.user.member|date:'c' }}")} `; }, 1000);
+                                </script>
+                                <p id="countdown" style="margin-bottom: 0;"></p>
+                            {% elif ctf.is_finished %}
+                                Ended {{ ctf.end_date | timesince }} ago
+                            {% else %}
+                                Starts in {{ ctf.start_date | timeuntil }}
+                            {% endif %}
                         {% endif %}
-                    {% endif %}
                     </h5>
-                  </div>
+                </div>
             </div>
         </div>
     </div>
@@ -42,22 +42,22 @@
     <div class="col">
         <div class="col-md">
             <div class="card text-center text-white  mb-3" id="total-ctf-played">
-                  <div class="card-header">
-                      <h5 class="card-title">Solved/Total challenges: {{ctf.solved_challenges | length}}/{{ctf.challenges | length}}</h5>
-                  </div>
-                  <div class="card-body">
+                <div class="card-header">
+                    <h5 class="card-title">Solved/Total challenges: {{ctf.solved_challenges | length}}/{{ctf.challenges | length}}</h5>
+                </div>
+                <div class="card-body">
                     <h3 class="card-title">
                         <div class="progress">
                             <div id="active_challenge_progress"
-                                class="progress-bar"
-                                role="progressbar"
-                                style="width: {{ ctf.solved_challenges_as_percent }}%;"
-                                aria-valuenow="{{ ctf.solved_challenges_as_percent }}"
-                                aria-valuemin="0"
-                                aria-valuemax="100">{{ ctf.solved_challenges_as_percent }}%</div>
+                                 class="progress-bar"
+                                 role="progressbar"
+                                 style="width: {{ ctf.solved_challenges_as_percent }}%;"
+                                 aria-valuenow="{{ ctf.solved_challenges_as_percent }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">{{ ctf.solved_challenges_as_percent }}%</div>
                         </div>
                     </h3>
-                  </div>
+                </div>
             </div>
         </div>
     </div>
@@ -65,24 +65,24 @@
     <div class="col">
         <div class="col-md">
             <div class="card text-center text-white  mb-3" id="current-ctf">
-                  <div class="card-header">
-                      <h5 class="card-title">Scored/Total points: {{ctf.scored_points}}/{{ctf.total_points}} pts</h5>
-                  </div>
-                  <div class="card-body">
+                <div class="card-header">
+                    <h5 class="card-title">Scored/Total points: {{ctf.scored_points}}/{{ctf.total_points}} pts</h5>
+                </div>
+                <div class="card-body">
                     <h3 class="card-title">
                         <div class="progress">
                             <div id="points_progress"
-                                class="progress-bar"
-                                role="progressbar"
-                                style="width: {{ctf.scored_points_as_percent}}%;"
-                                aria-valuenow="{{ctf.scored_points_as_percent}}"
-                                aria-valuemin="0"
-                                aria-valuemax="100">
+                                 class="progress-bar"
+                                 role="progressbar"
+                                 style="width: {{ctf.scored_points_as_percent}}%;"
+                                 aria-valuenow="{{ctf.scored_points_as_percent}}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
                                 {{ctf.scored_points_as_percent}}%
                             </div>
                         </div>
                     </h3>
-                  </div>
+                </div>
             </div>
         </div>
     </div>

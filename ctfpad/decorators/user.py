@@ -28,7 +28,11 @@ def is_authenticated(view_func):
     def wrapper_func(request: HttpRequest, *args, **kwargs):
         if not request.user.is_authenticated:
             messages.warning(request, "You must be authenticated!")
-            return redirect(reverse("ctfpad:user-login") + "?" + urlencode({"redirect_to": request.path}))
+            return redirect(
+                reverse("ctfpad:user-login")
+                + "?"
+                + urlencode({"redirect_to": request.path})
+            )
         else:
             return view_func(request, *args, **kwargs)
 

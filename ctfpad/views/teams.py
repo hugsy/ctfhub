@@ -1,16 +1,17 @@
-from django.views.generic import UpdateView, DeleteView, CreateView
 from django.contrib import messages
-from ctfpad.models import Team
-from ctfpad.forms import TeamCreateUpdateForm
-from django.shortcuts import redirect
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, DeleteView, UpdateView
 
+from ctfpad.forms import TeamCreateUpdateForm
 from ctfpad.mixins import RequireSuperPowersMixin
+from ctfpad.models import Team
 
 MESSAGE_SUCCESS_TEAM_CREATED: str = "Team successfully created"
 MESSAGE_ERROR_MULTIPLE_TEAM_CREATE: str = "Only one team can be created"
+
 
 class TeamCreateView(SuccessMessageMixin, CreateView):
     model = Team
@@ -23,21 +24,25 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
         if Team.objects.all().count():
             messages.error(self.request, MESSAGE_ERROR_MULTIPLE_TEAM_CREATE)
             return redirect("ctfpad:home")
-        if request.method and request.method.lower() in self.http_method_names:
-            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+        if request.method.lower() in self.http_method_names:
+            handler = getattr(
+                self, request.method.lower(), self.http_method_not_allowed
+            )
         else:
             handler = self.http_method_not_allowed
         return handler(request, *args, **kwargs)
 
     def get_success_message(self, cleaned_data):
         msg = f"Team '{self.object.name}' successfully created!"
-        msg+= f"Use the API key '{self.object.api_key}' to register new members."
+        msg += f"Use the API key '{self.object.api_key}' to register new members."
         return msg
 
 
-class TeamUpdateView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, UpdateView):
+class TeamUpdateView(
+    LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, UpdateView
+):
     model = Team
-    success_url = reverse_lazy('ctfpad:dashboard')
+    success_url = reverse_lazy("ctfpad:dashboard")
     template_name = "team/edit.html"
     login_url = reverse_lazy("ctfpad:user-login")
     form_class = TeamCreateUpdateForm
@@ -45,9 +50,11 @@ class TeamUpdateView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessage
     success_message = "Team successfully edited"
 
 
-class TeamDeleteView(LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView):
+class TeamDeleteView(
+    LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView
+):
     model = Team
-    success_url = reverse_lazy('ctfpad:team-register')
+    success_url = reverse_lazy("ctfpad:team-register")
     template_name = "team/confirm_delete.html"
     login_url = reverse_lazy("ctfpad:user-login")
     redirect_field_name = "redirect_to"

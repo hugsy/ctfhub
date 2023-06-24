@@ -22,14 +22,16 @@ class TagCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
 
     def get(self, request, *args, **kwargs):
         form = self.form_class(initial=self.initial)
-        return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {"form": form})
 
     def form_valid(self, form):
         form.cleaned_data["name"] = form.instance.name.strip().lower()
         return super().form_valid(form)
 
     def get_success_url(self):
-        redirect_to = self.request.META.get("HTTP_REFERER") or reverse("ctfpad:dashboard")
+        redirect_to = self.request.META.get("HTTP_REFERER") or reverse(
+            "ctfpad:dashboard"
+        )
         return redirect_to
 
 
@@ -47,7 +49,9 @@ class TagListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
         return ctx
 
 
-class TagDeleteView(LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, DeleteView):
+class TagDeleteView(
+    LoginRequiredMixin, MembersOnlyMixin, SuccessMessageMixin, DeleteView
+):
     model = Tag
     template_name = "ctfpad/tags/confirm_delete.html"
     login_url = "/users/login/"

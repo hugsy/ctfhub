@@ -90,9 +90,9 @@
                                     <input type="datetime-local"
                                            id={{ form.start_date.id_for_label }} name="{{ form.start_date.html_name }}"
                                            placeholder="{{ form.start_date.label }}"
-                                            {% if form.start_date.value %}
-                                           value="{{ form.start_date.value | date:'Y-m-d\TH:i' }}"
-                                            {% endif %}
+                                           {% if form.start_date.value %}
+                                               value="{{ form.start_date.value | date:'Y-m-d\TH:i' }}"
+                                           {% endif %}
                                            class="form-control">
                                 </div>
 
@@ -104,9 +104,9 @@
                                     <input type="datetime-local"
                                            id={{ form.end_date.id_for_label }} name="{{ form.end_date.html_name }}"
                                            placeholder="{{ form.end_date.label }}"
-                                            {% if form.end_date.value %}
-                                           value="{{ form.end_date.value | date:'Y-m-d\TH:i' }}"
-                                            {% endif %}
+                                           {% if form.end_date.value %}
+                                               value="{{ form.end_date.value | date:'Y-m-d\TH:i' }}"
+                                           {% endif %}
                                            class="form-control">
                                 </div>
 
@@ -160,7 +160,7 @@
 
                                 {% if form.instance.is_finished %}
                                     <label class="label"><strong>Team Rating</strong>&nbsp;<a
-                                            href="{{ team.ctftime_url }}" target="_blank"><i
+                                        href="{{ team.ctftime_url }}" target="_blank"><i
                                             class="fas fa-external-link-alt"></i></a></label>
                                     <div class="input-group mb-3">
                                         <span class="input-group-text">
@@ -192,10 +192,10 @@
                                     </div>
                                 </div>
                             </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
 {% endblock %}
