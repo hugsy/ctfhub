@@ -10,7 +10,7 @@ services:
       args:
         - NODE_ENV=${EXCALIDRAW_NODE_ENV}
     networks:
-      - ctfpad
+      - ctfhub
       - excalidraw
     ports:
       - 3001:80

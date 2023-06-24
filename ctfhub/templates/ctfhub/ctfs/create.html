@@ -1,0 +1,201 @@
+{% extends 'ctfhub/main.html' %}
+
+{% block content %}
+
+    <br/>
+
+    {% include 'snippets/messages.html' %}
+
+    {% include 'snippets/formerror.html' %}
+
+    <div class="row">
+        <div class="col-lg-4 offset-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        {% if form.instance.creation_time %}
+                            <p class="card-header-title">Updating CTF {{ form.name.value }}</p>
+                        {% else %}
+                            <p class="card-header-title">New CTF</p>
+                        {% endif %}
+                    </h5>
+                </div>
+
+                <div class="card-body">
+                    <form class="form" method="post">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="form-group">
+
+                                <label class="label"><strong>Name</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-hat-cowboy-side"></i>
+                                    </span>
+                                    <input id="{{ form.name.id_for_label }}" name="{{ form.name.html_name }}"
+                                           value="{{ form.name.value }}" class="form-control" type="text"
+                                           placeholder="{{ form.name.label }}" required>
+                                </div>
+
+                                <label class="label"><strong>URL</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-link"></i>
+                                    </span>
+                                    <input id="{{ form.url.id_for_label }}" name="{{ form.url.html_name }}"
+                                           placeholder="{{ form.url.label }}" value="{{ form.url.value }}"
+                                           class="form-control" type="text">
+                                </div>
+
+                                <label class="label"><strong>Description</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-pen"></i>
+                                    </span>
+                                    <textarea id="{{ form.description.id_for_label }}"
+                                              name="{{ form.description.html_name }}"
+                                              placeholder="{{ form.description.label }}"
+                                              class="form-control">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+                                </div>
+
+                                <label class="label"><strong>Flag Prefix </strong>(if any)</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-flag"></i>
+                                    </span>
+                                    <input id="{{ form.flag_prefix.id_for_label }}"
+                                           name="{{ form.flag_prefix.html_name }}"
+                                           placeholder="{{ form.flag_prefix.label }}"
+                                           value="{{ form.flag_prefix.value }}" class="form-control" type="text">
+                                </div>
+
+                                <label class="label"><strong>Visibility</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-eye-slash"></i>
+                                    </span>
+                                    <select class="form-control" id="{{ form.visibility.id_for_label }}"
+                                            name="{{ form.visibility.html_name }}">
+                                        {% for choice in form.visibility %}
+                                            {{ choice }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <label class="label"><strong>Start Date</strong>(leave empty for permanent CTFs)</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </span>
+                                    <input type="datetime-local"
+                                           id={{ form.start_date.id_for_label }} name="{{ form.start_date.html_name }}"
+                                           placeholder="{{ form.start_date.label }}"
+                                           {% if form.start_date.value %}
+                                               value="{{ form.start_date.value | date:'Y-m-d\TH:i' }}"
+                                           {% endif %}
+                                           class="form-control">
+                                </div>
+
+                                <label class="label"><strong>End Date</strong>(leave empty for permanent CTFs)</label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-calendar-day"></i>
+                                    </span>
+                                    <input type="datetime-local"
+                                           id={{ form.end_date.id_for_label }} name="{{ form.end_date.html_name }}"
+                                           placeholder="{{ form.end_date.label }}"
+                                           {% if form.end_date.value %}
+                                               value="{{ form.end_date.value | date:'Y-m-d\TH:i' }}"
+                                           {% endif %}
+                                           class="form-control">
+                                </div>
+
+                                <label class="label"><strong>Team Login</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-sign-in-alt"></i>
+                                    </span>
+                                    <input id="{{ form.team_login.id_for_label }}"
+                                           name="{{ form.team_login.html_name }}"
+                                           placeholder="{{ form.team_login.label }}" value="{{ form.team_login.value }}"
+                                           class="form-control" type="text">
+                                </div>
+
+                                <label class="label"><strong>Team Password</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-key"></i>
+                                    </span>
+                                    <input id="{{ form.team_password.id_for_label }}"
+                                           name="{{ form.team_password.html_name }}"
+                                           placeholder="{{ form.team_password.label }}" class="form-control" type="text"
+                                           value="{{ form.team_password.value }}">
+
+                                    <button class="form-control btn btn-info"
+                                            onclick="document.getElementById('{{ form.team_password.id_for_label }}').value=generate_random_string(16); return false;">
+                                        Generate
+                                    </button>
+                                </div>
+
+                                <label class="label"><strong>CTFTime Id</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-random"></i>
+                                    </span>
+                                    <input id="{{ form.ctftime_id.id_for_label }}"
+                                           name="{{ form.ctftime_id.html_name }}"
+                                           placeholder="{{ form.ctftime_id.label }}" class="form-control" type="number"
+                                           min="0" value="{{ form.ctftime_id.value }}">
+                                </div>
+
+                                <label class="label"><strong>Weight</strong></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-random"></i>
+                                    </span>
+                                    <input id="{{ form.weight.id_for_label }}" name="{{ form.weight.html_name }}"
+                                           placeholder="{{ form.weight.label }}" class="form-control" type="number"
+                                           min="0" value="{{ form.weight.value }}">
+                                </div>
+
+                                {% if form.instance.is_finished %}
+                                    <label class="label"><strong>Team Rating</strong>&nbsp;<a
+                                        href="{{ team.ctftime_url }}" target="_blank"><i
+                                            class="fas fa-external-link-alt"></i></a></label>
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-random"></i>
+                                        </span>
+                                        <input id="{{ form.rating.id_for_label }}" name="{{ form.rating.html_name }}"
+                                               placeholder="{{ form.rating.label }}" class="form-control" type="number"
+                                               min="0" value="{{ form.rating.value }}">
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="card-footer text-muted">
+                                <div class="control card-footer-item">
+                                    <div class="d-grid gap-2">
+                                        {% if form.instance.creation_time %}
+
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                    onclick="this.form.submit();">Update CTF
+                                            </button>
+                                        {% else %}
+                                            <button type="button" class="btn btn-primary btn-sm"
+                                                    onclick="this.form.submit();">Create CTF
+                                            </button>
+                                        {% endif %}
+                                        <button type="button" class="btn btn-secondary btn-sm"
+                                                onclick="window.history.back();">Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

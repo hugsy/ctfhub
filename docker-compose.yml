@@ -7,13 +7,13 @@ services:
     env_file:
       - .env
     environment:
-      - POSTGRES_DB=${CTFPAD_DB_NAME}
-      - POSTGRES_USER=${CTFPAD_DB_USER}
-      - POSTGRES_PASSWORD=${CTFPAD_DB_PASSWORD}
+      - POSTGRES_DB=${CTFHUB_DB_NAME}
+      - POSTGRES_USER=${CTFHUB_DB_USER}
+      - POSTGRES_PASSWORD=${CTFHUB_DB_PASSWORD}
     volumes:
       - postgres-vol:/var/lib/postgresql/data
     networks:
-      - ctfpad
+      - ctfhub
     restart: always
 
   hedgedoc:
@@ -23,16 +23,16 @@ services:
     env_file:
       - .env
     environment:
-      - CMD_DB_URL=postgres://${CTFPAD_DB_USER}:${CTFPAD_DB_PASSWORD}@${CTFPAD_DB_HOST}:${CTFPAD_DB_PORT}/${CTFPAD_DB_NAME}
+      - CMD_DB_URL=postgres://${CTFHUB_DB_USER}:${CTFHUB_DB_PASSWORD}@${CTFHUB_DB_HOST}:${CTFHUB_DB_PORT}/${CTFHUB_DB_NAME}
       - CMD_ALLOW_ANONYMOUS=false
       - CMD_ALLOW_FREEURL=true
       - CMD_IMAGE_UPLOAD_TYPE=filesystem
-      - CMD_DOMAIN=${CTFPAD_HEDGEDOC_DOMAIN}
-      - CMD_PORT=${CTFPAD_HEDGEDOC_PORT}
+      - CMD_DOMAIN=${CTFHUB_HEDGEDOC_DOMAIN}
+      - CMD_PORT=${CTFHUB_HEDGEDOC_PORT}
       - CMD_URL_ADDPORT=true
       - CMD_PROTOCOL_USESSL=false
     networks:
-      - ctfpad
+      - ctfhub
     ports:
       - 3000:3000
     restart: always
@@ -41,8 +41,8 @@ services:
     volumes:
       - ./volumes/upload/hedgedoc:/hedgedoc/public/uploads
 
-  ctfpad:
-    # build: https://github.com/hugsy/ctfpad.git#master
+  ctfhub:
+    # build: https://github.com/hugsy/ctfhub.git#master
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     links:
@@ -56,15 +56,15 @@ services:
     ports:
       - 8000:8000
     networks:
-      - ctfpad
+      - ctfhub
     restart: always
     volumes:
-      - ./volumes/upload/ctfpad:/code/uploads
-      - ./ctfpad:/code/ctfpad
-      - ./ctftools:/code/ctftools
+      - ./volumes/upload/ctfhub:/code/uploads
+      - ./ctfhub:/code/ctfhub
+      - ./ctfhub_project:/code/ctfhub_project
 
 networks:
-  ctfpad:
+  ctfhub:
     driver: bridge
 
 volumes:

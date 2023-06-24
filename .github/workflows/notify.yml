@@ -23,8 +23,8 @@ jobs:
               ● ') }}
 
           color: 0x0000ff
-          username: ${{ github.actor }} on CTFPad
-          avatar_url: "https://github.com/hugsy/ctfpad/blob/refresh-readme/static/images/new_logo_circle.png?raw=true"
+          username: ${{ github.actor }} on CTFHub
+          avatar_url: "https://github.com/hugsy/ctfhub/blob/refresh-readme/static/images/new_logo_circle.png?raw=true"
 
       - name: Triggering Pull Request Discord Notification
         if: github.event_name == 'pull_request' && github.event.action == 'opened' && github.repository_owner == 'hugsy'
@@ -40,8 +40,8 @@ jobs:
             ---
             Link: ${{ github.event.pull_request.html_url }}
           color: 0xff0000
-          username: ${{ github.actor }} on CTFPad
-          avatar_url: "https://github.com/hugsy/ctfpad/blob/refresh-readme/static/images/new_logo_circle.png?raw=true"
+          username: ${{ github.actor }} on CTFHub
+          avatar_url: "https://github.com/hugsy/ctfhub/blob/refresh-readme/static/images/new_logo_circle.png?raw=true"
 
       - name: Triggering Issue Discord Notification
         if: github.event_name == 'issues' && github.event.action == 'opened' && github.repository_owner == 'hugsy'
@@ -57,5 +57,5 @@ jobs:
             ---
             Link: ${{ github.event.issue.html_url }}
           color: 0x00ff00
-          username: ${{ github.actor }} on CTFPad
-          avatar_url: "https://github.com/hugsy/ctfpad/blob/refresh-readme/static/images/new_logo_circle.png?raw=true"
+          username: ${{ github.actor }} on CTFHub
+          avatar_url: "https://github.com/hugsy/ctfhub/blob/refresh-readme/static/images/new_logo_circle.png?raw=true"
