@@ -258,6 +258,7 @@ def send_mail(recipients: list[str], subject: str, body: str) -> bool:
             pass
     return False
 
+
 def get_random_string_64() -> str:
     """Convenience wrapper to generate 64 char string
 
@@ -277,26 +278,24 @@ def get_random_string_128() -> str:
 
 
 def generate_excalidraw_room_id() -> str:
-    """Convenience wrapper to generate an excalidraw room id 
+    """Convenience wrapper to generate an excalidraw room id
 
     Returns:
         str: [description]
     """
     return django.utils.crypto.get_random_string(
-        EXCALIDRAW_ROOM_ID_LENGTH, 
-        allowed_chars=EXCALIDRAW_ROOM_ID_CHARSET
+        EXCALIDRAW_ROOM_ID_LENGTH, allowed_chars=EXCALIDRAW_ROOM_ID_CHARSET
     )
 
 
 def generate_excalidraw_room_key() -> str:
-    """Convenience wrapper to generate an excalidraw room id 
+    """Convenience wrapper to generate an excalidraw room id
 
     Returns:
         str: [description]
-    """    
+    """
     return django.utils.crypto.get_random_string(
-        EXCALIDRAW_ROOM_KEY_LENGTH, 
-        allowed_chars=EXCALIDRAW_ROOM_KEY_CHARSET
+        EXCALIDRAW_ROOM_KEY_LENGTH, allowed_chars=EXCALIDRAW_ROOM_KEY_CHARSET
     )
 
 
@@ -377,4 +376,3 @@ def export_challenge_note(member, note_id: uuid.UUID) -> str:
                 result = h2.text
             session.post(f"{HEDGEDOC_URL}/logout")
     return result
-
