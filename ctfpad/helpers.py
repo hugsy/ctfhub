@@ -1,5 +1,6 @@
 import os
 import pathlib
+import requests
 import smtplib
 import time
 import uuid
@@ -9,14 +10,6 @@ from functools import lru_cache
 
 import django.core.mail
 import django.utils.crypto
-import exrex
-import magic
-import requests
-
-import exrex
-import magic
-import requests
-from django.utils.crypto import get_random_string
 
 from ctftools.settings import (
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
@@ -30,9 +23,11 @@ from ctftools.settings import (
     DISCORD_WEBHOOK_URL,
     EMAIL_HOST,
     EMAIL_HOST_PASSWORD,
-    EMAIL_HOST_USER,
-    EXCALIDRAW_ROOM_ID_PATTERN,
-    EXCALIDRAW_ROOM_KEY_PATTERN,
+    EMAIL_HOST_USER
+    EXCALIDRAW_ROOM_ID_CHARSET,
+    EXCALIDRAW_ROOM_ID_LENGTH,
+    EXCALIDRAW_ROOM_KEY_CHARSET,
+    EXCALIDRAW_ROOM_KEY_LENGTH,
     HEDGEDOC_URL,
     STATIC_URL,
     USE_INTERNAL_HEDGEDOC,
@@ -263,13 +258,40 @@ def send_mail(recipients: list[str], subject: str, body: str) -> bool:
             pass
     return False
 
-
 def get_random_string_64() -> str:
+    """Convenience wrapper to generate 64 char string
+
+    Returns:
+        str: [description]
+    """
     return django.utils.crypto.get_random_string(64)
 
 
 def get_random_string_128() -> str:
+    """Convenience wrapper to generate 128 char string
+
+    Returns:
+        str: [description]
+    """
     return django.utils.crypto.get_random_string(128)
+
+
+def generate_excalidraw_room_id() -> str:
+    """Convenience wrapper to generate an excalidraw room id 
+
+    Returns:
+        str: [description]
+    """
+    return django.utils.crypto.get_random_string(EXCALIDRAW_ROOM_ID_LENGTH, allowed_chars=EXCALIDRAW_ROOM_ID_CHARSET)
+
+
+def generate_excalidraw_room_key() -> str:
+    """Convenience wrapper to generate an excalidraw room id 
+
+    Returns:
+        str: [description]
+    """    
+    return django.utils.crypto.get_random_string(EXCALIDRAW_ROOM_KEY_LENGTH, allowed_chars=EXCALIDRAW_ROOM_KEY_CHARSET)
 
 
 def discord_send_message(js: dict) -> bool:
@@ -350,10 +372,3 @@ def export_challenge_note(member, note_id: uuid.UUID) -> str:
             session.post(f"{HEDGEDOC_URL}/logout")
     return result
 
-
-def generate_excalidraw_room_id() -> str:
-    return exrex.getone(EXCALIDRAW_ROOM_ID_PATTERN)
-
-
-def generate_excalidraw_room_key() -> str:
-    return exrex.getone(EXCALIDRAW_ROOM_KEY_PATTERN)
