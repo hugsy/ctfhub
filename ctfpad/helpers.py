@@ -1,15 +1,15 @@
 import os
 import pathlib
-import requests
 import smtplib
 import time
 import uuid
-
 from datetime import datetime
 from functools import lru_cache
 
 import django.core.mail
 import django.utils.crypto
+import magic
+import requests
 
 from ctftools.settings import (
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
