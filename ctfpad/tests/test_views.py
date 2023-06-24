@@ -1,43 +1,14 @@
-import uuid
 from typing import Union
 
-import django.contrib.messages.api
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from ctfpad.models import Member, Team
-from ctfpad.views.teams import (
-    MESSAGE_ERROR_MULTIPLE_TEAM_CREATE,
-    MESSAGE_SUCCESS_TEAM_CREATED,
+from ctfpad.models import Team
+from ctfpad.tests.utils import (
+    MockTeam,
+    MockTeamWithMembers,
+    get_messages,
 )
-
-
-def get_messages(response) -> list[str]:
-    request = response.context["request"]
-    messages = django.contrib.messages.api.get_messages(request)
-    messages_as_str = [str(msg) for msg in messages]
-    return messages_as_str
-
-
-def MockTeam() -> Team:
-    team = Team.objects.create(
-        name="TestTeam",
-        email="test@test.com",
-        api_key=str(uuid.uuid4()),
-        ctftime_id=1234,
-    )
-    return team
-
-
-def MockTeamWithAdmin() -> tuple[Team, Member]:
-    team = Team.objects.create(
-        name="TestTeam",
-        email="test@test.com",
-        api_key=str(uuid.uuid4()),
-        ctftime_id=1234,
-    )
-    admin = Member.objects.create()
-    return (team, admin)
 
 
 class TestTeamView(TestCase):
@@ -135,13 +106,13 @@ class TestAdminView(TestCase):
         self.client = Client()
         self.team = MockTeam()
 
-    def test_team_create_user_get(self):
+    def test_admin_get(self):
         url = reverse("ctfpad:users-register")
         response = self.client.get(url)
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "users/register.html")
 
-    def test_team_create_user_post(self):
+    def test_admin_post(self):
         data: dict[str, Union[str, int]] = {
             "username": "testuser",
             "email": "admin@test.com",
@@ -158,14 +129,14 @@ class TestAdminView(TestCase):
         messages = get_messages(response)
         self.assertIn(f"Member '{data['username']}' successfully created", messages)
 
-    def test_team_create_user_post_missing_fields(self):
+    def test_admin_post_missing_fields(self):
         url = reverse("ctfpad:users-register")
         response = self.client.post(url, {})
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "users/register.html")
         self.assertEqual(len(response.context["errors"]), 5)
 
-    def test_team_create_user_post_password_mismatch(self):
+    def test_admin_post_password_mismatch(self):
         data: dict[str, Union[str, int]] = {
             "username": "testuser",
             "email": "admin@test.com",
@@ -181,7 +152,7 @@ class TestAdminView(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertIn("Password mismatch", messages)
 
-    def test_team_create_user_post_bad_api_key(self):
+    def test_admin_post_bad_api_key(self):
         url = reverse("ctfpad:users-register")
         data: dict[str, Union[str, int]] = {
             "username": "testuser",
@@ -202,16 +173,16 @@ class TestAdminView(TestCase):
 class TestMemberView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.team, self.admin = MockTeamWithAdmin()
+        self.team, self.members = MockTeamWithMembers()
 
 
 class TestCtfView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.team, self.admin = MockTeamWithAdmin()
+        self.team, self.members = MockTeamWithMembers()
 
 
 class TestChallengeView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.team, self.admin = MockTeamWithAdmin()
+        self.team, self.members = MockTeamWithMembers()

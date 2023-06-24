@@ -36,10 +36,13 @@ jobs:
           CMD_PROTOCOL_USESSL: false
         ports:
           - 3000:3000
-    steps:
-      - uses: actions/checkout@v3
 
-      - run: |
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup environment vars
+        run: |
           echo CTFPAD_PROTOCOL=http >> $GITHUB_ENV
           echo CTFPAD_DOMAIN=localhost >> $GITHUB_ENV
           echo CTFPAD_PORT=8000 >> $GITHUB_ENV
@@ -51,14 +54,20 @@ jobs:
           echo CTFPAD_HEDGEDOC_URL=http://localhost:3000 >> $GITHUB_ENV
           echo CTFPAD_HEDGEDOC_IS_INTERNAL=0 >> $GITHUB_ENV
 
-      - uses: actions/setup-python@v4
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      - run: |
+      - name: Python pre-requisites
+        run: |
           python -m pip install pip --user --upgrade
           python -m pip install -r requirements.txt --user --upgrade
 
-      - run: |
+      - name: Migrate DB
+        run: |
           python manage.py migrate
+
+      - name: Execute Tests
+        run: |
           python manage.py test ctfpad

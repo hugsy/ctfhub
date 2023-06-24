@@ -15,8 +15,7 @@ jobs:
           nodetail: true
           title: ${{ github.actor }} pushed to `${{ github.ref }}`
           description: |
-            **Commit delta**: `${{ github.event.before }}` → `${{ github.event.after }}`
-            ---
+           ---
             **Changes**: ${{ github.event.compare }}
             ---
             **Commits**:
