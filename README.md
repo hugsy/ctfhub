@@ -67,6 +67,9 @@ $ nano scripts/proxy/.env
 $ docker compose -f scripts/proxy/docker-compose.yml -f ./docker-compose.yml up -d --build
 ```
 
+If you're migrating from the first versions called `ctpad`, check out see [PR #83](https://github.com/hugsy/ctfhub/pull/83) to migrate the data to the new environment, search the `Setup > Migration` part.
+
+
 ## Gallery
 
 Check out the [docs](docs/gallery.md)
@@ -83,7 +86,7 @@ If you just like the tool, consider dropping on Discord (or Twitter or other) a 
 And if you can, consider [sponsoring me](https://github.com/hugsy/sponsors) - it really helps dedicating time and resources to the projects!
 
 
-## Extra Credits
+## Credits and Links
 
-- [CTFHub](https://github.com/StratumAuhuur/CTFHub): nice project but NodeJS, so yeah. Also [`etherpad-lite`](https://yopad.eu) doesn't support MarkDown easily. I like the name, so I took it shamelessly
 - The world flag images are downloaded from https://flagpedia.net/
+- [CTFHub](https://github.com/StratumAuhuur/CTFHub): NodeJS project that is based on [`etherpad-lite`](https://yopad.eu) (no MarkDown support).
