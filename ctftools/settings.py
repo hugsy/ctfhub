@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+import django
+
 
 def get_boolean(key: str) -> bool:
     return os.getenv(key) in ("1", "True", "true", True)
