@@ -23,7 +23,7 @@ from ctftools.settings import (
     DISCORD_WEBHOOK_URL,
     EMAIL_HOST,
     EMAIL_HOST_PASSWORD,
-    EMAIL_HOST_USER
+    EMAIL_HOST_USER,
     EXCALIDRAW_ROOM_ID_CHARSET,
     EXCALIDRAW_ROOM_ID_LENGTH,
     EXCALIDRAW_ROOM_KEY_CHARSET,
@@ -282,7 +282,10 @@ def generate_excalidraw_room_id() -> str:
     Returns:
         str: [description]
     """
-    return django.utils.crypto.get_random_string(EXCALIDRAW_ROOM_ID_LENGTH, allowed_chars=EXCALIDRAW_ROOM_ID_CHARSET)
+    return django.utils.crypto.get_random_string(
+        EXCALIDRAW_ROOM_ID_LENGTH, 
+        allowed_chars=EXCALIDRAW_ROOM_ID_CHARSET
+    )
 
 
 def generate_excalidraw_room_key() -> str:
@@ -291,7 +294,10 @@ def generate_excalidraw_room_key() -> str:
     Returns:
         str: [description]
     """    
-    return django.utils.crypto.get_random_string(EXCALIDRAW_ROOM_KEY_LENGTH, allowed_chars=EXCALIDRAW_ROOM_KEY_CHARSET)
+    return django.utils.crypto.get_random_string(
+        EXCALIDRAW_ROOM_KEY_LENGTH, 
+        allowed_chars=EXCALIDRAW_ROOM_KEY_CHARSET
+    )
 
 
 def discord_send_message(js: dict) -> bool:
