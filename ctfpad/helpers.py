@@ -1,4 +1,5 @@
 from datetime import datetime
+from io import BufferedReader
 from time import time
 from django.utils.crypto import get_random_string
 from django.core.files.storage import get_storage_class
@@ -13,6 +14,7 @@ import exrex
 from functools import lru_cache
 from uuid import uuid4
 
+from ctfpad.models import Challenge
 from ctftools.settings import (
     CTFPAD_DOMAIN, CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT, CTFPAD_PORT, CTFPAD_USE_SSL,
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
@@ -98,24 +100,24 @@ def check_note_id(id: str) -> bool:
     return res.status_code == requests.codes.found
 
 
-def get_file_magic(file) -> str:
+def get_file_magic(challenge_file: BufferedReader) -> str:
     """
     Returns the file description from its magic number (ex. 'PE32+ executable (console) x86-64, for MS Windows' )
 
     Args:
-        file: File-like object
+        challenge_file: File-like object
 
     Returns:
         str: the file description, or "" if the file doesn't exist on FS
     """
     try:
-        file.seek(0)  # Ensure file is read from beginning
-        return magic.from_buffer(file.read())
-    except Exception as e:
+        challenge_file.seek(0)  # Ensure file is read from beginning
+        return magic.from_buffer(challenge_file.read())
+    except Exception:
         return "Data"
 
 
-def get_file_mime(file) -> str:
+def get_file_mime(challenge_file: BufferedReader) -> str:
     """
     Returns the mime type associated to the file (ex. 'appication/pdf')
 
@@ -126,9 +128,9 @@ def get_file_mime(file) -> str:
         str: the file mime type, or "application/octet-stream" if the file doesn't exist on FS
     """
     try:
-        file.seek(0)  # Ensure file is read from beginning
-        return magic.from_buffer(file.read(), mime=True)
-    except Exception as e:
+        challenge_file.seek(0)  # Ensure file is read from beginning
+        return magic.from_buffer(challenge_file.read(), mime=True)
+    except Exception:
         return "application/octet-stream"
 
 
@@ -348,11 +350,11 @@ def generate_excalidraw_room_key() -> str:
     return exrex.getone(EXCALIDRAW_ROOM_KEY_PATTERN)
 
 
-def get_named_storage(name):
+def get_named_storage(name: str) -> Any:
     config = settings.STORAGES[name]
     storage_class = get_storage_class(config["BACKEND"])
     return storage_class(**config["OPTIONS"])
 
 
-def get_challenge_upload_path(instance, filename):
+def get_challenge_upload_path(instance: Challenge, filename: str) -> str:
     return f"files/{instance.challenge.id}/{filename}"
