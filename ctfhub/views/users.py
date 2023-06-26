@@ -1,13 +1,3 @@
-from ctfhub.decorators import user
-from ctfhub.forms import (
-    MemberCreateForm,
-    MemberMarkAsSelectedForm,
-    MemberUpdateForm,
-    UserUpdateForm,
-)
-from ctfhub.helpers import get_random_string_128
-from ctfhub.mixins import RequireSuperPowersMixin
-from ctfhub.models import Member, Team
 from django.contrib import auth, messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
@@ -30,6 +20,17 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+
+from ctfhub.decorators import user
+from ctfhub.forms import (
+    MemberCreateForm,
+    MemberMarkAsSelectedForm,
+    MemberUpdateForm,
+    UserUpdateForm,
+)
+from ctfhub.helpers import get_random_string_128
+from ctfhub.mixins import RequireSuperPowersMixin
+from ctfhub.models import Member, Team
 
 
 class CtfhubLogin(LoginView):
@@ -270,4 +271,5 @@ class UserChangePassword(SuccessMessageMixin, PasswordResetConfirmView):
     template_name = "users/password_change.html"
     success_message = "Password successfully changed."
     success_url = reverse_lazy("ctfhub:user-login")
+    title = "Password Reset"
     title = "Password Reset"

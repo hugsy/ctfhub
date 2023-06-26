@@ -4,9 +4,9 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, DeleteView, UpdateView
+
 from ctfhub.forms import TeamCreateUpdateForm
 from ctfhub.mixins import RequireSuperPowersMixin
-
 from ctfhub.models import Team
 
 MESSAGE_SUCCESS_TEAM_CREATED: str = "Team successfully created"

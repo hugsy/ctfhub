@@ -1,12 +1,3 @@
-from ctfhub.forms import (
-    ChallengeCreateForm,
-    ChallengeFileCreateForm,
-    ChallengeImportForm,
-    ChallengeSetFlagForm,
-    ChallengeUpdateForm,
-)
-from ctfhub.helpers import export_challenge_note, generate_github_page_header
-from ctfhub.models import Challenge, ChallengeCategory, Ctf
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -22,6 +13,15 @@ from django.views.generic import (
     UpdateView,
 )
 
+from ctfhub.forms import (
+    ChallengeCreateForm,
+    ChallengeFileCreateForm,
+    ChallengeImportForm,
+    ChallengeSetFlagForm,
+    ChallengeUpdateForm,
+)
+from ctfhub.helpers import export_challenge_note, generate_github_page_header
+from ctfhub.models import Challenge, ChallengeCategory, Ctf
 from ctfhub_project.settings import HEDGEDOC_URL
 
 
