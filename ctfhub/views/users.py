@@ -187,7 +187,7 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             and "has_superpowers" in form.cleaned_data
         ):
             member = self.get_object()
-            if form.cleaned_data["has_superpowers"] == True:
+            if form.cleaned_data["has_superpowers"] is True:
                 # any superuser can make another user become a superuser
                 member.user.is_superuser = True
             else:
@@ -271,5 +271,4 @@ class UserChangePassword(SuccessMessageMixin, PasswordResetConfirmView):
     template_name = "users/password_change.html"
     success_message = "Password successfully changed."
     success_url = reverse_lazy("ctfhub:user-login")
-    title = "Password Reset"
-    title = "Password Reset"
+    title = "Password changed"

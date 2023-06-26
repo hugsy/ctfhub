@@ -1,8 +1,6 @@
 import os
 from pathlib import Path
 
-import django
-
 
 def get_boolean(key: str) -> bool:
     return os.getenv(key) in ("1", "True", "true", True)
@@ -106,7 +104,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": os.getenv("CTFHUB_DB_NAME") or "ctfhub",
         "USER": os.getenv("CTFHUB_DB_USER") or "ctfhub",
-        "PASSWORD": os.getenv("CTFHUB_DB_PASSWORD"),
+        "PASSWORD": os.getenv("CTFHUB_DB_PASSWORD") or "ctfhub",
         "HOST": os.getenv("CTFHUB_DB_HOST") or "localhost",
         "PORT": os.getenv("CTFHUB_DB_PORT") or "5432",
     }

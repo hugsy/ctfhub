@@ -42,7 +42,7 @@ def discord_notify_ctf_creation(
     url = f"{root}{instance.get_absolute_url()}"
     msg = random.choice(NEW_CTF_MESSAGES).format(instance.name)
     date_and_time = (
-        f"Permanent CTF"
+        "Permanent CTF"
         if instance.is_permanent
         else f"Date: {instance.start_date} - {instance.end_date}"
     )

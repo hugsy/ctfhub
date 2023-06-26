@@ -243,7 +243,7 @@ class Ctf(TimeStampedModel):
         # can't dump data
         #
         if member:
-            t = session.post(
+            session.post(
                 f"{HEDGEDOC_URL}/login",
                 data={
                     "email": member.hedgedoc_username,
@@ -253,7 +253,7 @@ class Ctf(TimeStampedModel):
 
         # add ctf notes
         fname = slugify(f"{self.name}.md")
-        with tempfile.TemporaryFile() as fp:
+        with tempfile.TemporaryFile():
             result = session.get(f"{HEDGEDOC_URL}{self.note_id}/download")
             zip_file.writestr(
                 zipfile.ZipInfo(filename=fname, date_time=ts), result.text
@@ -262,7 +262,7 @@ class Ctf(TimeStampedModel):
         # add challenge notes
         for challenge in self.challenges:
             fname = slugify(f"{self.name}-{challenge.name}.md")
-            with tempfile.TemporaryFile() as fp:
+            with tempfile.TemporaryFile():
                 result = session.get(f"{HEDGEDOC_URL}{challenge.note_id}/download")
                 if result.status_code != requests.codes.ok:
                     continue
@@ -1496,7 +1496,7 @@ class CtfStats:
         for ctf in ctfs:
             ctf.member_percents = {}
 
-            first_points = max(ctf.member_points.values())
+            max(ctf.member_points.values())
             total_points = sum(ctf.member_points.values())
 
             for member in members:

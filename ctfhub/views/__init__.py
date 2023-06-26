@@ -9,8 +9,29 @@ from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls.base import reverse
 
+from django.contrib.auth.decorators import login_required
+
 from ..models import CtfStats, Member, SearchEngine, Team
-from . import categories, challenges, ctfs, files, tags, teams, users
+
+from . import (
+    categories,
+    challenges,
+    ctfs,
+    files,
+    tags,
+    teams,
+    users,
+)
+
+__all__ = [
+    "categories",
+    "challenges",
+    "ctfs",
+    "files",
+    "tags",
+    "teams",
+    "users",
+]
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -27,7 +48,8 @@ def index(request: HttpRequest) -> HttpResponse:
     return redirect("ctfhub:dashboard")
 
 
-@user.is_authenticated
+# @user.is_authenticated
+@login_required
 def dashboard(request: HttpRequest) -> HttpResponse:
     """Dashboard view: contains basic summary of all the info in the ctfhub
 
@@ -108,7 +130,7 @@ def search(request: HttpRequest) -> HttpResponse:
     """
     q = request.GET.get("q")
     if not q:
-        messages.warning(request, f"No search pattern given")
+        messages.warning(request, "No search pattern given")
         return redirect("ctfhub:dashboard")
 
     search = SearchEngine(q)

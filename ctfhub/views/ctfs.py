@@ -1,4 +1,3 @@
-from ctfhub.decorators import user
 from ctfhub.forms import CategoryCreateForm, CtfCreateUpdateForm, TagCreateForm
 from ctfhub.helpers import ctftime_ctfs, ctftime_get_ctf_info, ctftime_parse_date
 from ctfhub.mixins import MembersOnlyMixin
@@ -7,7 +6,6 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Q
-from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy

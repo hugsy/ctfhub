@@ -7,4 +7,4 @@ class CtfhubConfig(AppConfig):
     verbose_name = _("ctfhub")
 
     def ready(self):
-        import ctfhub.signals
+        pass
