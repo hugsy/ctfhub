@@ -2,14 +2,14 @@
   <img alt="Logo" src="static/images/new_logo_circle.png" width=20%>
 </p>
 
-<h2 align="center"><b>CTFPad</b></h2>
+<h2 align="center"><b>CTFHub</b></h2>
 <h3 align="center">Where CTFs happen</h3>
 
 <p align="center">
   <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
-  <a href="https://github.com/hugsy/ctfpad/blob/master/LICENSE"><img alt="Licence MIT" src="https://img.shields.io/packagist/l/doctrine/orm.svg?maxAge=2592000?style=plastic"></a>
+  <a href="https://github.com/hugsy/ctfhub/blob/master/LICENSE"><img alt="Licence MIT" src="https://img.shields.io/packagist/l/doctrine/orm.svg?maxAge=2592000?style=plastic"></a>
   <img alt="Python-Version 3.10" src="https://img.shields.io/badge/Python-3.10-brightgreen">
-  <a href="https://discord.gg/fYsAjvsdQT"><img alt="CTFPad on Discord" src="https://img.shields.io/badge/Discord-CTFPad-purple"></a>
+  <a href="https://discord.gg/fYsAjvsdQT"><img alt="CTFHub on Discord" src="https://img.shields.io/badge/Discord-CTFHub-purple"></a>
 </p>
 
 ## What is it?
@@ -47,8 +47,8 @@ A non-exhaustive list of features:
 For most people, this will suffice:
 
 ```bash
-$ git clone https://github.com/hugsy/ctfpad
-$ cd ctfpad
+$ git clone https://github.com/hugsy/ctfhub
+$ cd ctfhub
 $ cp .env.example .env
 ### CHANGE THE CREDENTIALS IN .env ###
 $ nano .env
@@ -67,15 +67,18 @@ $ nano scripts/proxy/.env
 $ docker compose -f scripts/proxy/docker-compose.yml -f ./docker-compose.yml up -d --build
 ```
 
-## Gallery 
+If you're migrating from the first versions called `ctpad`, check out see [PR #83](https://github.com/hugsy/ctfhub/pull/83) to migrate the data to the new environment, search the `Setup > Migration` part.
+
+
+## Gallery
 
 Check out the [docs](docs/gallery.md)
 
 ## Contribution
 
-`CTFPad` was created and maintained by [`@_hugsy_`](https://twitter.com/_hugsy_), but kept fresh thanks to [all the contributors](https://github.com/hugsy/ctfpad/graphs/contributors).
+`CTFHub` was created and maintained by [`@_hugsy_`](https://twitter.com/_hugsy_), but kept fresh thanks to [all the contributors](https://github.com/hugsy/ctfhub/graphs/contributors).
 
-[ ![contributors-img](https://contrib.rocks/image?repo=hugsy/ctfpad) ](https://github.com/hugsy/ctfpad/graphs/contributors)
+[ ![contributors-img](https://contrib.rocks/image?repo=hugsy/ctfhub) ](https://github.com/hugsy/ctfhub/graphs/contributors)
 
 
 If you just like the tool, consider dropping on Discord (or Twitter or other) a simple *"thanks"*, it is always very appreciated.
@@ -83,7 +86,7 @@ If you just like the tool, consider dropping on Discord (or Twitter or other) a 
 And if you can, consider [sponsoring me](https://github.com/hugsy/sponsors) - it really helps dedicating time and resources to the projects!
 
 
-## Extra Credits
+## Credits and Links
 
-- [CTFPad](https://github.com/StratumAuhuur/CTFPad): nice project but NodeJS, so yeah. Also [`etherpad-lite`](https://yopad.eu) doesn't support MarkDown easily. I like the name, so I took it shamelessly
 - The world flag images are downloaded from https://flagpedia.net/
+- [CTFHub](https://github.com/StratumAuhuur/CTFHub): NodeJS project that is based on [`etherpad-lite`](https://yopad.eu) (no MarkDown support).

@@ -1,0 +1,69 @@
+{% load static %}
+
+<!-- Shortcut help modal -->
+<div class="modal" id="shorcutHelpModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">CTFHub shortcuts</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Shortcut</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>Control+Alt+h</code></td>
+                            <td>Show this help menu.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Control+Alt+s</code></td>
+                            <td>Focus on the search input.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Control+Alt+f</code></td>
+                            <td>Focus on the challenge filter input.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Control+Alt+g</code></td>
+                            <td>Jump to your current CTF.</td>
+                        </tr>
+                        <tr>
+                            <td><code>Control+Alt+t</code></td>
+                            <td>Jump to the team info page.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- shortcut declaration -->
+<script type="module">
+    var shortcutFunctionTable = {
+        "Control+Alt+h": function () {
+            (new bootstrap.Modal(document.getElementById("shorcutHelpModal"))).toggle();
+        },
+        "Control+Alt+s": function () {
+            document.getElementById("searchBarInput").focus();
+        },
+        "Control+Alt+f": function () {
+            let e = document.getElementById("ChallengeFilterPattern");
+            if (e) e.focus();
+        },
+        "Control+Alt+g": function () {
+            document.location = "{{request.user.member.selected_ctf.get_absolute_url}}";
+        },
+        "Control+Alt+t": function () {
+            document.location = "{% url 'ctfhub:stats-detail' %}";
+        },
+        /* "Control+Alt+c": function(){ alert("{{request.user.member}}") }, */
+    };
+</script>
+<script type="module" src="{% static '/js/shortcuts.js' %}"></script>
