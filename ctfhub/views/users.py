@@ -1,4 +1,5 @@
 from django.contrib import auth, messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import (
@@ -21,7 +22,6 @@ from django.views.generic import (
     UpdateView,
 )
 
-from ctfhub.decorators import user
 from ctfhub.forms import (
     MemberCreateForm,
     MemberMarkAsSelectedForm,
@@ -39,7 +39,7 @@ class CtfhubLogin(LoginView):
     redirect_field_name = "redirect_to"
 
 
-@user.is_authenticated
+@login_required
 def logout(request: HttpRequest) -> HttpResponse:
     """Log out from current session. CBV is not necessary for logging out.
 

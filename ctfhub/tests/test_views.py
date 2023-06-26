@@ -30,13 +30,12 @@ class TestTeamView(TestCase):
         # Create a first team, expect success
         #
         url = reverse("ctfhub:team-register")
-        response = self.client.post(
-            url,
-            {
-                "name": "TestTeam",
-                "email": "test@test.com",
-            },
-        )
+        team_info = {
+            "name": "TestTeam",
+            "email": "test@test.com",
+        }
+
+        response = self.client.post(url, data=team_info)
         self.assertEquals(response.status_code, 302)
         self.assertEquals(Team.objects.all().count(), 1)
         self.assertEquals(response.url, reverse("ctfhub:dashboard"))
@@ -48,9 +47,11 @@ class TestTeamView(TestCase):
         response = self.client.get(response.url)
         self.assertEquals(response.status_code, 200)
         messages = get_messages(response)
-        self.assertEqual(len(messages), 2)
-        self.assertTrue("successfully created!" in messages[0])
-        self.assertEqual("You must be authenticated!", messages[1])
+        self.assertEqual(len(messages), 1)
+        self.assertIn(
+            f"Team '{team_info['name']}' successfully created!Use the API key '",
+            messages[0],
+        )
 
         #
         # Create a second team, expect failure

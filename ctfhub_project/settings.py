@@ -168,6 +168,7 @@ CTFTIME_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"
 )
 
+LOGIN_URL = "ctfhub:user-login"
 LOGIN_REDIRECT_URL = "ctfhub:dashboard"
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 CHALLENGE_FILE_MAX_SIZE = FILE_UPLOAD_MAX_MEMORY_SIZE

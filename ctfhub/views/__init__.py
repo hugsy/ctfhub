@@ -1,7 +1,6 @@
 import datetime
 from typing import Optional
 
-from ctfhub.decorators import user
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http.request import HttpRequest
@@ -48,7 +47,6 @@ def index(request: HttpRequest) -> HttpResponse:
     return redirect("ctfhub:dashboard")
 
 
-# @user.is_authenticated
 @login_required
 def dashboard(request: HttpRequest) -> HttpResponse:
     """Dashboard view: contains basic summary of all the info in the ctfhub
@@ -91,7 +89,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     return render(request, "ctfhub/dashboard/dashboard.html", context)
 
 
-@user.is_authenticated
+@login_required
 def generate_stats(request: HttpRequest, year: Optional[int] = None) -> HttpResponse:
     """Generate some statistics of the CTFHub
 
@@ -118,7 +116,7 @@ def generate_stats(request: HttpRequest, year: Optional[int] = None) -> HttpResp
     return render(request, "ctfhub/stats/detail.html", context)
 
 
-@user.is_authenticated
+@login_required
 def search(request: HttpRequest) -> HttpResponse:
     """Search pattern(s) in database
 
@@ -147,7 +145,7 @@ def search(request: HttpRequest) -> HttpResponse:
     return render(request, "search/list.html", context)
 
 
-@user.is_authenticated
+@login_required
 def toggle_dark_mode(request: HttpRequest) -> HttpResponse:
     """Toggle dark mode cookie for user
 
