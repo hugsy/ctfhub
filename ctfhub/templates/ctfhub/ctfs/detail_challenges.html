@@ -11,16 +11,16 @@
             <div class="row mb-3">
                 <div class="col-2">
                     <div class="d-grid gap-2">
-                        <a class="btn btn-success btn-sm" href="{% url 'ctfhub:challenges-create' ctf.id %}">
+                        <a class="btn btn-success btn-sm" href="{% url 'ctfhub:challenges-create' ctf.id %}" title="Add Challenge">
                             <strong><i class="fas fa-plus-circle"></i></strong>
                         </a>
                     </div>
                 </div>
 
-                <div class="col-6">
+                <div class="col-2">
                     <div class="d-grid gap-2">
-                        <a class="btn btn-success btn-sm" href="{% url 'ctfhub:challenges-import' ctf.id %}">
-                            <strong>Import challenges</strong>
+                        <a class="btn btn-success btn-sm" href="{% url 'ctfhub:challenges-import' ctf.id %}" title="Import Challenge data from CTFd/rCTF">
+                            <strong><i class="fas fa-arrow-down"></i></strong>
                         </a>
                     </div>
                 </div>

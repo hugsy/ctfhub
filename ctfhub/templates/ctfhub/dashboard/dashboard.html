@@ -38,7 +38,7 @@
 
                     {% for member in members %}
                         {% if member.selected_ctf %}
-                            <tr class="table-row" data-href="{% url 'ctfhub:ctfs-detail' member.selected_ctf %}">
+                            <tr class="table-row" data-href="{% url 'ctfhub:ctfs-detail' member.selected_ctf.id %}">
                                 <td>{{ member.username }}</td>
                                 <td>
                                     {% if member.selected_ctf.is_public %}
