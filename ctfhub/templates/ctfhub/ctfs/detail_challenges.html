@@ -1,4 +1,5 @@
 {% load humanize %}
+{% load tz %}
 
 {% include 'snippets/quick_add_category.html' %}
 {% include 'snippets/quick_add_tag.html' %}
@@ -10,7 +11,7 @@
             <div class="row mb-3">
                 <div class="col-2">
                     <div class="d-grid gap-2">
-                        <a class="btn btn-success btn-sm" href="{% url 'ctfhub:challenges-create' ctf=ctf.id %}">
+                        <a class="btn btn-success btn-sm" href="{% url 'ctfhub:challenges-create' ctf.id %}">
                             <strong><i class="fas fa-plus-circle"></i></strong>
                         </a>
                     </div>
@@ -18,7 +19,7 @@
 
                 <div class="col-6">
                     <div class="d-grid gap-2">
-                        <a class="btn btn-success btn-sm" href="{% url 'ctfhub:challenges-import' ctf=ctf.id %}">
+                        <a class="btn btn-success btn-sm" href="{% url 'ctfhub:challenges-import' ctf.id %}">
                             <strong>Import challenges</strong>
                         </a>
                     </div>

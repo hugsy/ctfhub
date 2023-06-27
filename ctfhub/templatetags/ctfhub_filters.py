@@ -1,17 +1,9 @@
 from collections import namedtuple
 from django import template
 from django.utils.safestring import mark_safe
-import pytz
 import bleach
 
 register = template.Library()
-
-
-@register.filter
-def as_local_datetime_for_member(naive_utc, member):
-    aware_utc = pytz.utc.localize(naive_utc)
-    member_tz = pytz.timezone(member.timezone)
-    return aware_utc.astimezone(member_tz)
 
 
 @register.simple_tag

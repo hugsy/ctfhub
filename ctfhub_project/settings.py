@@ -83,6 +83,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "ctfhub.context_processors.add_debug_context",
+                "ctfhub.context_processors.add_timezone_context",
             ],
         },
     },
@@ -149,6 +150,9 @@ STATICFILES_DIRS = [
 MEDIA_URL = "/uploads/"
 MEDIA_ROOT = BASE_DIR / "uploads/"
 
+IMAGE_URL = f"{STATIC_URL}images/"
+IMAGE_ROOT = BASE_DIR / "static/images"
+
 CTF_CHALLENGE_FILE_URL = "/uploads/files/"
 CTF_CHALLENGE_FILE_PATH = "files/"
 CTF_CHALLENGE_FILE_ROOT = MEDIA_ROOT / CTF_CHALLENGE_FILE_PATH
@@ -177,6 +181,8 @@ SHORT_DATETIME_FORMAT = "Y-m-d P"
 
 CTFHUB_DEFAULT_CTF_LOGO = "blank-ctf.png"
 CTFHUB_ACCEPTED_IMAGE_EXTENSIONS = (".png", ".jpg", ".gif", ".bmp")
+
+CTFHUB_DEFAULT_COUNTRY_LOGO = "blank.png"
 
 # EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 # EMAIL_FILE_PATH = MEDIA_ROOT / "email_sent"

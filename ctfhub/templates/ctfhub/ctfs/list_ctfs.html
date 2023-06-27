@@ -1,5 +1,6 @@
 {% load humanize %}
 {% load ctfhub_filters %}
+{% load tz %}
 
 <div class="row">
     <div class="col">
@@ -35,9 +36,9 @@
                                 <td>♾</td>
                             {% else %}
                                 <td>
-                                    <abbr title='Local time: {{ ctf.start_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start_date | date:"Y/m/d H:i:s"}}</abbr>
+                                    <abbr title='Local time: {{ ctf.start_date | timezone:request.user.member.timezone | date:"Y/m/d H:i:s" }}'>{{ctf.start_date | date:"Y/m/d H:i:s"}}</abbr>
                                     &nbsp;→&nbsp;
-                                    <abbr title='Local time: {{ ctf.end_date | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
+                                    <abbr title='Local time: {{ ctf.end_date | timezone:request.user.member.timezone | date:"Y/m/d H:i:s" }}'>{{ctf.end_date | date:"Y/m/d H:i:s"}}</abbr>
                                 </td>
                                 <td>{{ ctf.duration | naturaltime}}</td>
                             {% endif %}

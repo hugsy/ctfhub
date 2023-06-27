@@ -1,5 +1,6 @@
 {% load ctfhub_filters %}
 {% load humanize %}
+{% load tz %}
 
 <div class="row">
     <div class="col-md-12">
@@ -30,9 +31,9 @@
                             <a href="https://ctftime.org/event/{{ctf.id}}" target="_blank">{{ctf.title}} <i class="fas fa-external-link-alt"></i></a>
                         </td>
                         <td>
-                            <abbr title='Local time: {{ ctf.start | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.start | date:"Y/m/d H:i:s"}}</abbr>
+                            <abbr title='Local time: {{ ctf.start | timezone:request.user.member.timezone | date:"Y/m/d H:i:s" }}'>{{ctf.start | date:"Y/m/d H:i:s"}}</abbr>
                             &nbsp;→&nbsp;
-                            <abbr title='Local time: {{ ctf.finish | as_local_datetime_for_member:request.user.member | date:"Y/m/d H:i:s" }}'>{{ctf.finish | date:"Y/m/d H:i:s"}}</abbr>
+                            <abbr title='Local time: {{ ctf.finish | timezone:request.user.member.timezone | date:"Y/m/d H:i:s" }}'>{{ctf.finish | date:"Y/m/d H:i:s"}}</abbr>
                         </td>
                         <td>
                             {{ ctf.duration|naturaltime}}

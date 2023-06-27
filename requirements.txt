@@ -6,7 +6,6 @@ python-magic
 psycopg2-binary
 django-model-utils
 bleach
-pytz
 
 # Dev packages (install those if you intend to submit PRs)
 pre-commit
