@@ -6,7 +6,6 @@ from django.core.paginator import Paginator
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from django.urls.base import reverse
 
 from django.contrib.auth.decorators import login_required
 
@@ -143,23 +142,3 @@ def search(request: HttpRequest) -> HttpResponse:
         "paginator": paginator,
     }
     return render(request, "search/list.html", context)
-
-
-@login_required
-def toggle_dark_mode(request: HttpRequest) -> HttpResponse:
-    """Toggle dark mode cookie for user
-
-    Args:
-        request (HttpRequest): [description]
-
-    Returns:
-        HttpResponse: [description]
-    """
-    val = request.POST.get("darkModeCookie")
-    redirect_to = request.META.get("HTTP_REFERER") or reverse("ctfhub:dashboard")
-    res = redirect(redirect_to)
-    if val:
-        res.set_cookie("theme", "dark")
-    else:
-        res.set_cookie("theme", "light")
-    return res
