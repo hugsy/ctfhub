@@ -64,19 +64,15 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     latest_ctfs = member.ctfs.order_by("-start_date")
     now = datetime.datetime.now()
     nb_ctf_played = member.ctfs.count()
-    current_ctfs = member.public_ctfs.filter(
-        end_date__isnull=False,
-        start_date__lte=now,
-        end_date__gt=now,
-    )
+    current_ctfs = (ctf for ctf in member.public_ctfs.all() if ctf.is_running)
     next_ctf = (
         member.public_ctfs.filter(
-            end_date__isnull=False,
             start_date__gt=now,
         )
         .order_by("start_date")
         .first()
     )
+
     context = {
         "members": members,
         "latest_ctfs": latest_ctfs[:10],

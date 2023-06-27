@@ -123,9 +123,9 @@ class Ctf(TimeStampedModel):
     visibility = models.CharField(
         max_length=4, choices=VisibilityType.choices, default=VisibilityType.PUBLIC
     )
-    weight = models.FloatField(default=1.0)
-    rating = models.FloatField(default=0.0)
-    note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
+    weight = models.FloatField(default=1.0, blank=False, null=False)
+    rating = models.FloatField(default=0.0, blank=False, null=False)
+    note_id = models.CharField(default=create_new_note, max_length=38, blank=False)
 
     def __str__(self) -> str:
         return self.name
@@ -152,11 +152,11 @@ class Ctf(TimeStampedModel):
 
     @property
     def is_public(self) -> bool:
-        return self.visibility == "public"
+        return self.visibility == Ctf.VisibilityType.PUBLIC
 
     @property
     def is_private(self) -> bool:
-        return self.visibility == "private"
+        return self.visibility == Ctf.VisibilityType.PRIVATE
 
     @property
     def challenges(self):
@@ -221,6 +221,7 @@ class Ctf(TimeStampedModel):
         """
         if self.is_permanent:
             return True
+
         if not self.is_time_limited:
             raise AttributeError
 
@@ -743,13 +744,15 @@ class Member(TimeStampedModel):
     def private_ctfs(self):
         if self.is_guest:
             return Ctf.objects.none()
-        return Ctf.objects.filter(visibility="private", created_by=self)
+        return Ctf.objects.filter(
+            visibility=Ctf.VisibilityType.PRIVATE, created_by=self
+        )
 
     @cached_property
     def public_ctfs(self):
         if self.is_guest:
             return Ctf.objects.filter(id=self.selected_ctf)
-        return Ctf.objects.filter(visibility="public")
+        return Ctf.objects.filter(visibility=Ctf.VisibilityType.PUBLIC)
 
     @cached_property
     def ctfs(self):
