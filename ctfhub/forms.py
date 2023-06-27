@@ -86,8 +86,9 @@ class MemberUpdateForm(forms.ModelForm):
     has_superpowers = forms.BooleanField(required=False, label="Has Super-Powers?")
 
     def clean(self):
-        status = self.cleaned_data["status"].strip().lower()
-        if status == "guest" and not self.cleaned_data["selected_ctf"]:
+        status = self.cleaned_data["status"]
+
+        if status == 1 and not self.cleaned_data["selected_ctf"]:
             raise ValidationError("Guests MUST have a selected_ctf")
         return super(MemberUpdateForm, self).clean()
 

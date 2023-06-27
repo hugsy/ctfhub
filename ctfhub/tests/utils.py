@@ -1,8 +1,9 @@
 import uuid
 
 import django.contrib.messages.api
-
-from ctfhub.models import Member, Team
+import django.utils.crypto
+from django.contrib.auth.models import User
+from ctfhub.models import Member, Team, Ctf
 
 
 def get_messages(response) -> list[str]:
@@ -23,13 +24,17 @@ def MockTeam() -> Team:
 
 
 def MockTeamWithAdmin() -> tuple[Team, Member]:
-    team = Team.objects.create(
-        name="TestTeam",
-        email="test@test.com",
-        api_key=str(uuid.uuid4()),
-        ctftime_id=1234,
+    team = MockTeam()
+
+    admin = Member.objects.create(
+        user=User.objects.create(
+            username="admin",
+            password="admin",
+            email="admin@admin.com",
+            is_superuser=True,
+        ),
+        team=team,
     )
-    admin = Member.objects.create()
     return (team, admin)
 
 
@@ -46,3 +51,10 @@ def MockTeamWithMembers(nb: int = 10) -> tuple[Team, list[Member]]:
         members.append(member)
 
     return (team, members)
+
+
+def MockCtf() -> Ctf:
+    ctf = Ctf.objects.create(
+        name=django.utils.crypto.get_random_string(10),
+    )
+    return ctf

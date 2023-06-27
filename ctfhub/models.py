@@ -10,7 +10,21 @@ from statistics import mean
 from typing import OrderedDict
 from urllib.parse import quote
 
+import django.db.models.manager
 import requests
+from django.contrib.auth.models import User
+from django.core.validators import RegexValidator
+from django.db import models
+from django.db.models import Count, Q, Sum
+from django.db.models.functions import TruncMonth
+from django.urls.base import reverse
+from django.utils.crypto import get_random_string
+from django.utils.functional import cached_property
+from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
+from model_utils import Choices, FieldTracker
+from model_utils.fields import MonitorField, StatusField
+
 from ctfhub.helpers import (
     create_new_note,
     ctftime_ctfs,
@@ -23,18 +37,6 @@ from ctfhub.helpers import (
     register_new_hedgedoc_user,
 )
 from ctfhub.validators import challenge_file_max_size_validator
-from django.contrib.auth.models import User
-from django.core.validators import RegexValidator
-from django.db import models
-from django.db.models import Count, Q, Sum
-from django.db.models.functions import TruncMonth
-from django.urls.base import reverse
-from django.utils.crypto import get_random_string
-from django.utils.functional import cached_property
-from django.utils.text import slugify
-from model_utils import Choices, FieldTracker
-from model_utils.fields import MonitorField, StatusField
-
 from ctfhub_project.settings import (
     CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT,
@@ -88,12 +90,9 @@ class Team(TimeStampedModel):
 
     @property
     def members(self):
-        members = sorted(
-            self.member_set.filter(status="member"), key=lambda x: x.username
-        )
-        members += sorted(
-            self.member_set.filter(status="guest"), key=lambda x: x.username
-        )
+        _members: django.db.models.manager.Manager[Member] = self.member_set.all()
+        members = sorted(_members.filter(status="member"), key=lambda x: x.username)
+        members += sorted(_members.filter(status="guest"), key=lambda x: x.username)
         return members
 
 
@@ -102,7 +101,9 @@ class Ctf(TimeStampedModel):
     CTF model class
     """
 
-    VISIBILITY = Choices("public", "private")
+    class VisibilityType(models.TextChoices):
+        PUBLIC = "OPEN", _("Public")
+        PRIVATE = "PRIV", _("Private")
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128)
@@ -117,7 +118,9 @@ class Ctf(TimeStampedModel):
     team_login = models.CharField(max_length=128, blank=True)
     team_password = models.CharField(max_length=128, blank=True)
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
-    visibility = StatusField(choices_name="VISIBILITY")
+    visibility = models.CharField(
+        max_length=4, choices=VisibilityType.choices, default=VisibilityType.PUBLIC
+    )
     weight = models.FloatField(default=1.0)
     rating = models.FloatField(default=0.0)
     note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
@@ -126,8 +129,24 @@ class Ctf(TimeStampedModel):
         return self.name
 
     @property
+    def is_time_limited(self) -> bool:
+        """Indicates whether a CTF is time-limited (24h, 48h, etc.). This requires both
+        `start_date` and `end_date` fields to be populated.
+
+        Returns:
+            bool: true if both fields are set
+        """
+        return self.start_date is not None and self.end_date is not None
+
+    @property
     def is_permanent(self) -> bool:
-        return not self.start_date and not self.end_date
+        """Indicates whether a CTF is permanent. This requires both
+        `start_date` and `end_date` fields to be None.
+
+        Returns:
+            bool: true if both fields are None
+        """
+        return self.start_date is None and self.end_date is None
 
     @property
     def is_public(self) -> bool:
@@ -171,22 +190,58 @@ class Ctf(TimeStampedModel):
         return int(float(self.scored_points / self.total_points) * 100)
 
     @property
-    def duration(self):
-        if self.is_permanent:
-            return 0
+    def duration(self) -> timedelta:
+        """Returns the total duration of a CTF. Note that this can only apply to a time-limited CTF, if not this will
+        raise an exception
+
+        Raises:
+            AttributeError: _description_
+
+        Returns:
+            _type_: _description_
+        """
+        if not self.is_time_limited:
+            raise AttributeError(
+                f"CTF {str(self)} is not time-limited (i.e. `duration` has no meaning)"
+            )
+        assert self.end_date and self.start_date
         return self.end_date - self.start_date
 
     @property
-    def is_running(self):
+    def is_running(self) -> bool:
+        """Indicates whether the CTF is currently running. A permanent CTF is always running.
+
+        Raises:
+            AttributeError: if the CTF is neither `permanent` or `time_limited`
+
+        Returns:
+            bool: true if the CTF is running
+        """
         if self.is_permanent:
             return True
+        if not self.is_time_limited:
+            raise AttributeError
+
+        assert self.end_date and self.start_date
         now = datetime.now()
         return self.start_date <= now < self.end_date
 
     @property
-    def is_finished(self):
+    def is_finished(self) -> bool:
+        """Indicates whether the CTF is finished. A permanent CTF never finishes.
+
+        Raises:
+            AttributeError: if the CTF is neither `permanent` or `time_limited`
+
+        Returns:
+            bool: _description_
+        """
         if self.is_permanent:
-            return False
+            return True
+        if not self.is_time_limited:
+            raise AttributeError
+
+        assert self.end_date
         now = datetime.now()
         return now >= self.end_date
 
@@ -297,10 +352,10 @@ class Member(TimeStampedModel):
     CTF team member model
     """
 
-    STATUS = Choices(
-        "member",
-        "guest",
-    )
+    class StatusType(models.IntegerChoices):
+        MEMBER = 0, _("Member")
+        GUEST = 1, _("Guest")
+
     COUNTRIES = Choices(
         "Afghanistan",
         "Alabama",
@@ -1073,7 +1128,7 @@ class Member(TimeStampedModel):
         related_name="players",
         related_query_name="player",
     )
-    status = StatusField()
+    status = models.IntegerField(default=StatusType.MEMBER, choices=StatusType.choices)
 
     @property
     def username(self) -> str:
@@ -1141,7 +1196,7 @@ class Member(TimeStampedModel):
         )
         return url
 
-    def save(self):
+    def save(self, **kwargs):
         if not self.hedgedoc_password:
             # create the hedgedoc user
             self.hedgedoc_password = get_random_string(64)
@@ -1177,7 +1232,7 @@ class Member(TimeStampedModel):
     @cached_property
     def public_ctfs(self):
         if self.is_guest:
-            return Ctf.objects.filter(id=self.selected_ctf.id)
+            return Ctf.objects.filter(id=self.selected_ctf)
         return Ctf.objects.filter(visibility="public")
 
     @cached_property
@@ -1188,7 +1243,7 @@ class Member(TimeStampedModel):
         return reverse(
             "ctfhub:users-detail",
             args=[
-                str(self.id),
+                str(id(self)),
             ],
         )
 
@@ -1361,7 +1416,7 @@ class ChallengeFile(TimeStampedModel):
     def url(self):
         return self.file.url
 
-    def save(self):
+    def save(self, **kwargs):
         # save() to commit files to proper location
         super(ChallengeFile, self).save()
 

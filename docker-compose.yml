@@ -70,7 +70,7 @@ services:
       - type: bind
         source: ./
         target: /code
-        read_only: true
+        read_only: false
 
 networks:
   ctfhub:

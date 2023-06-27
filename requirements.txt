@@ -15,4 +15,3 @@ black
 # Test packages (for running tests)
 pytest
 pytest-django
-
