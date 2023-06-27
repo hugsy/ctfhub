@@ -1051,7 +1051,7 @@ class Member(TimeStampedModel):
         "US/Pacific",
     )
 
-    user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
     avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
     description = models.TextField(blank=True)
