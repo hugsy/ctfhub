@@ -44,7 +44,6 @@ class TestAuthView(TestCase):
             reverse_name = f"ctfhub:{path.name}"
             if reverse_name in except_list:
                 continue
-            print(f"ctfhub:{path.name}")
 
             try:
                 url = reverse(reverse_name)
