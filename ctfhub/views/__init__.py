@@ -56,8 +56,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    user = request.user
-    member = user.member
+    member = Member.objects.get(request.user)
     if member.is_guest:
         members = Member.objects.filter(selected_ctf=member.selected_ctf)
     else:

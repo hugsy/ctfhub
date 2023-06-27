@@ -53,7 +53,7 @@ class TestAuthView(TestCase):
                 except django.urls.exceptions.NoReverseMatch:
                     url = reverse(
                         reverse_name,
-                        kwargs={"pk": "c0e37484-fe0d-42bb-998f-f301a89ba1f4"},
+                        kwargs={"pk": "11111111-1111-1111-1111-111111111111"},
                     )
 
             response = client.get(url)
