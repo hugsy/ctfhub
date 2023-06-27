@@ -39,7 +39,10 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./volumes/upload/hedgedoc:/hedgedoc/public/uploads
+      - type: volume
+        source: hedgedoc-vol
+        target: /hedgedoc/public/uploads
+        read_only: false
 
   ctfhub:
     # build: https://github.com/hugsy/ctfhub.git#master
@@ -59,9 +62,15 @@ services:
       - ctfhub
     restart: always
     volumes:
-      - ./volumes/upload/ctfhub:/code/uploads
-      - ./ctfhub:/code/ctfhub
-      - ./ctfhub_project:/code/ctfhub_project
+      - type: volume
+        source: ctfhub-vol
+        target: /code/uploads
+        read_only: false
+
+      - type: bind
+        source: ./
+        target: /code
+        read_only: true
 
 networks:
   ctfhub:
@@ -69,3 +78,5 @@ networks:
 
 volumes:
   postgres-vol:
+  hedgedoc-vol:
+  ctfhub-vol:

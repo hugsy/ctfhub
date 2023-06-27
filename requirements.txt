@@ -1,3 +1,4 @@
+# Core packages
 django >= 4
 Pillow
 requests
@@ -6,6 +7,12 @@ psycopg2-binary
 django-model-utils
 bleach
 pytz
+
+# Dev packages (install those if you intend to submit PRs)
 pre-commit
 black
-django-rename-app
+
+# Test packages (for running tests)
+pytest
+pytest-django
+
