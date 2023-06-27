@@ -356,313 +356,263 @@ class Member(TimeStampedModel):
         MEMBER = 0, _("Member")
         GUEST = 1, _("Guest")
 
-    COUNTRIES = Choices(
-        "Afghanistan",
-        "Alabama",
-        "Alaska",
-        "Albania",
-        "Algeria",
-        "American Samoa",
-        "Andorra",
-        "Angola",
-        "Anguilla",
-        "Antarctica",
-        "Antigua and Barbuda",
-        "Argentina",
-        "Arizona",
-        "Arkansas",
-        "Armenia",
-        "Aruba",
-        "Australia",
-        "Austria",
-        "Azerbaijan",
-        "Bahamas",
-        "Bahrain",
-        "Bangladesh",
-        "Barbados",
-        "Belarus",
-        "Belgium",
-        "Belize",
-        "Benin",
-        "Bermuda",
-        "Bhutan",
-        "Bolivia",
-        "Bosnia and Herzegovina",
-        "Botswana",
-        "Bouvet Island",
-        "Brazil",
-        "British Indian Ocean Territory",
-        "British Virgin Islands",
-        "Brunei",
-        "Bulgaria",
-        "Burkina Faso",
-        "Burundi",
-        "California",
-        "Cambodia",
-        "Cameroon",
-        "Canada",
-        "Cape Verde",
-        "Caribbean Netherlands",
-        "Cayman Islands",
-        "Central African Republic",
-        "Chad",
-        "Chile",
-        "China",
-        "Christmas Island",
-        "Cocos (Keeling) Islands",
-        "Colombia",
-        "Colorado",
-        "Comoros",
-        "Connecticut",
-        "Cook Islands",
-        "Costa Rica",
-        "Croatia",
-        "Cuba",
-        "Curaçao",
-        "Cyprus",
-        "Czechia",
-        "Côte d'Ivoire (Ivory Coast)",
-        "DR Congo",
-        "Delaware",
-        "Denmark",
-        "Djibouti",
-        "Dominica",
-        "Dominican Republic",
-        "Ecuador",
-        "Egypt",
-        "El Salvador",
-        "England",
-        "Equatorial Guinea",
-        "Eritrea",
-        "Estonia",
-        "Eswatini (Swaziland)",
-        "Ethiopia",
-        "European Union",
-        "Falkland Islands",
-        "Faroe Islands",
-        "Fiji",
-        "Finland",
-        "Florida",
-        "France",
-        "French Guiana",
-        "French Polynesia",
-        "French Southern and Antarctic Lands",
-        "Gabon",
-        "Gambia",
-        "Georgia",
-        "Georgia",
-        "Germany",
-        "Ghana",
-        "Gibraltar",
-        "Greece",
-        "Greenland",
-        "Grenada",
-        "Guadeloupe",
-        "Guam",
-        "Guatemala",
-        "Guernsey",
-        "Guinea",
-        "Guinea-Bissau",
-        "Guyana",
-        "Haiti",
-        "Hawaii",
-        "Heard Island and McDonald Islands",
-        "Honduras",
-        "Hong Kong",
-        "Hungary",
-        "Iceland",
-        "Idaho",
-        "Illinois",
-        "India",
-        "Indiana",
-        "Indonesia",
-        "Iowa",
-        "Iran",
-        "Iraq",
-        "Ireland",
-        "Isle of Man",
-        "Israel",
-        "Italy",
-        "Jamaica",
-        "Japan",
-        "Jersey",
-        "Jordan",
-        "Kansas",
-        "Kazakhstan",
-        "Kentucky",
-        "Kenya",
-        "Kiribati",
-        "Kosovo",
-        "Kuwait",
-        "Kyrgyzstan",
-        "Laos",
-        "Latvia",
-        "Lebanon",
-        "Lesotho",
-        "Liberia",
-        "Libya",
-        "Liechtenstein",
-        "Lithuania",
-        "Louisiana",
-        "Luxembourg",
-        "Macau",
-        "Madagascar",
-        "Maine",
-        "Malawi",
-        "Malaysia",
-        "Maldives",
-        "Mali",
-        "Malta",
-        "Marshall Islands",
-        "Martinique",
-        "Maryland",
-        "Massachusetts",
-        "Mauritania",
-        "Mauritius",
-        "Mayotte",
-        "Mexico",
-        "Michigan",
-        "Micronesia",
-        "Minnesota",
-        "Mississippi",
-        "Missouri",
-        "Moldova",
-        "Monaco",
-        "Mongolia",
-        "Montana",
-        "Montenegro",
-        "Montserrat",
-        "Morocco",
-        "Mozambique",
-        "Myanmar",
-        "Namibia",
-        "Nauru",
-        "Nebraska",
-        "Nepal",
-        "Netherlands",
-        "Nevada",
-        "New Caledonia",
-        "New Hampshire",
-        "New Jersey",
-        "New Mexico",
-        "New York",
-        "New Zealand",
-        "Nicaragua",
-        "Niger",
-        "Nigeria",
-        "Niue",
-        "Norfolk Island",
-        "North Carolina",
-        "North Dakota",
-        "North Korea",
-        "North Macedonia",
-        "Northern Ireland",
-        "Northern Mariana Islands",
-        "Norway",
-        "Ohio",
-        "Oklahoma",
-        "Oman",
-        "Oregon",
-        "Pakistan",
-        "Palau",
-        "Palestine",
-        "Panama",
-        "Papua New Guinea",
-        "Paraguay",
-        "Pennsylvania",
-        "Peru",
-        "Philippines",
-        "Pitcairn Islands",
-        "Poland",
-        "Portugal",
-        "Puerto Rico",
-        "Qatar",
-        "Republic of the Congo",
-        "Rhode Island",
-        "Romania",
-        "Russia",
-        "Rwanda",
-        "Réunion",
-        "Saint Barthélemy",
-        "Saint Helena, Ascension and Tristan da Cunha",
-        "Saint Kitts and Nevis",
-        "Saint Lucia",
-        "Saint Martin",
-        "Saint Pierre and Miquelon",
-        "Saint Vincent and the Grenadines",
-        "Samoa",
-        "San Marino",
-        "Saudi Arabia",
-        "Scotland",
-        "Senegal",
-        "Serbia",
-        "Seychelles",
-        "Sierra Leone",
-        "Singapore",
-        "Sint Maarten",
-        "Slovakia",
-        "Slovenia",
-        "Solomon Islands",
-        "Somalia",
-        "South Africa",
-        "South Carolina",
-        "South Dakota",
-        "South Georgia",
-        "South Korea",
-        "South Sudan",
-        "Spain",
-        "Sri Lanka",
-        "Sudan",
-        "Suriname",
-        "Svalbard and Jan Mayen",
-        "Sweden",
-        "Switzerland",
-        "Syria",
-        "São Tomé and Príncipe",
-        "Taiwan",
-        "Tajikistan",
-        "Tanzania",
-        "Tennessee",
-        "Texas",
-        "Thailand",
-        "Timor-Leste",
-        "Togo",
-        "Tokelau",
-        "Tonga",
-        "Trinidad and Tobago",
-        "Tunisia",
-        "Turkey",
-        "Turkmenistan",
-        "Turks and Caicos Islands",
-        "Tuvalu",
-        "Uganda",
-        "Ukraine",
-        "United Arab Emirates",
-        "United Kingdom",
-        "United Nations",
-        "United States",
-        "United States Minor Outlying Islands",
-        "United States Virgin Islands",
-        "Uruguay",
-        "Utah",
-        "Uzbekistan",
-        "Vanuatu",
-        "Vatican City (Holy See)",
-        "Venezuela",
-        "Vermont",
-        "Vietnam",
-        "Virginia",
-        "Wales",
-        "Wallis and Futuna",
-        "Washington",
-        "West Virginia",
-        "Western Sahara",
-        "Wisconsin",
-        "Wyoming",
-        "Yemen",
-        "Zambia",
-        "Zimbabwe",
-    )
+    class Country(models.TextChoices):
+        ANDORRA = "AD", _("Andorra")
+        UNITEDARABEMIRATES = "AE", _("United Arab Emirates")
+        AFGHANISTAN = "AF", _("Afghanistan")
+        ANTIGUABARBUDA = "AG", _("Antigua and Barbuda")
+        ANGUILLA = "AI", _("Anguilla")
+        ALBANIA = "AL", _("Albania")
+        ARMENIA = "AM", _("Armenia")
+        ANGOLA = "AO", _("Angola")
+        ANTARCTICA = "AQ", _("Antarctica")
+        ARGENTINA = "AR", _("Argentina")
+        AMERICAN = "AS", _("American Samoa")
+        AUSTRIA = "AT", _("Austria")
+        AUSTRALIA = "AU", _("Australia")
+        ARUBA = "AW", _("Aruba")
+        AZERBAIJAN = "AZ", _("Azerbaijan")
+        BOSNIAHERZEGOVINA = "BA", _("Bosnia and Herzegovina")
+        BARBADOS = "BB", _("Barbados")
+        BANGLADESH = "BD", _("Bangladesh")
+        BELGIUM = "BE", _("Belgium")
+        BURKINAFASO = "BF", _("Burkina Faso")
+        BULGARIA = "BG", _("Bulgaria")
+        BAHRAIN = "BH", _("Bahrain")
+        BURUNDI = "BI", _("Burundi")
+        BENIN = "BJ", _("Benin")
+        SAINTBARTHELEMY = "BL", _("Saint Barthélemy")
+        BERMUDA = "BM", _("Bermuda")
+        BRUNEI = "BN", _("Brunei")
+        BOLIVIA = "BO", _("Bolivia")
+        CARIBBEANNETHERLANDS = "BQ", _("Caribbean Netherlands")
+        BRAZIL = "BR", _("Brazil")
+        BAHAMAS = "BS", _("Bahamas")
+        BHUTAN = "BT", _("Bhutan")
+        BOUVETISLAND = "BV", _("Bouvet Island")
+        BOTSWANA = "BW", _("Botswana")
+        BELARUS = "BY", _("Belarus")
+        BELIZE = "BZ", _("Belize")
+        CANADA = "CA", _("Canada")
+        COCOSISLANDS = "CC", _("Cocos (Keeling) Islands")
+        DRCONGO = "CD", _("DR Congo")
+        CENTRALAFRICANREPUBLIC = "CF", _("Central African Republic")
+        REPUBLICOFTHECONGO = "CG", _("Republic of the Congo")
+        SWITZERLAND = "CH", _("Switzerland")
+        COTEDIVOIRE = "CI", _("Côte d'Ivoire (Ivory Coast)")
+        COOKISLANDS = "CK", _("Cook Islands")
+        CHILE = "CL", _("Chile")
+        CAMEROON = "CM", _("Cameroon")
+        CHINA = "CN", _("China")
+        COLOMBIA = "CO", _("Colombia")
+        COSTARICA = "CR", _("Costa Rica")
+        CUBA = "CU", _("Cuba")
+        CAPEVERDE = "CV", _("Cape Verde")
+        CURACAO = "CW", _("Curaçao")
+        CHRISTMASISLAND = "CX", _("Christmas Island")
+        CYPRUS = "CY", _("Cyprus")
+        CZECHIA = "CZ", _("Czechia")
+        GERMANY = "DE", _("Germany")
+        DJIBOUTI = "DJ", _("Djibouti")
+        DENMARK = "DK", _("Denmark")
+        DOMINICA = "DM", _("Dominica")
+        DOMINICANREPUBLIC = "DO", _("Dominican Republic")
+        ALGERIA = "DZ", _("Algeria")
+        ECUADOR = "EC", _("Ecuador")
+        ESTONIA = "EE", _("Estonia")
+        EGYPT = "EG", _("Egypt")
+        WESTERNSAHARA = "EH", _("Western Sahara")
+        ERITREA = "ER", _("Eritrea")
+        SPAIN = "ES", _("Spain")
+        ETHIOPIA = "ET", _("Ethiopia")
+        EUROPEANUNION = "EU", _("European Union")
+        FINLAND = "FI", _("Finland")
+        FIJI = "FJ", _("Fiji")
+        FALKLANDISLANDS = "FK", _("Falkland Islands")
+        MICRONESIA = "FM", _("Micronesia")
+        FAROEISLANDS = "FO", _("Faroe Islands")
+        FRANCE = "FR", _("France")
+        GABON = "GA", _("Gabon")
+        UNITEDKINGDOM = "GB", _("United Kingdom")
+        GRENADA = "GD", _("Grenada")
+        GEORGIA = "GE", _("Georgia")
+        FRENCHGUIANA = "GF", _("French Guiana")
+        GUERNSEY = "GG", _("Guernsey")
+        GHANA = "GH", _("Ghana")
+        GIBRALTAR = "GI", _("Gibraltar")
+        GREENLAND = "GL", _("Greenland")
+        GAMBIA = "GM", _("Gambia")
+        GUINEA = "GN", _("Guinea")
+        GUADELOUPE = "GP", _("Guadeloupe")
+        EQUATORIALGUINEA = "GQ", _("Equatorial Guinea")
+        GREECE = "GR", _("Greece")
+        SOUTHGEORGIA = "GS", _("South Georgia")
+        GUATEMALA = "GT", _("Guatemala")
+        GUAM = "GU", _("Guam")
+        GUINEABISSAU = "GW", _("Guinea-Bissau")
+        GUYANA = "GY", _("Guyana")
+        HONGKONG = "HK", _("Hong Kong")
+        HEARDISLANDANDMCDONALDISLANDS = "HM", _("Heard Island and McDonald Islands")
+        HONDURAS = "HN", _("Honduras")
+        CROATIA = "HR", _("Croatia")
+        HAITI = "HT", _("Haiti")
+        HUNGARY = "HU", _("Hungary")
+        INDONESIA = "ID", _("Indonesia")
+        IRELAND = "IE", _("Ireland")
+        ISRAEL = "IL", _("Israel")
+        ISLEOFMAN = "IM", _("Isle of Man")
+        INDIA = "IN", _("India")
+        BRITISHINDIANOCEANTERRITORY = "IO", _("British Indian Ocean Territory")
+        IRAQ = "IQ", _("Iraq")
+        IRAN = "IR", _("Iran")
+        ICELAND = "IS", _("Iceland")
+        ITALY = "IT", _("Italy")
+        JERSEY = "JE", _("Jersey")
+        JAMAICA = "JM", _("Jamaica")
+        JORDAN = "JO", _("Jordan")
+        JAPAN = "JP", _("Japan")
+        KENYA = "KE", _("Kenya")
+        KYRGYZSTAN = "KG", _("Kyrgyzstan")
+        CAMBODIA = "KH", _("Cambodia")
+        KIRIBATI = "KI", _("Kiribati")
+        COMOROS = "KM", _("Comoros")
+        SAINTKITTSANDNEVIS = "KN", _("Saint Kitts and Nevis")
+        NORTHKOREA = "KP", _("North Korea")
+        SOUTHKOREA = "KR", _("South Korea")
+        KUWAIT = "KW", _("Kuwait")
+        CAYMANISLANDS = "KY", _("Cayman Islands")
+        KAZAKHSTAN = "KZ", _("Kazakhstan")
+        LAOS = "LA", _("Laos")
+        LEBANON = "LB", _("Lebanon")
+        SAINTLUCIA = "LC", _("Saint Lucia")
+        LIECHTENSTEIN = "LI", _("Liechtenstein")
+        SRILANKA = "LK", _("Sri Lanka")
+        LIBERIA = "LR", _("Liberia")
+        LESOTHO = "LS", _("Lesotho")
+        LITHUANIA = "LT", _("Lithuania")
+        LUXEMBOURG = "LU", _("Luxembourg")
+        LATVIA = "LV", _("Latvia")
+        LIBYA = "LY", _("Libya")
+        MOROCCO = "MA", _("Morocco")
+        MONACO = "MC", _("Monaco")
+        MOLDOVA = "MD", _("Moldova")
+        MONTENEGRO = "ME", _("Montenegro")
+        SAINTMARTIN = "MF", _("Saint Martin")
+        MADAGASCAR = "MG", _("Madagascar")
+        MARSHALLISLANDS = "MH", _("Marshall Islands")
+        NORTHMACEDONIA = "MK", _("North Macedonia")
+        MALI = "ML", _("Mali")
+        MYANMAR = "MM", _("Myanmar")
+        MONGOLIA = "MN", _("Mongolia")
+        MACAU = "MO", _("Macau")
+        NORTHERNMARIANAISLANDS = "MP", _("Northern Mariana Islands")
+        MARTINIQUE = "MQ", _("Martinique")
+        MAURITANIA = "MR", _("Mauritania")
+        MONTSERRAT = "MS", _("Montserrat")
+        MALTA = "MT", _("Malta")
+        MAURITIUS = "MU", _("Mauritius")
+        MALDIVES = "MV", _("Maldives")
+        MALAWI = "MW", _("Malawi")
+        MEXICO = "MX", _("Mexico")
+        MALAYSIA = "MY", _("Malaysia")
+        MOZAMBIQUE = "MZ", _("Mozambique")
+        NAMIBIA = "NA", _("Namibia")
+        NEWCALEDONIA = "NC", _("New Caledonia")
+        NIGER = "NE", _("Niger")
+        NORFOLKISLAND = "NF", _("Norfolk Island")
+        NIGERIA = "NG", _("Nigeria")
+        NICARAGUA = "NI", _("Nicaragua")
+        NETHERLANDS = "NL", _("Netherlands")
+        NORWAY = "NO", _("Norway")
+        NEPAL = "NP", _("Nepal")
+        NAURU = "NR", _("Nauru")
+        NIUE = "NU", _("Niue")
+        NEWZEALAND = "NZ", _("New Zealand")
+        OMAN = "OM", _("Oman")
+        PANAMA = "PA", _("Panama")
+        PERU = "PE", _("Peru")
+        FRENCHPOLYNESIA = "PF", _("French Polynesia")
+        PAPUANEWGUINEA = "PG", _("Papua New Guinea")
+        PHILIPPINES = "PH", _("Philippines")
+        PAKISTAN = "PK", _("Pakistan")
+        POLAND = "PL", _("Poland")
+        SAINTPIERREANDMIQUELON = "PM", _("Saint Pierre and Miquelon")
+        PITCAIRNISLANDS = "PN", _("Pitcairn Islands")
+        PUERTORICO = "PR", _("Puerto Rico")
+        PALESTINE = "PS", _("Palestine")
+        PORTUGAL = "PT", _("Portugal")
+        PALAU = "PW", _("Palau")
+        PARAGUAY = "PY", _("Paraguay")
+        QATAR = "QA", _("Qatar")
+        RÉUNION = "RE", _("Réunion")
+        ROMANIA = "RO", _("Romania")
+        SERBIA = "RS", _("Serbia")
+        RUSSIA = "RU", _("Russia")
+        RWANDA = "RW", _("Rwanda")
+        SAUDIARABIA = "SA", _("Saudi Arabia")
+        SOLOMONISLANDS = "SB", _("Solomon Islands")
+        SEYCHELLES = "SC", _("Seychelles")
+        SUDAN = "SD", _("Sudan")
+        SWEDEN = "SE", _("Sweden")
+        SINGAPORE = "SG", _("Singapore")
+        SAINTHELENAASCENSIONANDTRISTANDACUNHA = "SH", _(
+            "Saint Helena, Ascension and Tristan da Cunha"
+        )
+        SLOVENIA = "SI", _("Slovenia")
+        SVALBARDANDJANMAYEN = "SJ", _("Svalbard and Jan Mayen")
+        SLOVAKIA = "SK", _("Slovakia")
+        SIERRALEONE = "SL", _("Sierra Leone")
+        SANMARINO = "SM", _("San Marino")
+        SENEGAL = "SN", _("Senegal")
+        SOMALIA = "SO", _("Somalia")
+        SURINAME = "SR", _("Suriname")
+        SOUTHSUDAN = "SS", _("South Sudan")
+        SAOTOMEANDPRINCIPE = "ST", _("São Tomé and Príncipe")
+        ELSALVADOR = "SV", _("El Salvador")
+        SINTMAARTEN = "SX", _("Sint Maarten")
+        SYRIA = "SY", _("Syria")
+        ESWATINI = "SZ", _("Eswatini (Swaziland)")
+        TURKSANDCAICOSISLANDS = "TC", _("Turks and Caicos Islands")
+        CHAD = "TD", _("Chad")
+        FRENCHSOUTHERNANDANTARCTICLANDS = "TF", _("French Southern and Antarctic Lands")
+        TOGO = "TG", _("Togo")
+        THAILAND = "TH", _("Thailand")
+        TAJIKISTAN = "TJ", _("Tajikistan")
+        TOKELAU = "TK", _("Tokelau")
+        TIMORLESTE = "TL", _("Timor-Leste")
+        TURKMENISTAN = "TM", _("Turkmenistan")
+        TUNISIA = "TN", _("Tunisia")
+        TONGA = "TO", _("Tonga")
+        TURKEY = "TR", _("Turkey")
+        TRINIDADANDTOBAGO = "TT", _("Trinidad and Tobago")
+        TUVALU = "TV", _("Tuvalu")
+        TAIWAN = "TW", _("Taiwan")
+        TANZANIA = "TZ", _("Tanzania")
+        UKRAINE = "UA", _("Ukraine")
+        UGANDA = "UG", _("Uganda")
+        UNITEDSTATESMINOROUTLYINGISLANDS = "UM", _(
+            "United States Minor Outlying Islands"
+        )
+        UNITEDNATIONS = "UN", _("United Nations")
+        UNITEDSTATES = "US", _("United States")
+        URUGUAY = "UY", _("Uruguay")
+        UZBEKISTAN = "UZ", _("Uzbekistan")
+        VATICANCITY = "VA", _("Vatican City")
+        SAINTVINCENTANDTHEGRENADINES = "VC", _("Saint Vincent and the Grenadines")
+        VENEZUELA = "VE", _("Venezuela")
+        BRITISHVIRGINISLANDS = "VG", _("British Virgin Islands")
+        UNITEDSTATESVIRGINISLANDS = "VI", _("United States Virgin Islands")
+        VIETNAM = "VN", _("Vietnam")
+        VANUATU = "VU", _("Vanuatu")
+        WALLISANDFUTUNA = "WF", _("Wallis and Futuna")
+        SAMOA = "WS", _("Samoa")
+        KOSOVO = "XK", _("Kosovo")
+        YEMEN = "YE", _("Yemen")
+        MAYOTTE = "YT", _("Mayotte")
+        SOUTHAFRICA = "ZA", _("South Africa")
+        ZAMBIA = "ZM", _("Zambia")
+        ZIMBABWE = "ZW", _("Zimbabwe")
+
     # pytz.common_timezones
     TIMEZONES = Choices(
         "UTC",
@@ -1110,7 +1060,9 @@ class Member(TimeStampedModel):
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
     avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
     description = models.TextField(blank=True)
-    country = StatusField(choices_name="COUNTRIES")
+    country = models.CharField(
+        default=Country.UNITEDNATIONS, choices=Country.choices, max_length=2
+    )
     timezone = StatusField(choices_name="TIMEZONES")
     last_scored = models.DateTimeField(null=True)
     show_pending_notifications = models.BooleanField(default=False)
