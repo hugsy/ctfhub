@@ -705,7 +705,7 @@ class ChallengeFile(TimeStampedModel):
         return self.file.url
 
     def download_url(self):
-        return f"/challenges/{self.challenge.id}/files/{self.id}/download"
+        return reverse('ctfpad:challenge-file-download', args=[str(self.challenge.id), str(self.id)])
 
     def save(self):
         super(ChallengeFile, self).save()

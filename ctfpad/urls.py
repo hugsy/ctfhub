@@ -74,7 +74,7 @@ urlpatterns = [
          name="challenge-files-detail"),
     path("challenges/<uuid:challenge_id>/files/<uuid:pk>/delete/", views.files.ChallengeFileDeleteView.as_view(),
          name="challenge-files-delete"),
-    path("challenges/<uuid:challenge_id>/files/<uuid:pk>/download", views.files.ChallengeFileDownloadView.as_view(),
+    path("challenges/<uuid:challenge_id>/files/<uuid:pk>/download", views.files.challenge_file_download_view,
          name="challenge-file-download"),
 
     # categories

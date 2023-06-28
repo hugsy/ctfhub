@@ -10,11 +10,11 @@ import pathlib
 import requests
 import smtplib
 import exrex
+from typing import *
 
 from functools import lru_cache
 from uuid import uuid4
 
-from ctfpad.models import Challenge
 from ctftools.settings import (
     CTFPAD_DOMAIN, CTFPAD_HTTP_REQUEST_DEFAULT_TIMEOUT, CTFPAD_PORT, CTFPAD_USE_SSL,
     CTFPAD_ACCEPTED_IMAGE_EXTENSIONS,
@@ -122,7 +122,7 @@ def get_file_mime(challenge_file: BufferedReader) -> str:
     Returns the mime type associated to the file (ex. 'appication/pdf')
 
     Args:
-        file: File-like object
+        challenge_file: File-like object
 
     Returns:
         str: the file mime type, or "application/octet-stream" if the file doesn't exist on FS
@@ -356,5 +356,5 @@ def get_named_storage(name: str) -> Any:
     return storage_class(**config["OPTIONS"])
 
 
-def get_challenge_upload_path(instance: Challenge, filename: str) -> str:
+def get_challenge_upload_path(instance: "Challenge", filename: str) -> str:
     return f"files/{instance.challenge.id}/{filename}"
