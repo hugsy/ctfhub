@@ -255,7 +255,10 @@ class Ctf(TimeStampedModel):
 
     @cached_property
     def ctftime_logo_url(self):
-        return ctftime_get_ctf_logo_url(self.ctftime_id)
+        try:
+            return ctftime_get_ctf_logo_url(self.ctftime_id)
+        except (RuntimeError, requests.exceptions.ReadTimeout):
+            return f"{IMAGE_URL}/blank-ctf.png"
 
     @cached_property
     def jitsi_url(self):

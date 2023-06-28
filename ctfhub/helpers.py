@@ -177,6 +177,7 @@ def ctftime_fetch_ctfs(limit=100) -> list:
     res = requests.get(
         f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={start:.0f}&finish={end:.0f}",
         headers={"user-agent": CTFTIME_USER_AGENT},
+        timeout=CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
     )
     if res.status_code != requests.codes.ok:
         raise RuntimeError(
@@ -204,7 +205,11 @@ def ctftime_get_ctf_info(ctftime_id: int) -> dict:
         dict: JSON output from CTFTime
     """
     url = f"{CTFTIME_API_EVENTS_URL}{ctftime_id}/"
-    res = requests.get(url, headers={"user-agent": CTFTIME_USER_AGENT})
+    res = requests.get(
+        url,
+        headers={"user-agent": CTFTIME_USER_AGENT},
+        timeout=CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+    )
     if res.status_code != requests.codes.ok:
         raise RuntimeError(
             f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}"

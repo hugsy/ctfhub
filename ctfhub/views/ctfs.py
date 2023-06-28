@@ -30,7 +30,12 @@ class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx |= {"ctftime_ctfs": ctftime_ctfs(running=True, future=True)}
+        try:
+            ctfs = ctftime_ctfs(running=True, future=True)
+        except RuntimeError:
+            ctfs = []
+            messages.warning(self.request, "CTFTime GET request failed")
+        ctx |= {"ctftime_ctfs": ctfs}
         return ctx
 
     def get_queryset(self):
@@ -72,14 +77,16 @@ class CtfCreateView(
             return render(self.request, self.template_name, {"form": form})
 
         if form.instance.ctftime_id:
-            ctf = ctftime_get_ctf_info(form.instance.ctftime_id)
-            form.instance.ctftime_id = ctf["id"]
-            form.instance.name = ctf["title"]
-            form.instance.url = ctf["url"]
-            form.instance.description = ctf["description"]
-            form.instance.start_date = ctftime_parse_date(ctf["start"])
-            form.instance.end_date = ctftime_parse_date(ctf["finish"])
-
+            try:
+                ctf = ctftime_get_ctf_info(form.instance.ctftime_id)
+                form.instance.ctftime_id = ctf["id"]
+                form.instance.name = ctf["title"]
+                form.instance.url = ctf["url"]
+                form.instance.description = ctf["description"]
+                form.instance.start_date = ctftime_parse_date(ctf["start"])
+                form.instance.end_date = ctftime_parse_date(ctf["finish"])
+            except (RuntimeError, requests.exceptions.ReadTimeout) as e:
+                messages.warning(self.request, f"CTFTime GET request failed: {str(e)}")
         form.instance.created_by = self.request.user.member
         return super().form_valid(form)
 
@@ -98,14 +105,17 @@ class CtfImportView(CtfCreateView):
             pass
 
         if initial["ctftime_id"]:
-            ctf = ctftime_get_ctf_info(initial["ctftime_id"])
-            initial["ctftime_id"] = ctf["id"]
-            initial["name"] = ctf["title"]
-            initial["url"] = ctf["url"]
-            initial["description"] = ctf["description"]
-            initial["start_date"] = ctftime_parse_date(ctf["start"])
-            initial["end_date"] = ctftime_parse_date(ctf["finish"])
-            initial["weight"] = ctf["weight"]
+            try:
+                ctf = ctftime_get_ctf_info(initial["ctftime_id"])
+                initial["ctftime_id"] = ctf["id"]
+                initial["name"] = ctf["title"]
+                initial["url"] = ctf["url"]
+                initial["description"] = ctf["description"]
+                initial["start_date"] = ctftime_parse_date(ctf["start"])
+                initial["end_date"] = ctftime_parse_date(ctf["finish"])
+                initial["weight"] = ctf["weight"]
+            except (RuntimeError, requests.exceptions.ReadTimeout) as e:
+                messages.warning(self.request, f"CTFTime GET request failed: {str(e)}")
 
         form = self.form_class(initial=initial)
         return render(request, self.template_name, {"form": form})
