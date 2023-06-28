@@ -89,8 +89,13 @@
         <td><a href="{% url 'ctfpad:challenges-delete' challenge.id %}" title='Delete'><i
                 class="fas fa-trash"></i></a>
         </td>
-        <td><a href="{% url 'ctfpad:challenges-workon' challenge.id %}" title='Work On'><i
-                class="fas {% if request.user.member in challenge.working_on_it.all %}fa-minus-circle{% else %}fa-plus-circle{% endif %}"></i></a>
+        <td>
+            <form method="post" action="{% url 'ctfpad:challenges-workon' challenge.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link p-0" title='Work On'>
+                    <i class="fas {% if request.user.member in challenge.working_on_it.all %}fa-minus-circle{% else %}fa-plus-circle{% endif %}"></i>
+                </button>
+            </form>
         </td>
         </tr>
         {% endfor %}

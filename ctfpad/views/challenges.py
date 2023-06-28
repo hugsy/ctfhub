@@ -2,9 +2,11 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http.response import HttpResponse
-from django.views import View
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views import View
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 from django.views.generic import FormView
 
@@ -217,13 +219,14 @@ class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
         return response
 
 
+@method_decorator(csrf_protect, name='dispatch')
 class ChallengeWorkOn(LoginRequiredMixin, View):
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         challenge_id = self.kwargs.get("pk")
         challenge = Challenge.objects.get(id=challenge_id)
 
-        # Add the current user to the challenge's working_on_it field
-        if challenge.working_on_it.contains(request.user.member):
+        # Toggle the current user's assignment to the challenge
+        if request.user.member in challenge.working_on_it.all():
             challenge.working_on_it.remove(request.user.member)
         else:
             challenge.working_on_it.add(request.user.member)
