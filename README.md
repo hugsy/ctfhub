@@ -1,8 +1,44 @@
-# CTFPad
+<p align="center">
+  <img alt="Logo" src="static/images/new_logo_circle.png" width=20%>
+</p>
 
-## What
+<h2 align="center"><b>CTFHub</b></h2>
+<h3 align="center">Where CTFs happen</h3>
 
-A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki/Wargame_(hacking)). If you're looking for a platform for hosting CTFs use [CTFd](https://github.com/ctfd/ctfd).
+<p align="center">
+  <a href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg"></a>
+  <a href="https://github.com/hugsy/ctfhub/blob/master/LICENSE"><img alt="Licence MIT" src="https://img.shields.io/packagist/l/doctrine/orm.svg?maxAge=2592000?style=plastic"></a>
+  <img alt="Python-Version 3.10" src="https://img.shields.io/badge/Python-3.10-brightgreen">
+  <a href="https://discord.gg/fYsAjvsdQT"><img alt="CTFHub on Discord" src="https://img.shields.io/badge/Discord-CTFHub-purple"></a>
+</p>
+
+## What is it?
+
+A collaborative environment for teams playing [CTFs](https://en.wikipedia.org/wiki/Wargame_(hacking)). It provides out-of-the-box everything to manage and collaborate on the CTFs and challenges you and your team are working on.
+
+_Note_: If you're looking for a platform for hosting CTFs use [CTFd](https://github.com/ctfd/ctfd).
+
+
+## Features
+
+A non-exhaustive list of features:
+
+ - Full Django + Python 3.10 code
+ - Clean (Bootstrap 5+) interface
+ - Key-in-hands setup via [`docker-compose`](https://docs.docker.com/compose)
+ - Fully integrated around [HedgeDoc](https://github.com/hedgedoc/hedgedoc): smart markdown note mechanism, with [tons of features](https://demo.hedgedoc.org/features)
+ - Possibility to create and play private CTFs
+ - Create "guests" to your CTFs
+ - View CTF stats, and track members' involment through a cool podium ranking
+ - [Jitsi](https://meet.jit.si) integration: instantly jump on video chat with your team mate
+ - CTFTime integration: import CTF (+ data) from CTFTime in 2 clicks
+ - CTFd/rCTF challenge(s) can optionally be pre-populated locally
+ - Basic search engine
+ - One step "challenge-notes" → "blog post" export feature
+ - Public & Self-hosted [Excalidraw](https://github.com/excalidraw/excalidraw) integration: draw & share ideas with your team mates
+ - Discord notifications
+ - ...and more to come...
+ - and of course, a Dark mode
 
 
 ## Build
@@ -11,8 +47,8 @@ A webapp for managing CTFs by teams playing [CTFs](https://en.wikipedia.org/wiki
 For most people, this will suffice:
 
 ```bash
-$ git clone https://github.com/hugsy/ctfpad
-$ cd ctfpad
+$ git clone https://github.com/hugsy/ctfhub
+$ cd ctfhub
 $ cp .env.example .env
 ### CHANGE THE CREDENTIALS IN .env ###
 $ nano .env
@@ -31,66 +67,26 @@ $ nano scripts/proxy/.env
 $ docker compose -f scripts/proxy/docker-compose.yml -f ./docker-compose.yml up -d --build
 ```
 
-## Features
+If you're migrating from the first versions called `ctpad`, check out see [PR #83](https://github.com/hugsy/ctfhub/pull/83) to migrate the data to the new environment, search the `Setup > Migration` part.
 
-A non-exhaustive list of features:
-
- - Full Django + Python 3 code
- - Clean (Bootstrap) interface
- - Key-in-hands setup via [`docker-compose`](https://docs.docker.com/compose)
- - Fully built on top of [HedgeDoc](https://github.com/hedgedoc/hedgedoc): smart markdown note mechanism, with [tons of features](https://demo.hedgedoc.org/features)
- - Possibility to create and play private CTFs
- - Internal statistic system to track members' involment + basic ranking system
- - [Jitsi](https://meet.jit.si) integration: instantly jump on video chat with your team mate
- - CTFTime integration: import CTF (+ data) from CTFTime in 2 clicks
- - Dark mode (duh!)
- - Basic search engine
- - Public & Self-hosted [Excalidraw](https://github.com/excalidraw/excalidraw) integration: draw & share ideas with your team mates
- - Discord notifications
- - ...and more to come...
-
-## Community ##
-
-[![Discord](https://img.shields.io/badge/Discord-CTFPad-green)](https://discord.gg/fYsAjvsdQT)
 
 ## Gallery
 
-### Dashboard
+Check out the [docs](docs/gallery.md)
 
-![dashboard](https://i.imgur.com/vWvgjQ1.png)
+## Contribution
 
-### View CTF
+`CTFHub` was created and maintained by [`@_hugsy_`](https://twitter.com/_hugsy_), but kept fresh thanks to [all the contributors](https://github.com/hugsy/ctfhub/graphs/contributors).
 
-![ctf](https://i.imgur.com/kEJo9Jj.png)
-![ctf2](https://i.imgur.com/fe3vvfC.png)
-
-### Import CTFs from CTFtime
-
-![ctftime](https://i.imgur.com/TnOupMe.png)
+[ ![contributors-img](https://contrib.rocks/image?repo=hugsy/ctfhub) ](https://github.com/hugsy/ctfhub/graphs/contributors)
 
 
-### Challenge
+If you just like the tool, consider dropping on Discord (or Twitter or other) a simple *"thanks"*, it is always very appreciated.
 
-![challenge1](https://i.imgur.com/YRvXs3u.png)
-
-
-### Statistics
-
-![stats](https://i.imgur.com/PGsPztU.png)
+And if you can, consider [sponsoring me](https://github.com/hugsy/sponsors) - it really helps dedicating time and resources to the projects!
 
 
+## Credits and Links
 
-## Why
-
-I was fed up of not finding a tool to my liking to manage CTFs for teams playing so I wrote one. You should probably not use it 😋 I wrote it quickly because I really couldn't find something that fitted my needs. Some other projects of the sort of collaboration during CTFs:
-
- - [CTFPad](https://github.com/StratumAuhuur/CTFPad): nice project but NodeJS, so yeah. Also  [`etherpad-lite`](https://yopad.eu) doesn't support MarkDown easily. I like the name, so I took it shamelessly
- - [rizzoma](http://rizzoma.com/): a horrible outdated collaborative platform, poorly suited for CTFs.
-
-I discovered [HedgeDoc](https://demo.hedgedoc.org/features?both) (aka. old CodiMD), an awesome platform, 100% Markdown, easily integrable. This project is just an eye-candy around using HedgeDoc as a central platform when doing a challenge collaboratively.
-
-It's a toy project, so there's a lot of TODOs, features will be added (slowly).
-
-### Notes
-
-Flag images are downloaded from https://flagpedia.net/
+- The world flag images are downloaded from https://flagpedia.net/
+- [CTFHub](https://github.com/StratumAuhuur/CTFHub): NodeJS project that is based on [`etherpad-lite`](https://yopad.eu) (no MarkDown support).

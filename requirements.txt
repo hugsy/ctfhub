@@ -6,5 +6,6 @@ psycopg2-binary
 django-model-utils
 bleach
 pytz
-exrex
+pre-commit
+black
 django-sendfile2

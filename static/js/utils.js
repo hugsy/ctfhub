@@ -16,7 +16,7 @@ function toggle_input_password_visibility()
             r.type = "text";
 
         else if (r.type === "text")
-            r.type = "password";
+        r.type = "password";
     }
 }
 

@@ -1,0 +1,27 @@
+<div class="card card-body">
+    <div class="row">
+        <div class="embed-responsive embed-responsive-16by9">
+            <iframe
+                id="note_frame"
+                class="embed-responsive-item"
+                width="100%"
+                height="500"
+                frameborder="0">
+            </iframe>
+        </div>
+    </div>
+</div>
+{% if request.user.member.hedgedoc_password %}
+    <script>
+        fetch("{{hedgedoc_url}}/login", {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded'},
+            body: "email={{request.user.member.hedgedoc_username}}&password={{request.user.member.hedgedoc_password}}"
+        }).then(data => {
+            document.getElementById("note_frame").contentWindow.location.replace("{{ ctf.note_url }}?both#");
+        });
+    </script>
+{% endif %}

@@ -1,0 +1,77 @@
+{% extends 'ctfhub/main.html' %}
+
+{% block content %}
+
+
+    {% for message in messages %}
+        <p id="messages">{{ message }}</p>
+    {% endfor %}
+
+
+    <br>
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">CTFs</h4>
+                    <p class="card-text">
+                        Manage your CTF from here.
+                    </p>
+                </div>
+            </div>
+            <div class="col-2"></div>
+        </div>
+    </div>
+
+    <br>
+
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div>
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="list_ctfs-tab" data-bs-toggle="tab" data-bs-target="#list_ctfs"
+                           type="button" role="tab" aria-controls="list_ctfs" aria-selected="true">Registered CTFs</a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="list_ctftime_ctfs-tab" data-bs-toggle="tab"
+                           data-bs-target="#list_ctftime_ctfs" type="button" role="tab"
+                           aria-controls="list_ctftime_ctfs" aria-selected="false">Import from CTFTime</a>
+                    </li>
+                </ul>
+            </div>
+
+
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="list_ctfs" role="tabpanel" aria-labelledby="list_ctfs-tab">
+                    <div class="card card-body">
+                        {% include 'ctfhub/ctfs/list_ctfs.html' %}
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="list_ctftime_ctfs" role="tabpanel"
+                     aria-labelledby="list_ctftime_ctfs-tab">
+                    <div class="card card-body">
+                        {% include 'ctfhub/ctfs/list_ctftime_ctfs.html' %}
+                    </div>
+                </div>
+            </div>
+
+
+            <script type="text/javascript">
+                let url = document.location.toString();
+                let active_tab = url.substring(url.indexOf("#") + 1);
+                if (active_tab === "list_ctftime_ctfs") {
+                    document.getElementById("list_ctftime_tab").className += " active";
+                    document.getElementById("list_ctftime_ctfs").className += "  show active";
+                } else {
+                    document.getElementById("list_ctf_tab").className += " active";
+                    document.getElementById("list_ctfs").className += " show active";
+                }
+            </script>
+
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+{% endblock %}
