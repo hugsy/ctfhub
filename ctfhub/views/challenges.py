@@ -1,3 +1,20 @@
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpRequest
+from django.http.response import HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    FormView,
+    ListView,
+    UpdateView,
+)
+
 from ctfhub.forms import (
     ChallengeCreateForm,
     ChallengeFileCreateForm,
@@ -6,25 +23,7 @@ from ctfhub.forms import (
     ChallengeUpdateForm,
 )
 from ctfhub.helpers import export_challenge_note, generate_github_page_header
-from ctfhub.models import Challenge, ChallengeCategory, Ctf
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.http.response import HttpResponse
-from django.shortcuts import redirect, render
-from django.urls import reverse
-from django.utils.decorators import method_decorator
-from django.views import View
-from django.views.decorators.csrf import csrf_protect
-from django.views.generic import (
-    CreateView,
-    DeleteView,
-    DetailView,
-    ListView,
-    UpdateView,
-)
-from django.views.generic import FormView
-
+from ctfhub.models import Challenge, ChallengeCategory, Ctf, Member
 from ctfhub_project.settings import HEDGEDOC_URL
 
 
@@ -229,16 +228,34 @@ class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
         return response
 
 
-@method_decorator(csrf_protect, name="dispatch")
-class ChallengeWorkOn(LoginRequiredMixin, View):
-    def post(self, request, *args, **kwargs):
-        challenge_id = self.kwargs.get("pk")
-        challenge = Challenge.objects.get(id=challenge_id)
+@login_required
+def assign_challenge_to_member(request: HttpRequest, pk: str) -> HttpResponse:
+    """Assign the current member to the challenge
 
-        # Toggle the current user's assignment to the challenge
-        if request.user.member in challenge.working_on_it.all():
-            challenge.working_on_it.remove(request.user.member)
-        else:
-            challenge.working_on_it.add(request.user.member)
+    Args:
+        request (HttpRequest): _description_
+        pk (str): _description_
 
-        return redirect(reverse("ctfhub:ctfs-detail", kwargs={"pk": challenge.ctf.id}))
+    Returns:
+        HttpResponse: _description_
+    """
+    challenge = get_object_or_404(Challenge, pk=pk)
+    member = Member.objects.get(user=request.user)
+
+    #
+    # Toggle the current user's assignment to the challenge
+    #
+    if member in challenge.assigned_members.all():
+        challenge.assigned_members.remove(member)
+        messages.info(
+            request,
+            f"{member.username} removed from assigned players of {challenge.ctf.name}/{challenge.name}",
+        )
+    else:
+        challenge.assigned_members.add(member)
+        messages.info(
+            request,
+            f"{member.username} added to assigned players of {challenge.ctf.name}/{challenge.name}",
+        )
+
+    return redirect(reverse("ctfhub:ctfs-detail", kwargs={"pk": challenge.ctf.id}))

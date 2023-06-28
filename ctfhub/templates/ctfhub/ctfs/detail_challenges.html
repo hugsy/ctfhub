@@ -80,7 +80,7 @@
             <td>{{ challenge.name }}</td>
             <td>{{ challenge.points }}</td>
             <td>{{ challenge.last_modification_time|naturaltime }}</td>
-            <td>{% for member in challenge.working_on_it.all %}
+            <td>{% for member in challenge.assigned_members.all %}
                 <span class="badge rounded-pill text-bg-primary">{{ member }}</span>{% endfor %}</td>
             <td><a href="{% url 'ctfhub:challenges-detail' challenge.id %}" title='Goto'><i class="fas fa-play"></i></a>
             </td>
@@ -90,10 +90,10 @@
                 class="fas fa-trash"></i></a>
             </td>
             <td>
-                <form method="post" action="{% url 'ctfhub:challenges-workon' challenge.id %}">
+                <form method="post" action="{% url 'ctfhub:challenges-assign' challenge.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-link p-0" title='Work On'>
-                        <i class="fas {% if request.user.member in challenge.working_on_it.all %}fa-minus-circle{% else %}fa-plus-circle{% endif %}"></i>
+                        <i class="fas {% if request.user.member in challenge.assigned_members.all %}fa-minus-circle{% else %}fa-plus-circle{% endif %}"></i>
                     </button>
                 </form>
             </td>
