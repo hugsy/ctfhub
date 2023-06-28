@@ -11,7 +11,7 @@ from django.contrib.auth.views import (
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import BaseModelForm
 from django.http.request import HttpRequest
-from django.http.response import Http404, HttpResponse
+from django.http.response import HttpResponseForbidden, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -68,7 +68,7 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             not request.user.member.has_superpowers
             and self.object.pk != request.user.id
         ):
-            raise Http404()
+            raise Http403()
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
@@ -172,8 +172,20 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             not request.user.member.has_superpowers
             and self.object.pk != request.user.member.id
         ):
-            raise Http404()
+            return HttpResponseForbidden()
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        #
+        # If not admin and different user id, simply reject
+        #
+        self.object = self.get_object()
+        if (
+            not request.user.member.has_superpowers
+            and self.object.pk != request.user.member.id
+        ):
+            return HttpResponseForbidden()
+        return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         if "form" not in kwargs:

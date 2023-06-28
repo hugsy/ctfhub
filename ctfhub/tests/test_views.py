@@ -284,6 +284,9 @@ class TestMemberViewAsMember(TestCase):
         )
         assert response.status_code == 200
 
+        response = self.client.post(url, data={"twitter_url": "AAAAAAA"})
+        assert response.status_code == 200
+
         #
         # access other settings -> nok
         #
@@ -296,7 +299,10 @@ class TestMemberViewAsMember(TestCase):
         response = self.client.get(
             url,
         )
-        assert response.status_code == 404
+        assert response.status_code == 403
+
+        response = self.client.post(url, data={"twitter_url": "AAAAAAA"})
+        assert response.status_code == 403
 
 
 class TestCtfView(TestCase):
