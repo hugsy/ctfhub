@@ -760,7 +760,11 @@ class Member(TimeStampedModel):
 
     @property
     def is_guest(self):
-        return self.status == "guest"
+        return self.status == Member.StatusType.GUEST
+
+    @property
+    def is_member(self):
+        return self.status == Member.StatusType.MEMBER
 
     @cached_property
     def jitsi_url(self):
@@ -769,7 +773,11 @@ class Member(TimeStampedModel):
     @cached_property
     def private_ctfs(self):
         if self.is_guest:
-            return Ctf.objects.none()
+            if not self.selected_ctf:
+                raise AttributeError
+            return Ctf.objects.filter(
+                id=self.selected_ctf.id, visibility=Ctf.VisibilityType.PRIVATE
+            )
         return Ctf.objects.filter(
             visibility=Ctf.VisibilityType.PRIVATE, created_by=self
         )
@@ -777,7 +785,11 @@ class Member(TimeStampedModel):
     @cached_property
     def public_ctfs(self):
         if self.is_guest:
-            return Ctf.objects.filter(id=self.selected_ctf)
+            if not self.selected_ctf:
+                raise AttributeError
+            return Ctf.objects.filter(
+                id=self.selected_ctf.id, visibility=Ctf.VisibilityType.PUBLIC
+            )
         return Ctf.objects.filter(visibility=Ctf.VisibilityType.PUBLIC)
 
     @cached_property

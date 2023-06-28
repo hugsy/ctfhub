@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from django.test import Client
 import pytest
-from ctfhub.models import Ctf
+from ctfhub.models import Ctf, Member
 
 from ctfhub.tests.utils import MockCtf, MockTeamWithMembers
 
@@ -91,3 +91,42 @@ class TestMemberView(TestCase):
         ctf.start_date = datetime.datetime(1970, 1, 1, 0, 0, 0)
         ctf.end_date = datetime.datetime(2971, 1, 1, 0, 0, 0)
         assert ctf.is_running
+
+    def test_member_basic(self):
+        member = self.members[1]
+        guest = self.members[2]
+
+        ctf1 = Ctf.objects.create(name="Ctf1", visibility=Ctf.VisibilityType.PUBLIC)
+        ctf2 = Ctf.objects.create(name="Ctf2", visibility=Ctf.VisibilityType.PUBLIC)
+        ctf3 = Ctf.objects.create(
+            name="Ctf3", visibility=Ctf.VisibilityType.PRIVATE, created_by=member
+        )
+
+        assert not member.has_superpowers
+        assert member.status == Member.StatusType.MEMBER
+
+        guest.status = Member.StatusType.GUEST
+        guest.selected_ctf = ctf1
+        guest.save()
+        assert not guest.has_superpowers
+        assert guest.is_guest
+        assert len(guest.public_ctfs) == 1
+        assert guest.public_ctfs[0].pk == ctf1.pk
+
+        member.status = Member.StatusType.MEMBER
+        member.selected_ctf = ctf1
+        member.save()
+        assert not member.has_superpowers
+        assert len(member.public_ctfs) == 2
+        assert member.public_ctfs[0].pk == ctf1.pk
+        assert member.public_ctfs[1].pk == ctf2.pk
+
+        member.selected_ctf = ctf3
+        member.save()
+        assert len(member.private_ctfs) == 1
+        assert member.private_ctfs[0].pk == ctf3.pk
+
+        assert len(member.ctfs) == 3
+        assert member.ctfs[0].pk == ctf1.pk
+        assert member.ctfs[1].pk == ctf2.pk
+        assert member.ctfs[2].pk == ctf3.pk
