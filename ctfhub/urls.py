@@ -131,7 +131,7 @@ urlpatterns = [
     ),
     path(
         "challenges/<uuid:pk>/assign",
-        views.challenges.assign_challenge_to_member,
+        views.challenges.assign_to_current_member,
         name="challenges-assign",
     ),
     # files

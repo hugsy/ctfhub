@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponseNotFound
 from django.http.response import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -229,7 +229,7 @@ class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
 
 
 @login_required
-def assign_challenge_to_member(request: HttpRequest, pk: str) -> HttpResponse:
+def assign_to_current_member(request: HttpRequest, pk: str) -> HttpResponse:
     """Assign the current member to the challenge
 
     Args:
@@ -239,6 +239,9 @@ def assign_challenge_to_member(request: HttpRequest, pk: str) -> HttpResponse:
     Returns:
         HttpResponse: _description_
     """
+    if not request.method == "POST":
+        return HttpResponseNotFound()
+
     challenge = get_object_or_404(Challenge, pk=pk)
     member = Member.objects.get(user=request.user)
 
