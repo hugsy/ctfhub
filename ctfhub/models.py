@@ -7,7 +7,7 @@ from collections import Counter, namedtuple
 from datetime import datetime, timedelta
 from pathlib import Path
 from statistics import mean
-from typing import OrderedDict
+from typing import Optional, OrderedDict
 from urllib.parse import quote
 import zoneinfo
 
@@ -25,6 +25,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices, FieldTracker
 from model_utils.fields import MonitorField, StatusField
+from ctfhub.exceptions import ExternalError
 
 from ctfhub.helpers import (
     create_new_note,
@@ -172,10 +173,10 @@ class Ctf(TimeStampedModel):
 
     @property
     def solved_challenges_as_percent(self):
-        l = self.challenges.count()
-        if l == 0:
+        cnt = self.challenges.count()
+        if cnt == 0:
             return 0
-        return int(float(self.solved_challenges.count() / l) * 100)
+        return int(float(self.solved_challenges.count() / cnt) * 100)
 
     @property
     def total_points(self):
@@ -713,16 +714,35 @@ class Member(TimeStampedModel):
         return url
 
     def save(self, **kwargs):
-        if not self.hedgedoc_password:
-            # create the hedgedoc user
-            self.hedgedoc_password = get_random_string(64)
-            if not register_new_hedgedoc_user(
-                self.hedgedoc_username, self.hedgedoc_password
-            ):
-                # password empty == anonymous mode under HedgeDoc
-                self.hedgedoc_password = ""
+        #
+        # First create/save the user, otherwise `hedgedoc_username` may not exist
+        #
+        super(Member, self).save(**kwargs)
 
-        super(Member, self).save()
+        #
+        # If this is an insert, also register the same username in hedgedoc
+        #
+        is_create = bool(kwargs.get("force_insert", False))
+        if is_create:
+            hedgedoc_password = get_random_string(64)
+            if not register_new_hedgedoc_user(
+                self.hedgedoc_username, hedgedoc_password
+            ):
+                #
+                # Register the user in hedgedoc failed, delete the user, and raise
+                #
+                username = self.username
+                self.delete()
+                raise ExternalError(
+                    f"Registration of user {username} on hedgedoc failed"
+                )
+            else:
+                #
+                # Save the password
+                #
+                self.hedgedoc_password = hedgedoc_password
+                self.save()
+
         return
 
     @property
@@ -762,11 +782,19 @@ class Member(TimeStampedModel):
         return reverse(
             "ctfhub:users-detail",
             args=[
-                str(id(self)),
+                str(self.pk),
             ],
         )
 
-    def best_category(self, year=None):
+    def best_category(self, year: Optional[int] = None) -> str:
+        """Get the name of the ChallengeCategory where the current member excels
+
+        Args:
+            year (_type_, optional): if given, specify for which year calculate the score
+
+        Returns:
+            str: _description_
+        """
         qs = (
             self.solved_public_challenges.values("category__name")
             .annotate(Sum("points"))

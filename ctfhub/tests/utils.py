@@ -27,11 +27,10 @@ def MockTeamWithAdmin() -> tuple[Team, Member]:
     team = MockTeam()
 
     admin = Member.objects.create(
-        user=User.objects.create(
+        user=User.objects.create_superuser(
             username="admin",
             password="admin",
             email="admin@admin.com",
-            is_superuser=True,
         ),
         team=team,
     )
@@ -40,13 +39,21 @@ def MockTeamWithAdmin() -> tuple[Team, Member]:
 
 def MockTeamWithMembers(nb: int = 10) -> tuple[Team, list[Member]]:
     members = []
+    nb = max(2, nb)
 
     team, admin = MockTeamWithAdmin()
     members.append(admin)
     assert admin.has_superpowers
 
-    for _ in range(nb):
-        member = Member.objects.create()
+    for i in range(nb - 1):
+        member = Member.objects.create(
+            user=User.objects.create_user(
+                username=f"user{i}",
+                password=f"user{i}",
+                email="user{i}@user.com",
+            ),
+            team=team,
+        )
         assert not member.has_superpowers
         members.append(member)
 

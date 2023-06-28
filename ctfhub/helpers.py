@@ -29,7 +29,7 @@ from ctfhub_project.settings import (
     EXCALIDRAW_ROOM_KEY_CHARSET,
     EXCALIDRAW_ROOM_KEY_LENGTH,
     HEDGEDOC_URL,
-    STATIC_URL,
+    IMAGE_URL,
     USE_INTERNAL_HEDGEDOC,
 )
 
@@ -223,7 +223,7 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     Returns:
         str: [description]
     """
-    default_logo = f"{STATIC_URL}images/{CTFHUB_DEFAULT_CTF_LOGO}"
+    default_logo = f"{IMAGE_URL}/{CTFHUB_DEFAULT_CTF_LOGO}"
     if ctftime_id != 0:
         try:
             ctf_info = ctftime_get_ctf_info(ctftime_id)

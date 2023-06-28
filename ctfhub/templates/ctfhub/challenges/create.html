@@ -73,8 +73,7 @@
                                     <textarea id="{{ form.description.id_for_label }}"
                                               name="{{ form.description.html_name }}"
                                               placeholder="{{ form.description.label }}"
-                                              class="form-control">{% if form.description %}
-                                        {{ form.description.value }}{% endif %}</textarea>
+                                              class="form-control">{% if form.description %}{{ form.description.value }}{% endif %}</textarea>
                                 </div>
 
                                 {% if form.instance.creation_time %}

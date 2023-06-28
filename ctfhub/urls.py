@@ -95,12 +95,12 @@ urlpatterns = [
         name="challenges-create",
     ),
     path(
-        "challenges/import/<uuid:pk>/",
+        "challenges/import/<uuid:ctf>/",
         views.challenges.ChallengeImportView.as_view(),
         name="challenges-import",
     ),
     path(
-        "challenges/create/<uuid:pk>/",
+        "challenges/create/<uuid:ctf>/",
         views.challenges.ChallengeCreateView.as_view(),
         name="challenges-create",
     ),
