@@ -1,5 +1,3 @@
-import uuid
-
 import django.contrib.messages.api
 import django.utils.crypto
 from django.contrib.auth.models import User
@@ -17,7 +15,6 @@ def MockTeam() -> Team:
     team = Team.objects.create(
         name="TestTeam",
         email="test@test.com",
-        api_key=str(uuid.uuid4()),
         ctftime_id=1234,
     )
     return team

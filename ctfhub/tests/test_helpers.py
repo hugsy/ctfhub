@@ -40,7 +40,7 @@ class TestHelpers(TestCase):
                 assert isinstance(ctf["is_votable_now"], bool)
                 assert isinstance(ctf["restrictions"], str)
                 assert isinstance(ctf["format"], str) and ctf["format"].lower() in (
-                    "jeoparty",
+                    "jeopardy",
                     "attack-defense",
                 )
                 assert isinstance(ctf["participants"], int)

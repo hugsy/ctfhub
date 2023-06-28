@@ -89,6 +89,8 @@ class Team(TimeStampedModel):
 
     @property
     def ctftime_url(self) -> str:
+        if not self.ctftime_id:
+            return "#"
         return f"{CTFTIME_URL}/team/{self.ctftime_id}"
 
     @property
@@ -207,7 +209,8 @@ class Ctf(TimeStampedModel):
             raise AttributeError(
                 f"CTF {str(self)} is not time-limited (i.e. `duration` has no meaning)"
             )
-        assert self.end_date and self.start_date
+        if not self.end_date or not self.start_date:
+            raise AttributeError
         return self.end_date - self.start_date
 
     @property
