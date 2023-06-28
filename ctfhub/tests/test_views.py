@@ -232,9 +232,12 @@ class TestMemberViewAsMember(TestCase):
     def setUp(self):
         self.client = Client()
         self.team, self.members = MockTeamWithMembers()
-        member = self.members[1]
-        assert not member.has_superpowers
-        assert self.client.login(username=member.username, password=member.username)
+        self.member = self.members[1]
+        self.other_member = self.members[2]
+        assert not self.member.has_superpowers
+        assert self.client.login(
+            username=self.member.username, password=self.member.username
+        )
 
     def tearDown(self) -> None:
         self.client.logout()
@@ -265,6 +268,35 @@ class TestMemberViewAsMember(TestCase):
 
         response = self.client.post(url, data={})
         assert response.status_code == 403
+
+    def test_member_cannot_edit_other_member_settings(self):
+        #
+        # access own settings -> ok
+        #
+        url = reverse(
+            "ctfhub:users-update",
+            args=[
+                self.member.pk,
+            ],
+        )
+        response = self.client.get(
+            url,
+        )
+        assert response.status_code == 200
+
+        #
+        # access other settings -> nok
+        #
+        url = reverse(
+            "ctfhub:users-update",
+            args=[
+                self.other_member.pk,
+            ],
+        )
+        response = self.client.get(
+            url,
+        )
+        assert response.status_code == 404
 
 
 class TestCtfView(TestCase):
