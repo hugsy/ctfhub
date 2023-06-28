@@ -1,6 +1,5 @@
 from typing import Union
 
-import django.urls.exceptions
 
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -27,9 +26,6 @@ class TestAuthView(TestCase):
             "ctfhub:user-login",
             "ctfhub:user-password-reset",
             "ctfhub:user-password-change",
-            "ctfhub:challenge-files-add",  # TODO
-            "ctfhub:challenge-files-detail",  # TODO
-            "ctfhub:challenge-files-delete",  # TODO
         )
 
         valid_redirect_targets = (
@@ -45,17 +41,20 @@ class TestAuthView(TestCase):
             if reverse_name in except_list:
                 continue
 
-            try:
-                url = reverse(reverse_name)
-            except django.urls.exceptions.NoReverseMatch:
-                try:
-                    url = reverse(reverse_name, kwargs={"pk": 1})
-                except django.urls.exceptions.NoReverseMatch:
-                    url = reverse(
-                        reverse_name,
-                        kwargs={"pk": "11111111-1111-1111-1111-111111111111"},
-                    )
+            #
+            # set fake arguments
+            #
+            kwargs = {}
+            if "<int:pk>" in path.pattern._route:
+                kwargs["pk"] = 1
+            if "<uuid:pk>" in path.pattern._route:
+                kwargs["pk"] = "11111111-1111-1111-1111-111111111111"
+            if "<uuid:ctf>" in path.pattern._route:
+                kwargs["ctf"] = "11111111-1111-1111-1111-111111111111"
+            if "<uuid:challenge_id>" in path.pattern._route:
+                kwargs["challenge_id"] = "11111111-1111-1111-1111-111111111111"
 
+            url = reverse(reverse_name, kwargs=kwargs)
             response = client.get(url)
 
             #
@@ -100,7 +99,7 @@ class TestTeamView(TestCase):
 
         response = self.client.get(response.url)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith(reverse("ctfhub:user-login")))
+        assert response.url.startswith(reverse("ctfhub:user-login"))
 
         response = self.client.get(response.url)
         self.assertEqual(response.status_code, 200)
@@ -229,10 +228,43 @@ class TestAdminView(TestCase):
         self.assertIn(f"The API key for team '{self.team.name}' is invalid", messages)
 
 
-class TestMemberView(TestCase):
+class TestMemberViewAsMember(TestCase):
     def setUp(self):
         self.client = Client()
         self.team, self.members = MockTeamWithMembers()
+        member = self.members[1]
+        assert not member.has_superpowers
+        assert self.client.login(username=member.username, password=member.username)
+
+    def tearDown(self) -> None:
+        self.client.logout()
+        return super().tearDown()
+
+    def test_member_cannot_access_team_settings_page(self):
+        url = reverse(
+            "ctfhub:team-edit",
+            args=[
+                self.team.pk,
+            ],
+        )
+
+        response = self.client.get(
+            url,
+        )
+        assert response.status_code == 403
+
+        response = self.client.post(url, data={})
+        assert response.status_code == 403
+
+        url = reverse("ctfhub:team-delete")
+
+        response = self.client.get(
+            url,
+        )
+        assert response.status_code == 403
+
+        response = self.client.post(url, data={})
+        assert response.status_code == 403
 
 
 class TestCtfView(TestCase):
