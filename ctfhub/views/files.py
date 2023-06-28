@@ -8,8 +8,8 @@ from django.views.generic import DeleteView, CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 
-from ctfpad.forms import ChallengeFileCreateForm
-from ctfpad.models import ChallengeFile
+from ctfhub.forms import ChallengeFileCreateForm
+from ctfhub.models import ChallengeFile
 from django_sendfile import sendfile
 
 

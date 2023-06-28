@@ -27,7 +27,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a
-                                href="{% url 'ctfpad:ctfs-detail' challenge.ctf.id %}"><strong>{{ challenge.ctf.name | upper }}</strong></a>
+                                href="{% url 'ctfhub:ctfs-detail' challenge.ctf.id %}"><strong>{{ challenge.ctf.name | upper }}</strong></a>
                             </li>
                             <li class="breadcrumb-item active" aria-current="page">
                                 <strong>{{ challenge.name | upper }}</strong></li>
@@ -50,13 +50,13 @@
                         <li class="list-group-item active">
                             <strong>{{ challenge.name }}</strong> ({{ challenge.points }} points)
                             &nbsp;
-                            <a href="{% url 'ctfpad:search' %}?q=cat:category+{{ challenge.category|urlencode }}">
+                            <a href="{% url 'ctfhub:search' %}?q=cat:category+{{ challenge.category|urlencode }}">
                                 <span class="badge text-bg-danger">{{ challenge.category }}</span>
                             </a>
 
                             {% for tag in challenge.tags.all %}
                                 &nbsp;
-                                <a href="{% url 'ctfpad:search' %}?q=cat:tag+{{ tag|urlencode }}">
+                                <a href="{% url 'ctfhub:search' %}?q=cat:tag+{{ tag|urlencode }}">
                                     <span class="badge text-bg-info">&nbsp;#{{ tag }}</span>
                                 </a>
                             {% endfor %}
@@ -103,7 +103,7 @@
                                         </div>
 
                                         <div class="col">
-                                            <a href="{% url 'ctfpad:challenges-export' challenge.id %}" target="_blank"
+                                            <a href="{% url 'ctfhub:challenges-export' challenge.id %}" target="_blank"
                                                style="color: black;" title="Generate a GithubPage-ready file">
                                                 <strong><i class="fas fa-rss"></i></strong>
                                             </a>

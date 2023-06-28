@@ -43,7 +43,6 @@ SESSION_COOKIE_NAME = "ctfhub-session"
 # Application definition
 
 INSTALLED_APPS = [
-    "django_rename_app",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",

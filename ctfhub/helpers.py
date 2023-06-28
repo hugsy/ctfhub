@@ -1,25 +1,19 @@
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    import io
-    from ctfhub.models import Challenge
-
+import io
 import os
 import smtplib
 import time
 import uuid
-
-
 from datetime import datetime
 from functools import lru_cache
+from typing import Any, TYPE_CHECKING
 
 import django.core.mail
 import django.utils.crypto
 import magic
 import requests
-
-from django.core.files.storage import get_storage_class
 from django.conf import settings
+from django.core.files.storage import get_storage_class
+
 
 from ctfhub_project.settings import (
     CTFHUB_ACCEPTED_IMAGE_EXTENSIONS,
@@ -42,6 +36,10 @@ from ctfhub_project.settings import (
     STATIC_URL,
     USE_INTERNAL_HEDGEDOC,
 )
+
+
+if TYPE_CHECKING:
+    from ctfhub.models import Challenge
 
 
 @lru_cache(maxsize=1)
@@ -398,5 +396,5 @@ def get_named_storage(name: str) -> Any:
     return storage_class(**config["OPTIONS"])
 
 
-def get_challenge_upload_path(instance: Challenge, filename: str) -> str:
+def get_challenge_upload_path(instance: "Challenge", filename: str) -> str:
     return f"files/{instance.challenge.id}/{filename}"

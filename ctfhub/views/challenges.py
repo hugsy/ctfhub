@@ -241,4 +241,4 @@ class ChallengeWorkOn(LoginRequiredMixin, View):
         else:
             challenge.working_on_it.add(request.user.member)
 
-        return redirect(reverse("ctfpad:ctfs-detail", kwargs={"pk": challenge.ctf.id}))
+        return redirect(reverse("ctfhub:ctfs-detail", kwargs={"pk": challenge.ctf.id}))
