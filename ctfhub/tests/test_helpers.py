@@ -1,4 +1,6 @@
 import datetime
+import pytest
+
 from django.test import TestCase
 import requests
 from ctfhub import helpers
@@ -55,4 +57,4 @@ class TestHelpers(TestCase):
                 assert isinstance(ctf["duration"], datetime.timedelta)
         except (RuntimeError, requests.exceptions.ReadTimeout):
             # CTFTime is probably down, discard test
-            pass
+            pytest.skip("CTFTime.org is not responding")
