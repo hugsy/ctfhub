@@ -1,14 +1,5 @@
-from ctfhub.decorators import user
-from ctfhub.forms import (
-    MemberCreateForm,
-    MemberMarkAsSelectedForm,
-    MemberUpdateForm,
-    UserUpdateForm,
-)
-from ctfhub.helpers import get_random_string_128
-from ctfhub.mixins import RequireSuperPowersMixin
-from ctfhub.models import Member, Team
 from django.contrib import auth, messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import (
@@ -20,7 +11,7 @@ from django.contrib.auth.views import (
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import BaseModelForm
 from django.http.request import HttpRequest
-from django.http.response import Http404, HttpResponse
+from django.http.response import HttpResponseForbidden, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
@@ -31,6 +22,16 @@ from django.views.generic import (
     UpdateView,
 )
 
+from ctfhub.forms import (
+    MemberCreateForm,
+    MemberMarkAsSelectedForm,
+    MemberUpdateForm,
+    UserUpdateForm,
+)
+from ctfhub.helpers import get_random_string_128
+from ctfhub.mixins import RequireSuperPowersMixin
+from ctfhub.models import Member, Team
+
 
 class CtfhubLogin(LoginView):
     template_name = "users/login.html"
@@ -38,7 +39,7 @@ class CtfhubLogin(LoginView):
     redirect_field_name = "redirect_to"
 
 
-@user.is_authenticated
+@login_required
 def logout(request: HttpRequest) -> HttpResponse:
     """Log out from current session. CBV is not necessary for logging out.
 
@@ -67,7 +68,7 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             not request.user.member.has_superpowers
             and self.object.pk != request.user.id
         ):
-            raise Http404()
+            raise Http403()
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
@@ -104,13 +105,21 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
             messages.error(self.request, "A team must be registered first!")
             return redirect("ctfhub:team-register")
 
+        # validate passwords
+        if form.cleaned_data["password1"] != form.cleaned_data["password2"]:
+            messages.error(self.request, "Password mismatch")
+            return self.form_invalid(form)
+
         # validate api_key
         team = teams.first()
+        if not team:
+            return redirect("ctfhub:team-register")
+
         if team.api_key != form.cleaned_data["api_key"]:
             messages.error(
                 self.request, f"The API key for team '{team.name}' is invalid"
             )
-            return redirect("ctfhub:home")
+            return self.form_invalid(form)
 
         # validate user uniqueness
         user_cnt = User.objects.all().count()
@@ -120,7 +129,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
             messages.error(
                 self.request, "Username already exists, try logging in instead"
             )
-            return redirect("ctfhub:home")
+            return self.form_invalid(form)
 
         # create the django user
         user = User.objects.create_user(
@@ -163,8 +172,20 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             not request.user.member.has_superpowers
             and self.object.pk != request.user.member.id
         ):
-            raise Http404()
+            return HttpResponseForbidden()
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        #
+        # If not admin and different user id, simply reject
+        #
+        self.object = self.get_object()
+        if (
+            not request.user.member.has_superpowers
+            and self.object.pk != request.user.member.id
+        ):
+            return HttpResponseForbidden()
+        return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         if "form" not in kwargs:
@@ -178,7 +199,7 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             and "has_superpowers" in form.cleaned_data
         ):
             member = self.get_object()
-            if form.cleaned_data["has_superpowers"] == True:
+            if form.cleaned_data["has_superpowers"] is True:
                 # any superuser can make another user become a superuser
                 member.user.is_superuser = True
             else:
@@ -262,4 +283,4 @@ class UserChangePassword(SuccessMessageMixin, PasswordResetConfirmView):
     template_name = "users/password_change.html"
     success_message = "Password successfully changed."
     success_url = reverse_lazy("ctfhub:user-login")
-    title = "Password Reset"
+    title = "Password changed"

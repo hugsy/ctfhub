@@ -1,16 +1,35 @@
 import datetime
 from typing import Optional
 
-from ctfhub.decorators import user
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http.request import HttpRequest
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
-from django.urls.base import reverse
+
+from django.contrib.auth.decorators import login_required
 
 from ..models import CtfStats, Member, SearchEngine, Team
-from . import categories, challenges, ctfs, files, tags, teams, users
+
+from . import (
+    categories,
+    challenges,
+    ctfs,
+    files,
+    tags,
+    teams,
+    users,
+)
+
+__all__ = [
+    "categories",
+    "challenges",
+    "ctfs",
+    "files",
+    "tags",
+    "teams",
+    "users",
+]
 
 
 def index(request: HttpRequest) -> HttpResponse:
@@ -27,7 +46,7 @@ def index(request: HttpRequest) -> HttpResponse:
     return redirect("ctfhub:dashboard")
 
 
-@user.is_authenticated
+@login_required
 def dashboard(request: HttpRequest) -> HttpResponse:
     """Dashboard view: contains basic summary of all the info in the ctfhub
 
@@ -37,8 +56,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    user = request.user
-    member = user.member
+    member = Member.objects.get(user=request.user)
     if member.is_guest:
         members = Member.objects.filter(selected_ctf=member.selected_ctf)
     else:
@@ -46,19 +64,15 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     latest_ctfs = member.ctfs.order_by("-start_date")
     now = datetime.datetime.now()
     nb_ctf_played = member.ctfs.count()
-    current_ctfs = member.public_ctfs.filter(
-        end_date__isnull=False,
-        start_date__lte=now,
-        end_date__gt=now,
-    )
+    current_ctfs = (ctf for ctf in member.public_ctfs.all() if ctf.is_running)
     next_ctf = (
         member.public_ctfs.filter(
-            end_date__isnull=False,
             start_date__gt=now,
         )
         .order_by("start_date")
         .first()
     )
+
     context = {
         "members": members,
         "latest_ctfs": latest_ctfs[:10],
@@ -69,7 +83,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     return render(request, "ctfhub/dashboard/dashboard.html", context)
 
 
-@user.is_authenticated
+@login_required
 def generate_stats(request: HttpRequest, year: Optional[int] = None) -> HttpResponse:
     """Generate some statistics of the CTFHub
 
@@ -96,7 +110,7 @@ def generate_stats(request: HttpRequest, year: Optional[int] = None) -> HttpResp
     return render(request, "ctfhub/stats/detail.html", context)
 
 
-@user.is_authenticated
+@login_required
 def search(request: HttpRequest) -> HttpResponse:
     """Search pattern(s) in database
 
@@ -108,7 +122,7 @@ def search(request: HttpRequest) -> HttpResponse:
     """
     q = request.GET.get("q")
     if not q:
-        messages.warning(request, f"No search pattern given")
+        messages.warning(request, "No search pattern given")
         return redirect("ctfhub:dashboard")
 
     search = SearchEngine(q)
@@ -123,23 +137,3 @@ def search(request: HttpRequest) -> HttpResponse:
         "paginator": paginator,
     }
     return render(request, "search/list.html", context)
-
-
-@user.is_authenticated
-def toggle_dark_mode(request: HttpRequest) -> HttpResponse:
-    """Toggle dark mode cookie for user
-
-    Args:
-        request (HttpRequest): [description]
-
-    Returns:
-        HttpResponse: [description]
-    """
-    val = request.POST.get("darkModeCookie")
-    redirect_to = request.META.get("HTTP_REFERER") or reverse("ctfhub:dashboard")
-    res = redirect(redirect_to)
-    if val:
-        res.set_cookie("theme", "dark")
-    else:
-        res.set_cookie("theme", "light")
-    return res

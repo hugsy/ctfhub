@@ -1,0 +1,74 @@
+name: "Run tests"
+
+on:
+  workflow_dispatch:
+  push:
+
+
+jobs:
+  test:
+    name: "Run tests"
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_DB: ctfhub
+          POSTGRES_USER: ctfhub
+          POSTGRES_PASSWORD: ctfhub
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+      hedgedoc:
+        image: quay.io/hedgedoc/hedgedoc:alpine
+        env:
+          CMD_DB_URL: postgres://ctfhub:ctfhub@postgres:5432/ctfhub
+          CMD_ALLOW_ANONYMOUS: false
+          CMD_ALLOW_FREEURL: true
+          CMD_IMAGE_UPLOAD_TYPE: filesystem
+          CMD_DOMAIN: localhost
+          CMD_PORT: 3000
+          CMD_URL_ADDPORT: true
+          CMD_PROTOCOL_USESSL: false
+        ports:
+          - 3000:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup environment vars
+        run: |
+          echo CTFPAD_PROTOCOL=http >> $GITHUB_ENV
+          echo CTFPAD_DOMAIN=localhost >> $GITHUB_ENV
+          echo CTFPAD_PORT=8000 >> $GITHUB_ENV
+          echo CTFPAD_DB_NAME=ctfhub >> $GITHUB_ENV
+          echo CTFPAD_DB_USER=ctfhub >> $GITHUB_ENV
+          echo CTFPAD_DB_PASSWORD=ctfhub >> $GITHUB_ENV
+          echo CTFPAD_DB_HOST=localhost >> $GITHUB_ENV
+          echo CTFPAD_DB_PORT=5432 >> $GITHUB_ENV
+          echo CTFPAD_HEDGEDOC_URL=http://localhost:3000 >> $GITHUB_ENV
+          echo CTFPAD_HEDGEDOC_IS_INTERNAL=0 >> $GITHUB_ENV
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Python pre-requisites
+        run: |
+          python -m pip install pip --user --upgrade
+          python -m pip install -r requirements.txt --user --upgrade
+
+      - name: Migrate DB
+        run: |
+          python manage.py migrate
+
+      - name: Execute Tests
+        run: |
+          py.test

@@ -13,7 +13,6 @@ from django import forms
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from django.forms import widgets
 
 
 class UserUpdateForm(UserChangeForm):
@@ -87,9 +86,13 @@ class MemberUpdateForm(forms.ModelForm):
     has_superpowers = forms.BooleanField(required=False, label="Has Super-Powers?")
 
     def clean(self):
-        status = self.cleaned_data["status"].strip().lower()
-        if status == "guest" and not self.cleaned_data["selected_ctf"]:
-            raise ValidationError("Guests MUST have a selected_ctf")
+        if "status" in self.cleaned_data:
+            status = self.cleaned_data["status"]
+            if (
+                status == Member.StatusType.GUEST.value
+                and not self.cleaned_data["selected_ctf"]
+            ):
+                raise ValidationError("Guests MUST have a selected_ctf")
         return super(MemberUpdateForm, self).clean()
 
 
@@ -111,8 +114,8 @@ class CtfCreateUpdateForm(forms.ModelForm):
             "visibility",
         ]
 
-    weight = forms.FloatField(min_value=0.0)
-    rating = forms.FloatField(min_value=0.0, required=False)
+    weight = forms.FloatField(min_value=1.0, required=True)
+    rating = forms.FloatField(min_value=0.0, required=True)
 
 
 class ChallengeCreateForm(forms.ModelForm):

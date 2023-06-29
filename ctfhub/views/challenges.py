@@ -129,7 +129,7 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
             return self.form_invalid(form)
 
     def get_success_url(self):
-        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.initial["ctf"]})
+        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.initial["ctf"].id})
 
 
 class ChallengeDetailView(LoginRequiredMixin, DetailView):

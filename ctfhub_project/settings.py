@@ -84,6 +84,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "ctfhub.context_processors.add_debug_context",
+                "ctfhub.context_processors.add_timezone_context",
             ],
         },
     },
@@ -104,7 +105,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": os.getenv("CTFHUB_DB_NAME") or "ctfhub",
         "USER": os.getenv("CTFHUB_DB_USER") or "ctfhub",
-        "PASSWORD": os.getenv("CTFHUB_DB_PASSWORD"),
+        "PASSWORD": os.getenv("CTFHUB_DB_PASSWORD") or "ctfhub",
         "HOST": os.getenv("CTFHUB_DB_HOST") or "localhost",
         "PORT": os.getenv("CTFHUB_DB_PORT") or "5432",
     }
@@ -136,7 +137,6 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
-USE_L10N = False
 USE_TZ = False
 
 
@@ -150,6 +150,9 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = "/uploads/"
 MEDIA_ROOT = BASE_DIR / "uploads/"
+
+IMAGE_URL = f"{STATIC_URL}images/"
+IMAGE_ROOT = BASE_DIR / "static/images"
 
 CTF_CHALLENGE_FILE_URL = "/uploads/files/"
 CTF_CHALLENGE_FILE_PATH = "files/"
@@ -202,6 +205,7 @@ CTFTIME_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"
 )
 
+LOGIN_URL = "ctfhub:user-login"
 LOGIN_REDIRECT_URL = "ctfhub:dashboard"
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
 CHALLENGE_FILE_MAX_SIZE = FILE_UPLOAD_MAX_MEMORY_SIZE
@@ -212,6 +216,8 @@ SHORT_DATETIME_FORMAT = "Y-m-d P"
 
 CTFHUB_DEFAULT_CTF_LOGO = "blank-ctf.png"
 CTFHUB_ACCEPTED_IMAGE_EXTENSIONS = (".png", ".jpg", ".gif", ".bmp")
+
+CTFHUB_DEFAULT_COUNTRY_LOGO = "blank.png"
 
 # EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
 # EMAIL_FILE_PATH = MEDIA_ROOT / "email_sent"
@@ -251,4 +257,4 @@ EXCALIDRAW_ROOM_ID_LENGTH = 20
 EXCALIDRAW_ROOM_KEY_CHARSET = CHARSET_ALNUM_MIXED + "_-"
 EXCALIDRAW_ROOM_KEY_LENGTH = 22
 
-CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT = 60
+CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT = 10

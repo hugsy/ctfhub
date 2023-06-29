@@ -4,14 +4,11 @@
 
     <br/>
 
+    {% include 'snippets/messages.html' %}
     {% include 'snippets/formerror.html' %}
 
     <div class="row">
         <div class="col-lg-4 offset-lg-4">
-
-            {% for message in messages %}
-                <p id="messages">{{ message }}</p>
-            {% endfor %}
 
             <div class="card">
                 <div class="card-header">
@@ -76,8 +73,7 @@
                                     <textarea id="{{ form.description.id_for_label }}"
                                               name="{{ form.description.html_name }}"
                                               placeholder="{{ form.description.label }}"
-                                              class="form-control">{% if form.description %}
-                                        {{ form.description.value }}{% endif %}</textarea>
+                                              class="form-control">{% if form.description %}{{ form.description.value }}{% endif %}</textarea>
                                 </div>
 
                                 {% if form.instance.creation_time %}

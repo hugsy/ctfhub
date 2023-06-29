@@ -1,11 +1,17 @@
+# Core packages
 django >= 4.2.2
 Pillow
 requests
 python-magic
 psycopg2-binary
 django-model-utils
+django-sendfile2
 bleach
-pytz
+
+# Dev packages (install those if you intend to submit PRs)
 pre-commit
 black
-django-sendfile2
+
+# Test packages (for running tests)
+pytest
+pytest-django
