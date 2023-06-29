@@ -7,7 +7,7 @@ from collections import Counter, namedtuple
 from datetime import datetime, timedelta
 from pathlib import Path
 from statistics import mean
-from typing import Optional, OrderedDict
+from typing import TYPE_CHECKING, Optional, OrderedDict
 from urllib.parse import quote
 import zoneinfo
 
@@ -53,7 +53,8 @@ from ctfhub_project.settings import (
     USERS_FILE_PATH,
 )
 
-# Create your models here.
+if TYPE_CHECKING:
+    from django.db.models.manager import Manager
 
 
 class TimeStampedModel(models.Model):
@@ -83,6 +84,11 @@ class Team(TimeStampedModel):
     api_key = models.CharField(max_length=128, default=get_random_string_128)
     avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
+
+    #
+    # Typing
+    #
+    member_set: django.db.models.manager.Manager["Member"]
 
     def __str__(self) -> str:
         return self.name
@@ -129,6 +135,13 @@ class Ctf(TimeStampedModel):
     weight = models.FloatField(default=1.0, blank=False, null=False)
     rating = models.FloatField(default=0.0, blank=False, null=False)
     note_id = models.CharField(default=create_new_note, max_length=38, blank=False)
+
+    #
+    # Typing
+    #
+
+    challenge_set: django.db.models.manager.Manager["Challenge"]
+    players: django.db.models.manager.Manager["Member"]
 
     def __str__(self) -> str:
         return self.name
@@ -296,7 +309,9 @@ class Ctf(TimeStampedModel):
 
         return members
 
-    def export_notes_as_zipstream(self, stream, member=None):
+    def export_notes_as_zipstream(
+        self, stream, member: Optional["Member"] = None
+    ) -> str:
         zip_file = zipfile.ZipFile(stream, "w")
         now = datetime.now()
         ts = (now.year, now.month, now.day, 0, 0, 0)
@@ -353,7 +368,7 @@ class Ctf(TimeStampedModel):
         )
 
     @property
-    def team(self):
+    def team(self) -> "Manager[Member]":
         return self.players.all()
 
 
@@ -634,7 +649,7 @@ class Member(TimeStampedModel):
     country = models.CharField(
         default=Country.UNITEDNATIONS, choices=Country.choices, max_length=2
     )
-    timezone = models.CharField(max_length=64, default="UTC", choices=Timezones.choices)
+    timezone = models.CharField(max_length=64, default="UTC", choices=Timezones.choices)  # type: ignore
     last_scored = models.DateTimeField(null=True)
     show_pending_notifications = models.BooleanField(default=False)
     last_active_notification = models.DateTimeField(null=True)
@@ -652,6 +667,11 @@ class Member(TimeStampedModel):
         related_query_name="player",
     )
     status = models.IntegerField(default=StatusType.MEMBER, choices=StatusType.choices)
+
+    #
+    # Typing
+    #
+    solved_challenges: django.db.models.manager.Manager["Challenge"]
 
     @property
     def username(self) -> str:
@@ -684,7 +704,7 @@ class Member(TimeStampedModel):
         return last.solved_time - now < timedelta(days=365)
 
     @cached_property
-    def solved_public_challenges(self):
+    def solved_public_challenges(self) -> "Manager[Challenge]":
         return self.solved_challenges.filter(ctf__visibility="public").order_by(
             "solved_time"
         )
@@ -698,11 +718,11 @@ class Member(TimeStampedModel):
         )
 
     @cached_property
-    def last_solved_challenge(self):
+    def last_solved_challenge(self) -> Optional["Challenge"]:
         return self.solved_public_challenges.last()
 
     @property
-    def last_logged_in(self):
+    def last_logged_in(self) -> Optional[datetime]:
         return self.user.last_login
 
     @property
@@ -825,7 +845,9 @@ class Member(TimeStampedModel):
         if not qs:
             return ""
 
-        return qs.first()["category__name"]
+        entry = qs.first()
+        assert entry
+        return entry["category__name"]
 
 
 class ChallengeCategory(TimeStampedModel):
@@ -837,6 +859,11 @@ class ChallengeCategory(TimeStampedModel):
     """
 
     name = models.CharField(max_length=128, unique=True)
+
+    #
+    # Typing
+    #
+    challenge_set: django.db.models.manager.Manager["Challenge"]
 
     def __str__(self):
         return self.name
@@ -899,11 +926,17 @@ class Challenge(TimeStampedModel):
         when=[
             "solved",
         ],
-    )
+    )  # type: ignore
     solvers = models.ManyToManyField(
         "ctfhub.Member", blank=True, related_name="solved_challenges"
     )
     tags = models.ManyToManyField("ctfhub.Tag", blank=True, related_name="challenges")
+
+    #
+    # Typing
+    #
+
+    challengefile_set: django.db.models.manager.Manager["ChallengeFile"]
 
     @property
     def solved(self) -> bool:
@@ -1006,6 +1039,12 @@ class Tag(TimeStampedModel):
 
     name = models.TextField(unique=True)
 
+    #
+    # Typing
+    #
+
+    challenges: django.db.models.manager.Manager["Challenge"]
+
     def __str__(self):
         return self.name
 
@@ -1023,7 +1062,7 @@ class CtfStats:
             creation_time__year__lte=self.year
         )
 
-    def player_activity(self) -> dict:
+    def player_activity(self):
         """Return the number of ctfs played per member"""
         return (
             Member.objects.select_related("user")
@@ -1034,7 +1073,7 @@ class CtfStats:
             .annotate(play_count=Count("solved_challenges__ctf", distinct=True))
         )
 
-    def category_stats(self) -> dict:
+    def category_stats(self):
         """Return the total number of challenges solved per category"""
         return (
             Challenge.objects.filter(
@@ -1063,7 +1102,7 @@ class CtfStats:
 
         return {"monthly_counts": monthly_counts}
 
-    def year_stats(self) -> list:
+    def year_stats(self):
         """Return a yearly count of public CTFs played"""
         return (
             Ctf.objects.filter(start_date__isnull=False, visibility="public")
@@ -1258,7 +1297,7 @@ class SearchEngine:
                     "member",
                     entry.username,
                     entry.description,
-                    reverse("ctfhub:users-detail", kwargs={"pk": entry.id}),
+                    reverse("ctfhub:users-detail", kwargs={"pk": entry.pk}),
                 )
             )
         return results
