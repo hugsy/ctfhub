@@ -36,6 +36,7 @@ from ctfhub.helpers import (
     get_file_mime,
     get_random_string_128,
     register_new_hedgedoc_user,
+    which_hedgedoc,
 )
 from ctfhub.validators import challenge_file_max_size_validator
 from ctfhub_project.settings import (
@@ -323,40 +324,41 @@ class Ctf(TimeStampedModel):
         #
         if member:
             session.post(
-                f"{HEDGEDOC_URL}/login",
+                f"{which_hedgedoc()}/login",
                 data={
                     "email": member.hedgedoc_username,
                     "password": member.hedgedoc_password,
                 },
+                allow_redirects=False,
             )
 
         # add ctf notes
         fname = slugify(f"{self.name}.md")
         with tempfile.TemporaryFile():
-            result = session.get(f"{HEDGEDOC_URL}{self.note_id}/download")
+            result = session.get(f"{which_hedgedoc()}{self.note_id}/download")
             zip_file.writestr(
                 zipfile.ZipInfo(filename=fname, date_time=ts), result.text
             )
 
         # add challenge notes
         for challenge in self.challenges:
-            fname = slugify(f"{self.name}-{challenge.name}.md")
+            fname = f"{slugify(self.name)}-{slugify(challenge.name)}.md"
             with tempfile.TemporaryFile():
-                result = session.get(f"{HEDGEDOC_URL}{challenge.note_id}/download")
+                result = session.get(f"{which_hedgedoc()}{challenge.note_id}/download")
                 if result.status_code != requests.codes.ok:
                     continue
                 zinfo = zipfile.ZipInfo(filename=fname, date_time=ts)
                 zip_file.writestr(zinfo, result.text)
 
         if member:
-            session.post(f"{HEDGEDOC_URL}/logout")
+            session.post(f"{which_hedgedoc()}/logout", allow_redirects=False)
 
         return f"{slugify(self.name)}-notes.zip"
 
     @property
     def note_url(self) -> str:
         note_id = self.note_id or "/"
-        return f"{HEDGEDOC_URL}{note_id}"
+        return f"{which_hedgedoc()}{note_id}"
 
     def get_absolute_url(self):
         return reverse(
