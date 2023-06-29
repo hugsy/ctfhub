@@ -367,17 +367,20 @@ def export_challenge_note(member, note_id: uuid.UUID) -> str:
         str: The body of the note if successful; an empty string otherwise
     """
     result = ""
+    url = which_hedgedoc()
+    print(url)
     with requests.Session() as session:
         h = session.post(
-            f"{HEDGEDOC_URL}/login",
+            f"{url}/login",
             data={
                 "email": member.hedgedoc_username,
                 "password": member.hedgedoc_password,
             },
+            allow_redirects=False,
         )
         if h.status_code == requests.codes.ok:
-            h2 = session.get(f"{HEDGEDOC_URL}{note_id}/download")
+            h2 = session.get(f"{url}{note_id}/download")
             if h2.status_code == requests.codes.ok:
                 result = h2.text
-            session.post(f"{HEDGEDOC_URL}/logout")
+            session.post(f"{url}/logout")
     return result
