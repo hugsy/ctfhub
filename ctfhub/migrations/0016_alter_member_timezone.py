@@ -5,7 +5,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("ctfhub", "0016_alter_member_timezone"),
+        ("ctfhub", "0015_alter_ctf_note_id_alter_member_timezone"),
     ]
 
     operations = [
