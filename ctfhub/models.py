@@ -106,10 +106,12 @@ class Team(TimeStampedModel):
     def members(self):
         _members = self.member_set.all()
         members = sorted(
-            _members.filter(status="member"), key=lambda member: member.username
+            _members.filter(status=Member.StatusType.MEMBER),
+            key=lambda member: member.username,
         )
         members += sorted(
-            _members.filter(status="guest"), key=lambda member: member.username
+            _members.filter(status=Member.StatusType.GUEST),
+            key=lambda member: member.username,
         )
         return members
 
@@ -1327,7 +1329,7 @@ class Member(TimeStampedModel):
 
     @property
     def is_active(self):
-        if self.status == "guest":
+        if self.status == Member.StatusType.GUEST:
             return True
 
         last = self.last_solved_challenge
