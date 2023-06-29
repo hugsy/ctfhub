@@ -180,23 +180,36 @@
                             <canvas id="user-categories"></canvas>
                             <script>
                                 new Chart(document.getElementById("user-categories"), {
-                                    "type": "doughnut",
-                                    "data": {
-                                        "labels": [
+                                    type: "doughnut",
+                                    data: {
+                                        labels: [
                                             {% for c in member.solved_categories %}
                                                 "{{c.category__name|upper}}",
                                             {% endfor %}
                                         ],
-                                        "datasets": [{
-                                            "label": "Solved categories",
-                                            "data": [
+                                        datasets: [{
+                                            label: "Solved categories",
+                                            data: [
                                                 {% for c in member.solved_categories %}
                                                     {{c.category__count}},
                                                 {% endfor %}
                                             ],
-                                            "backgroundColor": [{% for _ in member.solved_categories %}
-                                                generate_random_color({{forloop.counter}}), {% endfor %}]
+                                            backgroundColor: [{% for _ in member.solved_categories %}
+                                                generate_random_color({{forloop.counter}}), {% endfor %}
+                                            ]
                                         }]
+                                    },
+                                    options: {
+                                        aspectRatio: 16 / 8,
+                                        plugins: {
+                                            legend: {
+                                                display: true,
+                                                position: 'top',
+                                            },
+                                            title: {
+                                                display: false,
+                                            },
+                                        },
                                     }
                                 });
                             </script>
@@ -207,23 +220,23 @@
                             <canvas id="user-stats"></canvas>
                             <script>
                                 new Chart(document.getElementById("user-stats"), {
-                                    "type": "line",
-                                    "data": {
-                                        "labels": [
+                                    type: "line",
+                                    data: {
+                                        labels: [
                                             {% for solved in member.solved_public_challenges|as_time_accumulator_graph %}
                                                 "{{solved.time}}",{% endfor %}
                                         ],
-                                        "datasets": [{
-                                            "label": "Scored points",
-                                            "data": [
+                                        datasets: [{
+                                            label: "Scored points",
+                                            data: [
                                                 {% for solved in member.solved_public_challenges|as_time_accumulator_graph %}{{solved.accu}}, {% endfor %}
                                             ],
-                                            "fill": false,
-                                            "borderColor": "rgb(75, 192, 192)",
-                                            "lineTension": 0.1
+                                            fill: false,
+                                            borderColor: "rgb(75, 192, 192)",
+                                            tension: 0.1
                                         }]
                                     },
-                                    "options": {}
+                                    options: {}
                                 });
                             </script>
                         </div>

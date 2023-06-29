@@ -1,8 +1,10 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpRequest, HttpResponseNotFound
 from django.http.response import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.generic import (
     CreateView,
@@ -21,7 +23,7 @@ from ctfhub.forms import (
     ChallengeUpdateForm,
 )
 from ctfhub.helpers import export_challenge_note, generate_github_page_header
-from ctfhub.models import Challenge, ChallengeCategory, Ctf
+from ctfhub.models import Challenge, ChallengeCategory, Ctf, Member
 from ctfhub_project.settings import HEDGEDOC_URL
 
 
@@ -164,7 +166,7 @@ class ChallengeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
                 len(form.cleaned_data["solvers"]) > 0 and not form.cleaned_data["flag"]
             ) or (len(form.cleaned_data["solvers"]) == 0 and form.cleaned_data["flag"]):
                 messages.error(self.request, "Cannot set flag without solver(s)")
-                return redirect("ctfhub:challenges-detail", self.object.id)
+                return super().form_invalid(form)
 
         return super().form_valid(form)
 
@@ -224,3 +226,39 @@ class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
         response = HttpResponse(content, content_type="text/markdown; charset=utf-8")
         response["Content-Length"] = len(content)
         return response
+
+
+@login_required
+def assign_to_current_member(request: HttpRequest, pk: str) -> HttpResponse:
+    """Assign the current member to the challenge
+
+    Args:
+        request (HttpRequest): _description_
+        pk (str): _description_
+
+    Returns:
+        HttpResponse: _description_
+    """
+    if not request.method == "POST":
+        return HttpResponseNotFound()
+
+    challenge = get_object_or_404(Challenge, pk=pk)
+    member = Member.objects.get(user=request.user)
+
+    #
+    # Toggle the current user's assignment to the challenge
+    #
+    if member in challenge.assigned_members.all():
+        challenge.assigned_members.remove(member)
+        messages.info(
+            request,
+            f"{member.username} removed from assigned players of {challenge.ctf.name}/{challenge.name}",
+        )
+    else:
+        challenge.assigned_members.add(member)
+        messages.info(
+            request,
+            f"{member.username} added to assigned players of {challenge.ctf.name}/{challenge.name}",
+        )
+
+    return redirect(reverse("ctfhub:ctfs-detail", kwargs={"pk": challenge.ctf.id}))

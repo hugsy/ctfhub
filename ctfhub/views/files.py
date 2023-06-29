@@ -1,12 +1,16 @@
 from pathlib import Path
 
-from ctfhub.forms import ChallengeFileCreateForm
-from ctfhub.models import ChallengeFile
+from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
+from django.views.generic import DeleteView, CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import render
-from django.urls import reverse
-from django.views.generic import CreateView, DeleteView, DetailView
+
+from ctfhub.forms import ChallengeFileCreateForm
+from ctfhub.models import ChallengeFile
+from django_sendfile import sendfile
 
 
 class ChallengeFileCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -54,3 +58,9 @@ class ChallengeFileDetailView(LoginRequiredMixin, SuccessMessageMixin, DetailVie
     def get(self, request, *args, **kwargs):
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {"form": form})
+
+
+@login_required
+def challenge_file_download_view(request: HttpRequest, pk: int, challenge_id: int):
+    challenge_file = get_object_or_404(ChallengeFile, pk=pk)
+    return sendfile(request, challenge_file.file.path, mimetype=challenge_file.mime)

@@ -1,10 +1,11 @@
 # Core packages
-django >= 4
+django >= 4.2.2
 Pillow
 requests
 python-magic
 psycopg2-binary
 django-model-utils
+django-sendfile2
 bleach
 
 # Dev packages (install those if you intend to submit PRs)

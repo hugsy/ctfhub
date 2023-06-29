@@ -1,15 +1,19 @@
+import io
 import os
-import pathlib
 import smtplib
 import time
 import uuid
 from datetime import datetime
 from functools import lru_cache
+from typing import Any, TYPE_CHECKING
 
 import django.core.mail
 import django.utils.crypto
 import magic
 import requests
+from django.conf import settings
+from django.core.files.storage import get_storage_class
+
 
 from ctfhub_project.settings import (
     CTFHUB_ACCEPTED_IMAGE_EXTENSIONS,
@@ -32,6 +36,10 @@ from ctfhub_project.settings import (
     IMAGE_URL,
     USE_INTERNAL_HEDGEDOC,
 )
+
+
+if TYPE_CHECKING:
+    from ctfhub.models import Challenge
 
 
 @lru_cache(maxsize=1)
@@ -102,34 +110,38 @@ def check_note_id(id: str) -> bool:
     return res.status_code == requests.codes.found
 
 
-def get_file_magic(fpath: pathlib.Path) -> str:
-    """Returns the file description from its magic number (ex. 'PE32+ executable (console) x86-64, for MS Windows' )
+def get_file_magic(challenge_file: io.BufferedReader) -> str:
+    """
+    Returns the file description from its magic number (ex. 'PE32+ executable (console) x86-64, for MS Windows' )
 
     Args:
-        fpath (pathlib.Path): path object to the file
+        challenge_file: File-like object
 
     Returns:
         str: the file description, or "" if the file doesn't exist on FS
     """
-    abspath = str(fpath.absolute())
-    return magic.from_file(abspath) if fpath.exists() else "Data"
+    try:
+        challenge_file.seek(0)  # Ensure file is read from beginning
+        return magic.from_buffer(challenge_file.read())
+    except Exception:
+        return "Data"
 
 
-def get_file_mime(fpath: pathlib.Path) -> str:
-    """Returns the mime type associated to the file (ex. 'appication/pdf')
+def get_file_mime(challenge_file: io.BufferedReader) -> str:
+    """
+    Returns the mime type associated to the file (ex. 'appication/pdf')
 
     Args:
-        fpath (pathlib.Path): path object to the file
+        challenge_file: File-like object
 
     Returns:
         str: the file mime type, or "application/octet-stream" if the file doesn't exist on FS
     """
-    abspath = str(fpath.absolute())
-    return (
-        magic.from_file(abspath, mime=True)
-        if fpath.exists()
-        else "application/octet-stream"
-    )
+    try:
+        challenge_file.seek(0)  # Ensure file is read from beginning
+        return magic.from_buffer(challenge_file.read(), mime=True)
+    except Exception:
+        return "application/octet-stream"
 
 
 def ctftime_parse_date(date: str) -> datetime:
@@ -384,3 +396,13 @@ def export_challenge_note(member, note_id: uuid.UUID) -> str:
                 result = h2.text
             session.post(f"{url}/logout")
     return result
+
+
+def get_named_storage(name: str) -> Any:
+    config = settings.STORAGES[name]
+    storage_class = get_storage_class(config["BACKEND"])
+    return storage_class(**config["OPTIONS"])
+
+
+def get_challenge_upload_path(instance: "Challenge", filename: str) -> str:
+    return f"files/{instance.challenge.id}/{filename}"

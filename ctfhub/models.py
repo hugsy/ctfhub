@@ -3,6 +3,8 @@ import os
 import tempfile
 import uuid
 import zipfile
+import requests
+
 from collections import Counter, namedtuple
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -11,7 +13,7 @@ from typing import TYPE_CHECKING, Optional, OrderedDict
 from urllib.parse import quote
 
 import django.db.models.manager
-import requests
+
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
@@ -40,7 +42,6 @@ from ctfhub.helpers import (
 )
 from ctfhub.validators import challenge_file_max_size_validator
 from ctfhub_project.settings import (
-    CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT,
     CTFHUB_DEFAULT_COUNTRY_LOGO,
     CTFTIME_URL,
@@ -1266,7 +1267,9 @@ class Member(TimeStampedModel):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
-    avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
+    avatar = models.ImageField(
+        blank=True, upload_to=USERS_FILE_PATH, storage=get_named_storage("MEDIA")
+    )
     description = models.TextField(blank=True)
     country = models.CharField(
         default=Country.UNITEDNATIONS, choices=Country.choices, max_length=2
@@ -1553,12 +1556,16 @@ class Challenge(TimeStampedModel):
         "ctfhub.Member", blank=True, related_name="solved_challenges"
     )
     tags = models.ManyToManyField("ctfhub.Tag", blank=True, related_name="challenges")
+    assigned_members = models.ManyToManyField(
+        "ctfhub.Member", blank=True, related_name="assigned_challenges"
+    )
 
     #
     # Typing
     #
 
     challengefile_set: django.db.models.manager.Manager["ChallengeFile"]
+
 
     @property
     def solved(self) -> bool:
@@ -1614,7 +1621,8 @@ class ChallengeFile(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     file = models.FileField(
         null=True,
-        upload_to=CTF_CHALLENGE_FILE_PATH,
+        upload_to=get_challenge_upload_path,
+        storage=get_named_storage("MEDIA"),
         validators=[
             challenge_file_max_size_validator,
         ],
