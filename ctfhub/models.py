@@ -34,8 +34,10 @@ from ctfhub.helpers import (
     ctftime_get_ctf_logo_url,
     generate_excalidraw_room_id,
     generate_excalidraw_room_key,
+    get_challenge_upload_path,
     get_file_magic,
     get_file_mime,
+    get_named_storage,
     get_random_string_128,
     register_new_hedgedoc_user,
     which_hedgedoc,
@@ -1566,7 +1568,6 @@ class Challenge(TimeStampedModel):
 
     challengefile_set: django.db.models.manager.Manager["ChallengeFile"]
 
-
     @property
     def solved(self) -> bool:
         return self.status == "solved"
@@ -1645,17 +1646,21 @@ class ChallengeFile(TimeStampedModel):
         return self.file.url
 
     def save(self, **kwargs):
+        #
         # save() to commit files to proper location
-        super(ChallengeFile, self).save()
+        #
+        super().save()
 
+        #
         # update missing properties
-        p = Path(CTF_CHALLENGE_FILE_ROOT) / self.name
-        if p.exists():
-            abs_path = str(p.absolute())
+        #
+        fpath = Path(CTF_CHALLENGE_FILE_ROOT) / self.name
+        if fpath.exists():
+            abs_path = str(fpath.absolute())
             if not self.mime:
-                self.mime = get_file_mime(p)
+                self.mime = get_file_mime(fpath)
             if not self.type:
-                self.type = get_file_magic(p)
+                self.type = get_file_magic(fpath)
             if not self.hash:
                 self.hash = hashlib.sha256(open(abs_path, "rb").read()).hexdigest()
             super(ChallengeFile, self).save()

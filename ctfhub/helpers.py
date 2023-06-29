@@ -1,11 +1,12 @@
 import io
 import os
+import pathlib
 import smtplib
 import time
 import uuid
 from datetime import datetime
 from functools import lru_cache
-from typing import Any, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Union
 
 import django.core.mail
 import django.utils.crypto
@@ -13,7 +14,6 @@ import magic
 import requests
 from django.conf import settings
 from django.core.files.storage import get_storage_class
-
 
 from ctfhub_project.settings import (
     CTFHUB_ACCEPTED_IMAGE_EXTENSIONS,
@@ -37,9 +37,8 @@ from ctfhub_project.settings import (
     USE_INTERNAL_HEDGEDOC,
 )
 
-
 if TYPE_CHECKING:
-    from ctfhub.models import Challenge
+    from ctfhub.models import ChallengeFile
 
 
 @lru_cache(maxsize=1)
@@ -110,24 +109,39 @@ def check_note_id(id: str) -> bool:
     return res.status_code == requests.codes.found
 
 
-def get_file_magic(challenge_file: io.BufferedReader) -> str:
+def get_file_magic(
+    challenge_file: Union[io.BufferedReader, pathlib.Path], use_mime: bool = False
+) -> str:
     """
-    Returns the file description from its magic number (ex. 'PE32+ executable (console) x86-64, for MS Windows' )
+    Returns the file description from its magic number (ex. 'PE32+ executable (console) x86-64, for MS Windows' ), or a
+    MIME type if `use_mime` is True
 
     Args:
-        challenge_file: File-like object
+        challenge_file: File-like object or a pathlib.Path
+        use_mime: specifies whether to get the output string as a MIME type
+
+    Raises:
+        TypeError if `challenge_file` has an invalid type
 
     Returns:
         str: the file description, or "" if the file doesn't exist on FS
     """
+
+    if isinstance(challenge_file, io.BufferedReader):
+        challenge_file.seek(0)
+        challenge_file_data = challenge_file.read()
+    elif isinstance(challenge_file, pathlib.Path):
+        challenge_file_data = challenge_file.open("rb").read()
+    else:
+        raise TypeError("Invalid type for `challenge_file`")
+
     try:
-        challenge_file.seek(0)  # Ensure file is read from beginning
-        return magic.from_buffer(challenge_file.read())
+        return magic.from_buffer(challenge_file_data, mime=use_mime)
     except Exception:
-        return "Data"
+        return "Data" if not use_mime else "application/octet-stream"
 
 
-def get_file_mime(challenge_file: io.BufferedReader) -> str:
+def get_file_mime(challenge_file: Union[io.BufferedReader, pathlib.Path]) -> str:
     """
     Returns the mime type associated to the file (ex. 'appication/pdf')
 
@@ -137,11 +151,7 @@ def get_file_mime(challenge_file: io.BufferedReader) -> str:
     Returns:
         str: the file mime type, or "application/octet-stream" if the file doesn't exist on FS
     """
-    try:
-        challenge_file.seek(0)  # Ensure file is read from beginning
-        return magic.from_buffer(challenge_file.read(), mime=True)
-    except Exception:
-        return "application/octet-stream"
+    return get_file_magic(challenge_file, True)
 
 
 def ctftime_parse_date(date: str) -> datetime:
@@ -404,5 +414,14 @@ def get_named_storage(name: str) -> Any:
     return storage_class(**config["OPTIONS"])
 
 
-def get_challenge_upload_path(instance: "Challenge", filename: str) -> str:
+def get_challenge_upload_path(instance: "ChallengeFile", filename: str) -> str:
+    """Custom helper to retrieve the upload path for a given challenge file.
+
+    Args:
+        instance (ChallengeFile): _description_
+        filename (str): _description_
+
+    Returns:
+        str: _description_
+    """
     return f"files/{instance.challenge.id}/{filename}"
