@@ -104,9 +104,13 @@ class Team(TimeStampedModel):
 
     @property
     def members(self):
-        _members: django.db.models.manager.Manager[Member] = self.member_set.all()
-        members = sorted(_members.filter(status="member"), key=lambda x: x.username)
-        members += sorted(_members.filter(status="guest"), key=lambda x: x.username)
+        _members = self.member_set.all()
+        members = sorted(
+            _members.filter(status="member"), key=lambda member: member.username
+        )
+        members += sorted(
+            _members.filter(status="guest"), key=lambda member: member.username
+        )
         return members
 
 
@@ -145,6 +149,9 @@ class Ctf(TimeStampedModel):
 
     challenge_set: django.db.models.manager.Manager["Challenge"]
     players: django.db.models.manager.Manager["Member"]
+    member_points: dict["Member", float]
+    member_percents: dict["Member", float]
+    ranking: list[tuple["Member", float]]
 
     def __str__(self) -> str:
         return self.name
@@ -1598,7 +1605,7 @@ class Challenge(TimeStampedModel):
         return f"{JITSI_URL}/{self.ctf.id}--{self.id}"
 
     def save(self, **kwargs):
-        if self.flag_tracker.has_changed("flag"):
+        if self.flag_tracker.has_changed("flag"):  # type: ignore
             self.status = "solved" if self.flag else "unsolved"
             self.solvers.add(self.last_update_by)
 
@@ -1732,7 +1739,9 @@ class CtfStats:
 
         monthly_counts = [
             (k.strftime("%Y/%m"), v)
-            for k, v in sorted(Counter(ctf.month for ctf in ctfs).items())
+            for k, v in sorted(
+                Counter(ctf.start_date for ctf in ctfs if ctf.start_date).items()
+            )
         ]
 
         return {"monthly_counts": monthly_counts}
@@ -1766,7 +1775,7 @@ class CtfStats:
         )
 
         members = set()
-        ctfs = []
+        ctfs: list[Ctf] = []
 
         for ctf in qs:
             ctf.member_points = {}
@@ -1816,6 +1825,7 @@ class CtfStats:
 
         # last CTFs
         for ctf in ctfs:
+            # Ranking = sorted scoring members in descending order
             ctf.ranking = sorted(
                 ctf.member_percents.items(), key=lambda x: x[1], reverse=True
             )
