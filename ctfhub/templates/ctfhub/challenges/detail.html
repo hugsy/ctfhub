@@ -7,12 +7,12 @@
     {% include 'snippets/messages.html' %}
     {% load ctfhub_filters %}
 
-    <div class="row">
+    <div class="row" id="detailNav">
         <div class="col-md-3">
             <div class="row">
                 <div class="col-sm-2">
                     <span class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" href="#challenge_info_left_menu"
-                          role="button" aria-expanded="false" aria-controls="collapseExample">
+                          role="button" aria-expanded="true" aria-controls="challenge_info_left_menu">
                         <i class="fas fa-exchange-alt"></i>
                     </span>
                 </div>
@@ -40,81 +40,80 @@
     </div>
 
     <div class="row">
-        <div class="col-md-3" id="challenge_info_left_menu">
+        <div class="col-md-3 collapse show" id="challenge_info_left_menu">
             {% include 'snippets/formerror.html' %}
             <div class="card card-body">
                 <div class="d-grid gap-2">
                     <a class="btn btn-warning btn-sm" href="{% url 'ctfhub:challenges-edit' challenge.id %}"><strong>Edit
                         Challenge</strong></a>
-                </div>
-                <ul class="list-group">
-                    <li class="list-group-item active">
-                        <strong>{{ challenge.name }}</strong> ({{ challenge.points }} points)
-                        &nbsp;
-                        <a href="{% url 'ctfhub:search' %}?q=cat:category+{{ challenge.category|urlencode }}">
-                            <span class="badge text-bg-danger">{{ challenge.category }}</span>
-                        </a>
-
-                        {% for tag in challenge.tags.all %}
+                    <ul class="list-group">
+                        <li class="list-group-item active">
+                            <strong>{{ challenge.name }}</strong> ({{ challenge.points }} points)
                             &nbsp;
-                            <a href="{% url 'ctfhub:search' %}?q=cat:tag+{{ tag|urlencode }}">
-                                <span class="badge text-bg-info">&nbsp;#{{ tag }}</span>
+                            <a href="{% url 'ctfhub:search' %}?q=cat:category+{{ challenge.category|urlencode }}">
+                                <span class="badge text-bg-danger">{{ challenge.category }}</span>
                             </a>
-                        {% endfor %}
-                    </li>
 
-                    <li class="list-group-item list-group-item-action">
-                        <div class="col" style="text-align: justify;"
-                             onclick="new bootstrap.Modal(document.getElementById('ChallengeDescriptionModal')).toggle();"
-                             title="Click to view the complete description">
-                            {% autoescape off %}
-                                {{ challenge.description|html_sanitize|truncatewords:15 }}
-                            {% endautoescape %}
-                        </div>
-                    </li>
+                            {% for tag in challenge.tags.all %}
+                                &nbsp;
+                                <a href="{% url 'ctfhub:search' %}?q=cat:tag+{{ tag|urlencode }}">
+                                    <span class="badge text-bg-info">&nbsp;#{{ tag }}</span>
+                                </a>
+                            {% endfor %}
+                        </li>
 
-                    <li class="list-group-item list-group-item-action">
-
-                        <div class="row">
-                            <div class="col-6">
-                                <strong>Features</strong>
+                        <li class="list-group-item list-group-item-action">
+                            <div class="col" style="text-align: justify;"
+                                 onclick="new bootstrap.Modal(document.getElementById('ChallengeDescriptionModal')).toggle();"
+                                 title="Click to view the complete description">
+                                {% autoescape off %}
+                                    {{ challenge.description|html_sanitize|truncatewords:15 }}
+                                {% endautoescape %}
                             </div>
+                        </li>
 
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col">
-                                        <a href="{{ challenge.note_url }}?both#" target="_blank" style="color: black;"
-                                           title="Open the challenge note in a pop-up">
-                                            <strong><i class="fas fa-clipboard"></i></strong>
-                                        </a>
-                                    </div>
+                        <li class="list-group-item list-group-item-action">
 
-                                    <div class="col">
-                                        <a href="{{ excalidraw_url }}" target="_blank" style="color: black;"
-                                           title="Open the challenge whiteboard in a pop-up">
-                                            <strong><i class="fas fa-paint-brush"></i></strong>
-                                        </a>
-                                    </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <strong>Features</strong>
+                                </div>
 
-                                    <div class="col">
-                                        <a href="{{ challenge.jitsi_url }}" target="_blank" style="color: black;"
-                                           title="Open a Jitsi channel">
-                                            <strong><i class="far fa-comments"></i></strong>
-                                        </a>
-                                    </div>
+                                <div class="col-6">
+                                    <div class="row">
+                                        <div class="col">
+                                            <a href="{{ challenge.note_url }}?both#" target="_blank" style="color: black;"
+                                               title="Open the challenge note in a pop-up">
+                                                <strong><i class="fas fa-clipboard"></i></strong>
+                                            </a>
+                                        </div>
 
-                                    <div class="col">
-                                        <a href="{% url 'ctfhub:challenges-export' challenge.id %}" target="_blank"
-                                           style="color: black;" title="Generate a GithubPage-ready file">
-                                            <strong><i class="fas fa-rss"></i></strong>
-                                        </a>
+                                        <div class="col">
+                                            <a href="{{ excalidraw_url }}" target="_blank" style="color: black;"
+                                               title="Open the challenge whiteboard in a pop-up">
+                                                <strong><i class="fas fa-paint-brush"></i></strong>
+                                            </a>
+                                        </div>
+
+                                        <div class="col">
+                                            <a href="{{ challenge.jitsi_url }}" target="_blank" style="color: black;"
+                                               title="Open a Jitsi channel">
+                                                <strong><i class="far fa-comments"></i></strong>
+                                            </a>
+                                        </div>
+
+                                        <div class="col">
+                                            <a href="{% url 'ctfhub:challenges-export' challenge.id %}" target="_blank"
+                                               style="color: black;" title="Generate a GithubPage-ready file">
+                                                <strong><i class="fas fa-rss"></i></strong>
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </li>
-                </ul>
-
+                        </li>
+                    </ul>
+                </div>
 
                 <div class="modal fade" id="ChallengeDescriptionModal" tabindex="-1"
                      aria-labelledby="ChallengeDescriptionModalLabel" aria-hidden="true">
@@ -144,26 +143,32 @@
                                    id={{ flag_form.flag.id_for_label }} name="{{ flag_form.flag.html_name }}"
                                    placeholder="{{ challenge.ctf.flag_prefix }}" value="{{ challenge.flag }}" readonly/>
                             <small>Solved by <strong>{{ challenge.solvers.all|join:", " }}</strong> at <em><abbr
-                                title="Local time: {{ challenge.solved_time| as_local_datetime_for_member:request.user.member }}">{{ challenge.solved_time }}
-                                UTC</abbr></em></small>
+                                title="Local time:{{ challenge.solved_time| as_local_datetime_for_member:request.user.member }}"
+                            >{{ challenge.solved_time }} UTC</abbr></em></small>
                         {% else %}
                             <form method="POST" action="{% url 'ctfhub:challenges-score' challenge.id %}">
                                 {% csrf_token %}
-                                <input type="text" class="form-control" style="background-color: lightyellow;"
-                                       id={{ flag_form.flag.id_for_label }} name="{{ flag_form.flag.html_name }}"
-                                       placeholder="{{ challenge.ctf.flag_prefix }}" value=""/>
-                                <input type="hidden" id="{{ flag_form.last_update_by.id_for_label }}"
-                                       name="{{ flag_form.last_update_by.html_name }}" value="{{ request.user.id }}"/>
-                                <button type="submit" class="btn btn-primary">Score flag</button>
+                                <div class="d-grid gap-2">
+                                    <div class="input-group mb-3">
+                                        <input type="text" class="form-control" style="background-color: lightyellow;"
+                                               id={{ flag_form.flag.id_for_label }} name="{{ flag_form.flag.html_name }}"
+                                               placeholder="{{ challenge.ctf.flag_prefix }}" value=""/>
+                                        <input type="hidden" id="{{ flag_form.last_update_by.id_for_label }}"
+                                               name="{{ flag_form.last_update_by.html_name }}"
+                                               value="{{ request.user.id }}"/>
+                                        <button type="submit" class="btn btn-primary">Score flag</button>
+                                    </div>
+                                </div>
                             </form>
                         {% endif %}
                     </div>
                 </div>
 
                 <br>
-
-                <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#QuickAddFileModal"><strong>Add a
-                    file</strong></a>
+                <div class="d-grid gap-2">
+                    <a class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#QuickAddFileModal"><strong>Add a
+                        file</strong></a>
+                </div>
                 <table class="table table-sm table-hover">
                     <tr>
                         <th>File</th>
@@ -193,7 +198,7 @@
                             <td><small>{{ file.size | filesizeformat }}</small></td>
 
                             <td>
-                                <a href="{{ file.url }}" download="{{ file.name }}" title="Download '{{ file.name }}'">
+                                <a href="{{ file.download_url }}" title="Download '{{ file.name }}'">
                                     <span>
                                         <i class="fas fa-download"></i>
                                     </span>
@@ -216,19 +221,29 @@
 
         <div class="col-md">
             <div class="row">
-                <div class="embed-responsive embed-responsive-16by9">
-                    <iframe
-                        id="note_frame"
-                        class="embed-responsive-item"
-                        width="100%"
-                        height="500"
-                        frameborder="0"
-                    >
-                    </iframe>
+                <div id="ifr" class="ratio ratio-custom" style="height: 500px">
+                    <iframe id="note_frame"></iframe>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        window.addEventListener('load', adjustIframeHeight);
+        window.addEventListener('resize', adjustIframeHeight);
+
+        function adjustIframeHeight() {
+            let navbarHeight = document.querySelector('.navbar').offsetHeight;
+            let detailNavHeight = document.querySelector('#detailNav').offsetHeight;
+            let ifr = document.querySelector('#ifr');
+
+        // Calculate the remaining height after subtracting the header and footer
+            let remainingHeight = window.innerHeight - navbarHeight - detailNavHeight - 25;
+
+        // Set the height of the iframe
+            ifr.style.height = `${remainingHeight}px`;
+        }
+    </script>
 
     {% if request.user.member.hedgedoc_password %}
         <script>
@@ -246,6 +261,5 @@
     {% endif %}
 
     {% include 'snippets/quick_add_file.html' with challenge=challenge %}
-
 
 {% endblock %}

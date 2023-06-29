@@ -17,8 +17,10 @@ from ctfhub.helpers import (
     ctftime_get_ctf_logo_url,
     generate_excalidraw_room_id,
     generate_excalidraw_room_key,
+    get_challenge_upload_path,
     get_file_magic,
     get_file_mime,
+    get_named_storage,
     get_random_string_128,
     register_new_hedgedoc_user,
 )
@@ -36,7 +38,6 @@ from model_utils import Choices, FieldTracker
 from model_utils.fields import MonitorField, StatusField
 
 from ctfhub_project.settings import (
-    CTF_CHALLENGE_FILE_PATH,
     CTF_CHALLENGE_FILE_ROOT,
     CTFTIME_URL,
     EXCALIDRAW_ROOM_ID_REGEX,
@@ -243,7 +244,7 @@ class Ctf(TimeStampedModel):
         # can't dump data
         #
         if member:
-            t = session.post(
+            session.post(
                 f"{HEDGEDOC_URL}/login",
                 data={
                     "email": member.hedgedoc_username,
@@ -253,7 +254,7 @@ class Ctf(TimeStampedModel):
 
         # add ctf notes
         fname = slugify(f"{self.name}.md")
-        with tempfile.TemporaryFile() as fp:
+        with tempfile.TemporaryFile():
             result = session.get(f"{HEDGEDOC_URL}{self.note_id}/download")
             zip_file.writestr(
                 zipfile.ZipInfo(filename=fname, date_time=ts), result.text
@@ -262,7 +263,7 @@ class Ctf(TimeStampedModel):
         # add challenge notes
         for challenge in self.challenges:
             fname = slugify(f"{self.name}-{challenge.name}.md")
-            with tempfile.TemporaryFile() as fp:
+            with tempfile.TemporaryFile():
                 result = session.get(f"{HEDGEDOC_URL}{challenge.note_id}/download")
                 if result.status_code != requests.codes.ok:
                     continue
@@ -1053,7 +1054,9 @@ class Member(TimeStampedModel):
 
     user = models.OneToOneField(User, on_delete=models.SET_NULL, null=True)
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
-    avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
+    avatar = models.ImageField(
+        blank=True, upload_to=USERS_FILE_PATH, storage=get_named_storage("MEDIA")
+    )
     description = models.TextField(blank=True)
     country = StatusField(choices_name="COUNTRIES")
     timezone = StatusField(choices_name="TIMEZONES")
@@ -1285,6 +1288,10 @@ class Challenge(TimeStampedModel):
     )
     tags = models.ManyToManyField("ctfhub.Tag", blank=True, related_name="challenges")
 
+    assigned_members = models.ManyToManyField(
+        "ctfhub.Member", blank=True, related_name="assigned_challenges"
+    )
+
     @property
     def solved(self) -> bool:
         return self.status == "solved"
@@ -1339,7 +1346,8 @@ class ChallengeFile(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     file = models.FileField(
         null=True,
-        upload_to=CTF_CHALLENGE_FILE_PATH,
+        upload_to=get_challenge_upload_path,
+        storage=get_named_storage("MEDIA"),
         validators=[
             challenge_file_max_size_validator,
         ],
@@ -1496,7 +1504,7 @@ class CtfStats:
         for ctf in ctfs:
             ctf.member_percents = {}
 
-            first_points = max(ctf.member_points.values())
+            max(ctf.member_points.values())
             total_points = sum(ctf.member_points.values())
 
             for member in members:

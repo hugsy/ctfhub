@@ -129,6 +129,11 @@ urlpatterns = [
         views.challenges.ChallengeExportAsGithubPageView.as_view(),
         name="challenges-export",
     ),
+    path(
+        "challenges/<uuid:pk>/assign",
+        views.challenges.assign_to_current_member,
+        name="challenges-assign",
+    ),
     # files
     path(
         "challenges/<uuid:challenge_id>/files/add/",
@@ -144,6 +149,11 @@ urlpatterns = [
         "challenges/<uuid:challenge_id>/files/<uuid:pk>/delete/",
         views.files.ChallengeFileDeleteView.as_view(),
         name="challenge-files-delete",
+    ),
+    path(
+        "challenges/<uuid:challenge_id>/files/<uuid:pk>/download",
+        views.files.challenge_file_download_view,
+        name="challenge-file-download",
     ),
     # categories
     path(

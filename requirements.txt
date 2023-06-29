@@ -1,4 +1,4 @@
-django >= 4
+django >= 4.2.2
 Pillow
 requests
 python-magic
@@ -8,4 +8,4 @@ bleach
 pytz
 pre-commit
 black
-django-rename-app
+django-sendfile2
