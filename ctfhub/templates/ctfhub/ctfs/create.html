@@ -158,19 +158,18 @@
                                            min="0" value="{{ form.weight.value }}">
                                 </div>
 
-                                {% if form.instance.is_finished %}
-                                    <label class="label"><strong>Team Rating</strong>&nbsp;<a
-                                        href="{{ team.ctftime_url }}" target="_blank"><i
-                                            class="fas fa-external-link-alt"></i></a></label>
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <i class="fas fa-random"></i>
-                                        </span>
-                                        <input id="{{ form.rating.id_for_label }}" name="{{ form.rating.html_name }}"
-                                               placeholder="{{ form.rating.label }}" class="form-control" type="number"
-                                               min="0" value="{{ form.rating.value }}">
-                                    </div>
-                                {% endif %}
+
+                                <label class="label"><strong>Team Rating</strong>&nbsp;<a
+                                    href="{{ team.ctftime_url }}" target="_blank"><i
+                                        class="fas fa-external-link-alt"></i></a></label>
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-random"></i>
+                                    </span>
+                                    <input id="{{ form.rating.id_for_label }}" name="{{ form.rating.html_name }}"
+                                           placeholder="{{ form.rating.label }}" class="form-control" type="number"
+                                           min="0" value="{% if form.instance.is_finished %}{{ form.rating.value }}{% else %}0{% endif %}">
+                                </div>
                             </div>
 
                             <div class="card-footer text-muted">

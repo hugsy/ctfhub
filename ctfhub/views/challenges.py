@@ -254,11 +254,17 @@ def assign_to_current_member(request: HttpRequest, pk: str) -> HttpResponse:
             request,
             f"{member.username} removed from assigned players of {challenge.ctf.name}/{challenge.name}",
         )
+
     else:
         challenge.assigned_members.add(member)
         messages.info(
             request,
             f"{member.username} added to assigned players of {challenge.ctf.name}/{challenge.name}",
         )
+
+    #
+    # Update last modification date
+    #
+    member.save()
 
     return redirect(reverse("ctfhub:ctfs-detail", kwargs={"pk": challenge.ctf.id}))

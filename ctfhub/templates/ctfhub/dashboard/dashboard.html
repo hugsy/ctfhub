@@ -31,24 +31,14 @@
                     </div>
                 </div>
                 <table class="table table-sm table-hover">
-                    <tr>
-                        <th>Nickname</th>
-                        <th>Working On</th>
-                    </tr>
-
                     {% for member in members %}
-                        {% if member.selected_ctf %}
-                            <tr class="table-row" data-href="{% url 'ctfhub:ctfs-detail' member.selected_ctf.id %}">
-                                <td>{{ member.username }}</td>
-                                <td>
-                                    {% if member.selected_ctf.is_public %}
-                                        {{ member.selected_ctf }}
-                                    {% else %}
-                                        <i>(private)</i>
-                                    {% endif %}
-                                </td>
+                        {%  for challenge in member.assigned_challenges.all %}
+                            <tr class="table-row" data-href="{% url 'ctfhub:ctfs-detail' member.assigned_challenges.last.ctf.id %}">
+                                <td><img src="{{ member.avatar_url }}" width="25px" height="25px" title="{{ member.username }}"></td>
+                                <td>{% if challenge.ctf.is_finished %}worked on{% elif challenge.ctf.is_running %}works on{% else %}will work on{% endif %}</td>
+                                <td>{{ challenge.ctf.name }} ⟫ {{ challenge.name }} ({{ challenge.points }} pts)</td>
                             </tr>
-                        {% endif %}
+                        {% endfor %}
                     {% endfor %}
                 </table>
             </div>

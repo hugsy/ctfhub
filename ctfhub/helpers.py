@@ -38,7 +38,7 @@ from ctfhub_project.settings import (
 )
 
 if TYPE_CHECKING:
-    from ctfhub.models import ChallengeFile
+    from ctfhub.models import ChallengeFile, Member
 
 
 @lru_cache(maxsize=1)
@@ -378,7 +378,7 @@ date: {date}
     return content
 
 
-def export_challenge_note(member, note_id: uuid.UUID) -> str:
+def export_challenge_note(member: "Member", note_id: uuid.UUID) -> str:
     """Export a challenge note. `member` is required for privilege requirements
 
     Args:
@@ -390,7 +390,6 @@ def export_challenge_note(member, note_id: uuid.UUID) -> str:
     """
     result = ""
     url = which_hedgedoc()
-    print(url)
     with requests.Session() as session:
         h = session.post(
             f"{url}/login",
