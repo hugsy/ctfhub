@@ -43,7 +43,7 @@ class HedgeDoc:
         elif isinstance(credentials, tuple):
             self.__username, self.__password = credentials
         else:
-            raise TypeError("Invalid type for creentials")
+            raise TypeError("Invalid type for credentials")
 
         self.__session = None
         self.__url = None
@@ -403,11 +403,7 @@ def which_hedgedoc() -> str:
 
 
 def create_new_note() -> str:
-    """ "Returns a unique note ID so that the note will be automatically created when accessed for the first time
-
-    Returns:
-        str: the string ID of the new note
-    """
+    """OBSOLETE FUNCTION: use the HedgeDoc() class"""
     return f"/{uuid.uuid4()}"
 
 

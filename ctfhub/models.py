@@ -3,6 +3,7 @@ import os
 import tempfile
 import uuid
 import zipfile
+from django.conf import settings
 import requests
 
 from collections import Counter, namedtuple
@@ -29,7 +30,6 @@ from ctfhub import helpers
 from ctfhub.exceptions import ExternalError
 
 from ctfhub.helpers import (
-    create_new_note,
     ctftime_ctfs,
     ctftime_get_ctf_logo_url,
     generate_excalidraw_room_id,
@@ -143,7 +143,7 @@ class Ctf(TimeStampedModel):
     )
     weight = models.FloatField(default=1.0, blank=False, null=False)
     rating = models.FloatField(default=0.0, blank=False, null=False)
-    note_id = models.CharField(default=create_new_note, max_length=38, blank=False)
+    note_id = models.UUIDField(default=uuid.uuid4, editable=True)
 
     #
     # Typing
@@ -369,8 +369,7 @@ class Ctf(TimeStampedModel):
 
     @property
     def note_url(self) -> str:
-        note_id = self.note_id or "/"
-        return f"{which_hedgedoc()}{note_id}"
+        return f"{settings.HEDGEDOC_URL}/{self.note_id}"
 
     def get_absolute_url(self):
         return reverse(
@@ -1521,7 +1520,7 @@ class Challenge(TimeStampedModel):
     category = models.ForeignKey(
         ChallengeCategory, on_delete=models.DO_NOTHING, null=True
     )
-    note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
+    note_id = models.UUIDField(default=uuid.uuid4, editable=True)
     excalidraw_room_id = models.CharField(
         default=generate_excalidraw_room_id,
         validators=[
@@ -1583,8 +1582,8 @@ class Challenge(TimeStampedModel):
 
     @property
     def note_url(self) -> str:
-        note_id = self.note_id or "/"
-        return f"{HEDGEDOC_URL}{note_id}"
+        note_id = self.note_id or ""
+        return f"{settings.HEDGEDOC_URL}/{note_id}"
 
     def get_excalidraw_url(self, member=None) -> str:
         """
