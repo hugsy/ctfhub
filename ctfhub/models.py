@@ -1387,9 +1387,7 @@ class Member(TimeStampedModel):
         #
         # If this is an insert, also register the same username in hedgedoc
         #
-        print(f"{is_create=}")
         if is_create:
-            print(self.hedgedoc_username)
             hedgedoc_password = get_random_string_64()
             if not register_new_hedgedoc_user(
                 self.hedgedoc_username, hedgedoc_password

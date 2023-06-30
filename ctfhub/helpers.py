@@ -6,7 +6,7 @@ import time
 import uuid
 from datetime import datetime
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any, Optional, Union
 
 import django.core.mail
 import django.utils.crypto
@@ -14,37 +14,373 @@ import magic
 import requests
 from django.conf import settings
 from django.core.files.storage import get_storage_class
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
-from ctfhub_project.settings import (
-    CTFHUB_ACCEPTED_IMAGE_EXTENSIONS,
-    CTFHUB_DEFAULT_CTF_LOGO,
-    CTFHUB_DOMAIN,
-    CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
-    CTFHUB_PORT,
-    CTFHUB_USE_SSL,
-    CTFTIME_API_EVENTS_URL,
-    CTFTIME_USER_AGENT,
-    DISCORD_WEBHOOK_URL,
-    EMAIL_HOST,
-    EMAIL_HOST_PASSWORD,
-    EMAIL_HOST_USER,
-    EXCALIDRAW_ROOM_ID_CHARSET,
-    EXCALIDRAW_ROOM_ID_LENGTH,
-    EXCALIDRAW_ROOM_KEY_CHARSET,
-    EXCALIDRAW_ROOM_KEY_LENGTH,
-    HEDGEDOC_URL,
-    IMAGE_URL,
-    USE_INTERNAL_HEDGEDOC,
-)
+import ctfhub.models
+
 
 if TYPE_CHECKING:
-    from ctfhub.models import ChallengeFile, Member
+    from ctfhub.models import ChallengeFile, Ctf
+
+
+class HedgeDoc:
+    __username: str
+    __password: str
+    __session: Optional[requests.Session]
+    __url: Optional[str]
+
+    def __init__(
+        self, credentials: Union["ctfhub.models.Member", tuple[str, str]]
+    ) -> None:
+        if isinstance(credentials, ctfhub.models.Member):
+            self.__username = credentials.hedgedoc_username
+            if not credentials.hedgedoc_password:
+                raise AttributeError(
+                    "Member is not registered on the hedgedoc instance"
+                )
+            self.__password = credentials.hedgedoc_password
+        elif isinstance(credentials, tuple):
+            self.__username, self.__password = credentials
+        else:
+            raise TypeError("Invalid type for creentials")
+
+        self.__session = None
+        self.__url = None
+        return
+
+    def __del__(self) -> None:
+        if self.logged_in:
+            self.logout()
+        return
+
+    @property
+    def logged_in(self) -> bool:
+        if not self.__session:
+            return False
+
+        response = self.__session.get(
+            f"{self.url}/me",
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+
+        if response.status_code != requests.codes.ok:
+            return False
+
+        data = response.json()
+        print(data)
+        return data["status"] == "ok"
+
+    @property
+    def url(self) -> str:
+        """Get the URL base to the hedgedoc.
+
+        Raises:
+            ValidationError: if the url is invalid (bad pattern OR unreachable)
+
+        Returns:
+            str: _description_
+        """
+        if not self.__url:
+            #
+            # lazy fetching, cache it, raises ValidationError on failure
+            #
+            if settings.USE_INTERNAL_HEDGEDOC:
+                self.__url = "http://hedgedoc:3000"
+            else:
+                #
+                # If specified an HedgeDoc URL outside of the docker-compose env, also ping it
+                #
+                url = settings.HEDGEDOC_URL.rstrip("/")
+                is_valid = URLValidator(schemes=["http", "https"])
+                is_valid(url)
+                if not self.ping(url):
+                    raise ValidationError(f"Failed to reach {url}")
+                self.__url = url
+
+        return self.__url
+
+    def ping(self, url: Optional[str] = None) -> bool:
+        """Sends a simple ping to the server
+
+        Args:
+            url (Optional[str], optional): the url to ping, if not given default to the instance `__url` attribute
+
+        Returns:
+            bool: true if the server responded correctly, false on timeout
+        """
+        if not url:
+            url = self.__url
+        assert url
+        try:
+            requests.head(
+                url,
+                timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+            )
+        except requests.exceptions.Timeout:
+            return False
+        except requests.exceptions.ConnectionError:
+            return False
+        return True
+
+    def register(self) -> bool:
+        """Register the member in hedgedoc. If fail, the member will be seen as anonymous. Anonymous user can read but
+        not write to notes.
+
+        Returns:
+            bool: if the register action succeeded, returns True; False in any other cases
+        """
+
+        sess = requests.Session()
+
+        res = sess.post(
+            f"{self.url}/register",
+            data={"email": self.__username, "password": self.__password},
+            allow_redirects=False,
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+
+        #
+        # HedgeDoc successful user registration can be fingerprint by an HTTP/302 to the root
+        # and a Cookie `connect.sid`
+        #
+        if res.status_code != requests.codes.found:
+            return False
+
+        if "Set-Cookie" not in res.headers:
+            return False
+
+        cookie = res.headers["Set-Cookie"].lower()
+        if not cookie.startswith("connect.sid"):
+            return False
+
+        #
+        # The registration is ok, the session is valid
+        # Affect it to the instance
+        #
+        return self.login()
+
+    def delete(self) -> bool:
+        """Delete the current user, invalidate the session
+
+        Returns:
+            bool: true on success, false otherwise
+        """
+        if not self.logged_in:
+            return False
+
+        assert self.__session
+
+        #
+        # Retrieve the delete `nonce` hidden in <a> tag
+        #
+        response = self.__session.get(
+            f"{self.url}/",
+            allow_redirects=False,
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+        if response.status_code != requests.codes.ok:
+            return False
+
+        text = response.text
+        text = text[text.find("/me/delete/") + 11 :]
+        text = text[: text.find('"')]
+
+        nonce = text
+
+        self.__session.cookies["connect.sid"]
+        response = self.__session.get(
+            f"{self.url}/me/delete/{nonce}",
+            allow_redirects=False,
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+
+        #
+        # On successful user delete, expect HTTP/302 + a new `connect.sid` cookie
+        #
+        if response.status_code != requests.codes.found:
+            return False
+
+        if "set-cookie" not in response.headers:
+            return False
+
+        if not response.headers["set-cookie"].lower().startswith("connect.sid"):
+            return False
+
+        self.__session.close()
+        self.__session = None
+        return True
+
+    def login(self) -> bool:
+        """Logs the current user in using the credentials of the instance. If the users is already logged in, just
+        return successfully immediately.
+
+        Returns:
+            bool: true if the operation succeeded, false otherwise
+        """
+        if self.logged_in:
+            return True
+
+        assert not self.__session
+        sess = requests.Session()
+        response = sess.post(
+            f"{self.url}/login",
+            data={
+                "email": self.__username,
+                "password": self.__password,
+            },
+            allow_redirects=False,
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+
+        #
+        # On success, expect HTTP/302 + new auth cookie
+        #
+        if response.status_code != requests.codes.found:
+            sess.close()
+            return False
+
+        if "connect.sid" not in sess.cookies:
+            return False
+
+        self.__session = sess
+        return True
+
+    def logout(self) -> bool:
+        """Logout the current user, invalidate the session
+
+        Returns:
+            bool: true on success, false otherwise
+        """
+        if not self.logged_in:
+            return False
+
+        assert self.__session
+
+        old_auth_cookie = self.__session.cookies["connect.sid"]
+
+        response = self.__session.get(
+            f"{self.url}/logout",
+            allow_redirects=False,
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+
+        #
+        # Successful logout means 302 redirect + Cookie invalidation
+        #
+        if response.status_code != requests.codes.found:
+            return False
+
+        new_auth_cookie = self.__session.cookies["connect.sid"]
+
+        if old_auth_cookie == new_auth_cookie:
+            return False
+
+        self.__session.close()
+        self.__session = None
+        return True
+
+    def info(self) -> dict:
+        """Returns the HedgeDoc info of the current user
+
+        Returns:
+            dict: _description_
+        """
+        if not self.logged_in:
+            print("logging in")
+            assert self.login()
+            assert self.logged_in
+
+        assert self.__session
+        response = self.__session.get(
+            f"{self.url}/me",
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+
+        if response.status_code != requests.codes.ok:
+            return {}
+
+        data = response.json()
+        print(data)
+        if data["status"] == "forbidden":
+            return {}
+
+        return data
+
+    def create_note(self) -> str:
+        """ "Returns a unique note ID so that the note will be automatically created when accessed for the first time
+
+        Returns:
+            str: a string of the GUID for the new note
+        """
+        return f"/{uuid.uuid4()}"
+
+    def note_exists(self, note_id) -> str:
+        """ "Checks if a specific note exists from its ID.
+
+        Args:
+            id (str): the identifier to check
+
+        Returns:
+            bool: returns True if it exists
+        """
+        if not self.logged_in:
+            self.login()
+            assert self.logged_in
+
+        assert self.__session
+        res = self.__session.head(
+            f"{self.url}/{note_id}",
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+        return res.status_code == requests.codes.found
+
+    def export_note(self, note_id: str) -> str:
+        """Export a challenge note as string
+
+        Args:
+            note_id (str): the note id to export, usually the string of a GUID
+
+        Raises:
+            AttributeError: if not authenticated
+            KeyError: if the note_id doesn't exist
+
+        Returns:
+            str: The body of the note if successful; an empty string otherwise
+        """
+        if not self.logged_in:
+            if not self.login():
+                raise AttributeError
+
+        assert self.__session
+        response = self.__session.get(
+            f"{self.url}/{note_id}/download",
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+        if response.status_code != requests.codes.ok:
+            raise KeyError(f"Note {note_id} doesn't exist")
+
+        return response.text
+
+    def download_archive(self, ctf: "Ctf") -> bool:
+        """Export all notes of a given CTF as a ZIP stream
+
+        Args:
+            ctf (Ctf): _description_
+
+        Raises:
+            NotImplementedError: _description_
+
+        Returns:
+            bool: _description_
+        """
+        raise NotImplementedError
 
 
 @lru_cache(maxsize=1)
 def get_current_site() -> str:
-    r = "https://" if CTFHUB_USE_SSL else "http://"
-    r += f"{CTFHUB_DOMAIN}:{CTFHUB_PORT}"
+    r = "https://" if settings.CTFHUB_USE_SSL else "http://"
+    r += f"{settings.CTFHUB_DOMAIN}:{settings.CTFHUB_PORT}"
     return r
 
 
@@ -57,11 +393,13 @@ def which_hedgedoc() -> str:
     Returns:
         str: the base HedgeDoc URL
     """
-    if USE_INTERNAL_HEDGEDOC:
+    if settings.USE_INTERNAL_HEDGEDOC:
         return "http://hedgedoc:3000"
 
-    requests.get(HEDGEDOC_URL, timeout=CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT)
-    return HEDGEDOC_URL
+    requests.get(
+        settings.HEDGEDOC_URL, timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT
+    )
+    return settings.HEDGEDOC_URL
 
 
 def register_new_hedgedoc_user(username: str, password: str) -> bool:
@@ -102,7 +440,7 @@ def check_note_id(id: str) -> bool:
     Returns:
         bool: returns True if it exists
     """
-    res = requests.head(f"{HEDGEDOC_URL}/{id}")
+    res = requests.head(f"{settings.HEDGEDOC_URL}/{id}")
     return res.status_code == requests.codes.found
 
 
@@ -168,7 +506,7 @@ def ctftime_ctfs(running=True, future=True) -> list:
     Returns:
         list: current and future CTFs
     """
-    ctfs = ctftime_fetch_ctfs()
+    ctfs = settings.CTFTIME_fetch_ctfs()
     now = datetime.now()
 
     result = []
@@ -194,9 +532,9 @@ def ctftime_fetch_ctfs(limit=100) -> list:
     start = time.time() - (3600 * 24 * 60)
     end = time.time() + (3600 * 24 * 7 * 26)
     res = requests.get(
-        f"{CTFTIME_API_EVENTS_URL}?limit={limit}&start={start:.0f}&finish={end:.0f}",
-        headers={"user-agent": CTFTIME_USER_AGENT},
-        timeout=CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        f"{settings.CTFTIME_API_EVENTS_URL}?limit={limit}&start={start:.0f}&finish={end:.0f}",
+        headers={"user-agent": settings.CTFTIME_USER_AGENT},
+        timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
     )
     if res.status_code != requests.codes.ok:
         raise RuntimeError(
@@ -223,11 +561,11 @@ def ctftime_get_ctf_info(ctftime_id: int) -> dict:
     Returns:
         dict: JSON output from CTFTime
     """
-    url = f"{CTFTIME_API_EVENTS_URL}{ctftime_id}/"
+    url = f"{settings.CTFTIME_API_EVENTS_URL}{ctftime_id}/"
     res = requests.get(
         url,
-        headers={"user-agent": CTFTIME_USER_AGENT},
-        timeout=CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        headers={"user-agent": settings.CTFTIME_USER_AGENT},
+        timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
     )
     if res.status_code != requests.codes.ok:
         raise RuntimeError(
@@ -247,13 +585,13 @@ def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
     Returns:
         str: [description]
     """
-    default_logo = f"{IMAGE_URL}/{CTFHUB_DEFAULT_CTF_LOGO}"
+    default_logo = f"{settings.IMAGE_URL}/{settings.CTFHUB_DEFAULT_CTF_LOGO}"
     if ctftime_id != 0:
         try:
             ctf_info = ctftime_get_ctf_info(ctftime_id)
             logo = ctf_info.setdefault("logo", default_logo)
             _, ext = os.path.splitext(logo)
-            if ext.lower() not in CTFHUB_ACCEPTED_IMAGE_EXTENSIONS:
+            if ext.lower() not in settings.CTFHUB_ACCEPTED_IMAGE_EXTENSIONS:
                 return default_logo
         except ValueError:
             logo = default_logo
@@ -272,10 +610,14 @@ def send_mail(recipients: list[str], subject: str, body: str) -> bool:
     Returns:
         bool: [description]
     """
-    if EMAIL_HOST and EMAIL_HOST_USER and EMAIL_HOST_PASSWORD:
+    if (
+        settings.EMAIL_HOST
+        and settings.EMAIL_HOST_USER
+        and settings.EMAIL_HOST_PASSWORD
+    ):
         try:
             django.core.mail.send_mail(
-                subject, body, EMAIL_HOST_USER, recipients, fail_silently=False
+                subject, body, settings.EMAIL_HOST_USER, recipients, fail_silently=False
             )
             return True
         except smtplib.SMTPException:
@@ -308,7 +650,8 @@ def generate_excalidraw_room_id() -> str:
         str: [description]
     """
     return django.utils.crypto.get_random_string(
-        EXCALIDRAW_ROOM_ID_LENGTH, allowed_chars=EXCALIDRAW_ROOM_ID_CHARSET
+        settings.EXCALIDRAW_ROOM_ID_LENGTH,
+        allowed_chars=settings.EXCALIDRAW_ROOM_ID_CHARSET,
     )
 
 
@@ -319,7 +662,8 @@ def generate_excalidraw_room_key() -> str:
         str: [description]
     """
     return django.utils.crypto.get_random_string(
-        EXCALIDRAW_ROOM_KEY_LENGTH, allowed_chars=EXCALIDRAW_ROOM_KEY_CHARSET
+        settings.EXCALIDRAW_ROOM_KEY_LENGTH,
+        allowed_chars=settings.EXCALIDRAW_ROOM_KEY_CHARSET,
     )
 
 
@@ -336,11 +680,11 @@ def discord_send_message(js: dict) -> bool:
     Returns:
         bool: True if a message was successfully sent, False in any other cases
     """
-    if not DISCORD_WEBHOOK_URL:
+    if not settings.DISCORD_WEBHOOK_URL:
         return False
 
     try:
-        h = requests.post(DISCORD_WEBHOOK_URL, json=js)
+        h = requests.post(settings.DISCORD_WEBHOOK_URL, json=js)
         if h.status_code not in (200, 204):
             raise Exception(f"Incorrect response, got {h.status_code}")
 
@@ -375,11 +719,11 @@ date: {date}
     return content
 
 
-def export_challenge_note(member: "Member", note_id: uuid.UUID) -> str:
+def export_challenge_note(member: "ctfhub.models.Member", note_id: uuid.UUID) -> str:
     """Export a challenge note. `member` is required for privilege requirements
 
     Args:
-        member (Member): [description]
+        member (ctfhub.models.Member): [description]
         note_id (uuid.UUID): [description]
 
     Returns:

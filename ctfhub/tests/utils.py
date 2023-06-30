@@ -3,6 +3,25 @@ import django.utils.crypto
 from django.contrib.auth.models import User
 from ctfhub.models import Member, Team, Ctf
 
+from django.conf import settings
+from functools import wraps
+
+
+def django_set_temporary_setting(setting_name, temporary_value):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            original_value = getattr(settings, setting_name)
+            setattr(settings, setting_name, temporary_value)
+            try:
+                return func(*args, **kwargs)
+            finally:
+                setattr(settings, setting_name, original_value)
+
+        return wrapper
+
+    return decorator
+
 
 def get_messages(response) -> list[str]:
     request = response.context["request"]
