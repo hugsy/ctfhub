@@ -25,6 +25,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices, FieldTracker
 from model_utils.fields import MonitorField, StatusField
+from ctfhub import helpers
 from ctfhub.exceptions import ExternalError
 
 from ctfhub.helpers import (
@@ -39,7 +40,6 @@ from ctfhub.helpers import (
     get_named_storage,
     get_random_string_128,
     get_random_string_64,
-    register_new_hedgedoc_user,
     which_hedgedoc,
 )
 from ctfhub.validators import challenge_file_max_size_validator
@@ -1389,9 +1389,9 @@ class Member(TimeStampedModel):
         #
         if is_create:
             hedgedoc_password = get_random_string_64()
-            if not register_new_hedgedoc_user(
-                self.hedgedoc_username, hedgedoc_password
-            ):
+            hedgedoc_cli = helpers.HedgeDoc((self.hedgedoc_username, hedgedoc_password))
+
+            if not hedgedoc_cli.register():
                 #
                 # Register the user in hedgedoc failed, delete the user, and raise
                 #

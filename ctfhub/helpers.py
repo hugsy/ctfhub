@@ -402,26 +402,6 @@ def which_hedgedoc() -> str:
     return settings.HEDGEDOC_URL
 
 
-def register_new_hedgedoc_user(username: str, password: str) -> bool:
-    """Register the member in hedgedoc. If fail, the member will be
-    seen as anonymous.
-
-    Args:
-        username (str): member HedgeDoc username
-        password (str): member HedgeDoc password
-
-    Returns:
-        bool: if the register action succeeded, returns True; False in any other cases
-    """
-    res = requests.post(
-        which_hedgedoc() + "/register",
-        data={"email": username, "password": password},
-        allow_redirects=False,
-    )
-
-    return res.status_code == requests.codes.found
-
-
 def create_new_note() -> str:
     """ "Returns a unique note ID so that the note will be automatically created when accessed for the first time
 
