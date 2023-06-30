@@ -19,11 +19,11 @@
 
                     <li class="list-group-item list-group-item-action" style="text-align: center;">
                         <div class="row">
-                            {% if request.user.member.has_superpowers or request.user.id == member.user.id %}
+                            {% if request.user.member.has_superpowers or request.user.pk == member.user.pk %}
                                 <div class="col">
                                     <div class="d-grid gap-2">
                                         <a class="btn btn-sm btn-warning"
-                                           href="{% url 'ctfhub:users-update' member.user.id %}">Edit</a>
+                                           href="{% url 'ctfhub:users-update' member.pk %}">Edit</a>
                                     </div>
                                 </div>
                             {% endif %}
@@ -31,7 +31,7 @@
                                 <div class="col">
                                     <div class="d-grid gap-2">
                                         <a class="btn btn-sm btn-danger"
-                                           href="{% url 'ctfhub:users-delete' member.user.id %}">Delete</a>
+                                           href="{% url 'ctfhub:users-delete' member.pk %}">Delete</a>
                                     </div>
                                 </div>
                             {% endif %}

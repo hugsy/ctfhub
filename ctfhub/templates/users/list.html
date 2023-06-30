@@ -44,10 +44,10 @@
                                     <td>{% if member.blog_url%}<a href="{{member.blog_url}}"><i class="fas fa-blog"></i></i></a>{% endif %}</td>
                                     <td>{% if member.twitter_url%}<a href="{{member.twitter_url}}"><i class="fab fa-twitter"></i></a>{% endif %}</td>
                                     <td>{% if member.github_url%}<a href="{{member.github_url}}"><i class="fab fa-github"></i></a>{% endif %}</td>
-                                    <td><a class="btn btn-sm btn-success" href="{% url 'ctfhub:users-detail' member.id %}">View</a></td>
+                                    <td><a class="btn btn-sm btn-success" href="{% url 'ctfhub:users-detail' member.pk %}">View</a></td>
                                     {% if request.user.member.has_superpowers %}
                                         <td>
-                                            <a class="btn btn-sm btn-danger" href="{% url 'ctfhub:users-delete' member.id %}">Delete</a>
+                                            <a class="btn btn-sm btn-danger" href="{% url 'ctfhub:users-delete' member.pk %}">Delete</a>
                                         </td>
                                     {% endif %}
                                 </tr>

@@ -16,7 +16,7 @@
                 Confirm deletion?
             </p>
             <div>
-                <form method="POST" action="{% url 'ctfhub:users-delete' member.id %}">
+                <form method="POST" action="{% url 'ctfhub:users-delete' member.pk %}">
                     {% csrf_token %}
                     <div class="modal-footer">
                         <a type="button" class="btn btn-secondary" href="{% url 'ctfhub:dashboard' %}">Cancel</a>

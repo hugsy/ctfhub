@@ -53,7 +53,7 @@
                 {% if team.ctftime_id > 0 %}
                     <li class="list-group-item list-group-item-action">
                         View team on
-                        <a href="https://ctftime.org/team/{{team.ctftime_id}}"><strong>CTFTime</strong> <i class="fas fa-external-link-alt"></i></a>
+                        <a href="{{team.ctftime_url}}"><strong>CTFTime</strong> <i class="fas fa-external-link-alt"></i></a>
                     </li>
                 {% endif %}
             </ul>
@@ -81,12 +81,12 @@
                 </thead>
                 <tbody>
                     {% for member in members %}
-                        <tr class="table-row" data-href="{% url 'ctfhub:users-detail' member.id %}">
+                        <tr class="table-row" data-href="{% url 'ctfhub:users-detail' member.pk %}">
                             <td>
                                 <img width="25px" height="25px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
                             </td>
                             <td>
-                                <a href="{% url 'ctfhub:users-detail' member.id %}">{{member.username}}</a>
+                                <a href="{% url 'ctfhub:users-detail' member.pk %}">{{member.username}}</a>
                             </td>
                             <td style="text-align: center;"><img height="25px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
                             <td>
@@ -111,11 +111,11 @@
                                 {% endif %}
                                 &nbsp;●
                             </td>
-                            {% if request.user.member.has_superpowers or request.user.id == member.user.id %}
-                                <td><a href="{% url 'ctfhub:users-update' member.user.id %}" title="Edit"><strong><i class="fas fa-edit"></i></strong></a></td>
+                            {% if request.user.member.has_superpowers or request.user.pk == member.user.pk %}
+                                <td><a href="{% url 'ctfhub:users-update' member.pk %}" title="Edit"><strong><i class="fas fa-edit"></i></strong></a></td>
                             {% endif %}
                             {% if request.user.member.has_superpowers %}
-                                <td><a href="{% url 'ctfhub:users-delete' member.user.id %}" title="Delete"><strong><i class="fas fa-trash"></i></strong></a></td>
+                                <td><a href="{% url 'ctfhub:users-delete' member.pk %}" title="Delete"><strong><i class="fas fa-trash"></i></strong></a></td>
                             {% endif %}
                         </tr>
                     {% endfor %}

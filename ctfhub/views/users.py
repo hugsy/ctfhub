@@ -21,6 +21,7 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+from ctfhub import helpers
 
 from ctfhub.forms import (
     MemberCreateForm,
@@ -224,28 +225,32 @@ class MemberDeleteView(
     LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView
 ):
     model = Member
-    success_url = reverse_lazy("ctfhub:dashboard")
+    success_url = reverse_lazy("ctfhub:stats-detail")
     template_name = "users/confirm_delete.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
     success_message = "Member successfully deleted"
 
     def post(self, request, *args, **kwargs):
-        member = get_object_or_404(Member, pk=kwargs.get("pk"))
+        member: Member = self.get_object()  # type: ignore
         if member.has_superpowers:
             messages.error(request, "Refusing to delete super-user")
             return redirect("ctfhub:home")
 
-        # rotate the team api key
+        # rotate the team api key as it might have been shared with the to-be deleted user
         team = Team.objects.first()
         assert team
         team.api_key = get_random_string_128()
         team.save()
 
-        member.user.delete()
+        # delete the hedgedoc user
+        if member.hedgedoc_password:
+            cli = helpers.HedgeDoc((member.hedgedoc_username, member.hedgedoc_password))
+            assert cli.login()
+            cli.delete()
 
-        # delete the member entry
-        return self.delete(request, *args, **kwargs)
+        # propagate to the super() method to trigger the deletion
+        return super().post(request, *args, **kwargs)
 
 
 class MemberListView(LoginRequiredMixin, RequireSuperPowersMixin, ListView):
