@@ -81,10 +81,7 @@ def register_new_hedgedoc_user(username: str, password: str) -> bool:
         allow_redirects=False,
     )
 
-    if res.status_code != requests.codes.found:
-        return False
-
-    return True
+    return res.status_code == requests.codes.found
 
 
 def create_new_note() -> str:

@@ -20,7 +20,6 @@ from django.db import models
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.urls.base import reverse
-from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
@@ -39,6 +38,7 @@ from ctfhub.helpers import (
     get_file_mime,
     get_named_storage,
     get_random_string_128,
+    get_random_string_64,
     register_new_hedgedoc_user,
     which_hedgedoc,
 )
@@ -393,6 +393,7 @@ class Member(TimeStampedModel):
     class StatusType(models.IntegerChoices):
         MEMBER = 0, _("Member")
         GUEST = 1, _("Guest")
+        INACTIVE = 2, _("Inactive")
 
     class Country(models.TextChoices):
         ANDORRA = "AD", _("Andorra")
@@ -1379,32 +1380,29 @@ class Member(TimeStampedModel):
         #
         # First create/save the user, otherwise `hedgedoc_username` may not exist
         #
+        is_create = self.hedgedoc_password is None
+
         super(Member, self).save(**kwargs)
 
         #
         # If this is an insert, also register the same username in hedgedoc
         #
-        is_create = bool(kwargs.get("force_insert", False))
+        print(f"{is_create=}")
         if is_create:
-            hedgedoc_password = get_random_string(64)
+            print(self.hedgedoc_username)
+            hedgedoc_password = get_random_string_64()
             if not register_new_hedgedoc_user(
                 self.hedgedoc_username, hedgedoc_password
             ):
                 #
                 # Register the user in hedgedoc failed, delete the user, and raise
                 #
-                username = self.username
-                self.delete()
                 raise ExternalError(
-                    f"Registration of user {username} on hedgedoc failed"
+                    f"Registration of user {self.username} on hedgedoc failed"
                 )
-            else:
-                #
-                # Save the password
-                #
-                self.hedgedoc_password = hedgedoc_password
-                self.save()
 
+            self.hedgedoc_password = hedgedoc_password
+            self.save()
         return
 
     @property
