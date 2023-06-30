@@ -4,6 +4,8 @@ import pathlib
 import smtplib
 import time
 import uuid
+import zipfile
+
 from datetime import datetime
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Optional, Union
@@ -335,11 +337,11 @@ class HedgeDoc:
         )
         return res.status_code == requests.codes.found
 
-    def export_note(self, note_id: str) -> str:
+    def export_note(self, note_id: uuid.UUID) -> str:
         """Export a challenge note as string
 
         Args:
-            note_id (str): the note id to export, usually the string of a GUID
+            note_id (uuid.UUID): the note id to export, usually the string of a GUID
 
         Raises:
             AttributeError: if not authenticated
@@ -361,20 +363,6 @@ class HedgeDoc:
             raise KeyError(f"Note {note_id} doesn't exist")
 
         return response.text
-
-    def download_archive(self, ctf: "Ctf") -> bool:
-        """Export all notes of a given CTF as a ZIP stream
-
-        Args:
-            ctf (Ctf): _description_
-
-        Raises:
-            NotImplementedError: _description_
-
-        Returns:
-            bool: _description_
-        """
-        raise NotImplementedError
 
 
 @lru_cache(maxsize=1)

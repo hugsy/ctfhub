@@ -1,5 +1,6 @@
 import hashlib
 import os
+import pathlib
 import tempfile
 import uuid
 import zipfile
@@ -322,50 +323,53 @@ class Ctf(TimeStampedModel):
         return members
 
     def export_notes_as_zipstream(
-        self, stream, member: Optional["Member"] = None
+        self, stream: pathlib.Path, member: "Member", include_files: bool = False
     ) -> str:
-        zip_file = zipfile.ZipFile(stream, "w")
+        """Export the CTF as a ZIP arhchive
+
+        Returns:
+            str: the file name of the archive
+        """
+        archive = zipfile.ZipFile(stream, "w")
         now = datetime.now()
         ts = (now.year, now.month, now.day, 0, 0, 0)
 
-        session = requests.Session()
+        cli = helpers.HedgeDoc(member)
+        if not cli.login():
+            raise RuntimeError(f"Failed to authenticate {member}")
 
         #
-        # try impersonating requesting user on HedgeDoc, this way we're sure anonymous & unauthorized users
-        # can't dump data
+        # Add the CTF notes
         #
-        if member:
-            session.post(
-                f"{which_hedgedoc()}/login",
-                data={
-                    "email": member.hedgedoc_username,
-                    "password": member.hedgedoc_password,
-                },
-                allow_redirects=False,
-            )
-
-        # add ctf notes
-        fname = slugify(f"{self.name}.md")
+        fname = f"{slugify(self.name)}.md"
         with tempfile.TemporaryFile():
-            result = session.get(f"{which_hedgedoc()}{self.note_id}/download")
-            zip_file.writestr(
-                zipfile.ZipInfo(filename=fname, date_time=ts), result.text
-            )
+            text = cli.export_note(self.note_id)
+            archive.writestr(zipfile.ZipInfo(filename=fname, date_time=ts), text)
 
-        # add challenge notes
+        #
+        # Add the notes of every challenge
+        #
         for challenge in self.challenges:
             fname = f"{slugify(self.name)}-{slugify(challenge.name)}.md"
             with tempfile.TemporaryFile():
-                result = session.get(f"{which_hedgedoc()}{challenge.note_id}/download")
-                if result.status_code != requests.codes.ok:
-                    continue
-                zinfo = zipfile.ZipInfo(filename=fname, date_time=ts)
-                zip_file.writestr(zinfo, result.text)
+                data = cli.export_note(challenge.note_id)
+                sub_stream = zipfile.ZipInfo(filename=fname, date_time=ts)
+                archive.writestr(sub_stream, data)
 
-        if member:
-            session.post(f"{which_hedgedoc()}/logout", allow_redirects=False)
+            if include_files:
+                #
+                # Add all the challenge files
+                #
+                fname = f"{slugify(self.name)}-{slugify(challenge.name)}"
+                for challenge_file in challenge.challengefile_set:
+                    fname += f"-{challenge_file.name}.bin"
+                    with tempfile.TemporaryFile():
+                        data = challenge_file.file.open("rb").read()
+                        sub_stream = zipfile.ZipInfo(filename=fname, date_time=ts)
+                        archive.writestr(sub_stream, data)
 
-        return f"{slugify(self.name)}-notes.zip"
+        suffix = "notes" if not include_files else "full"
+        return f"{slugify(self.name)}-{suffix}.zip"
 
     @property
     def note_url(self) -> str:
