@@ -89,4 +89,4 @@ And if you can, consider [sponsoring me](https://github.com/hugsy/sponsors) - it
 ## Credits and Links
 
 - The world flag images are downloaded from https://flagpedia.net/
-- [CTFHub](https://github.com/StratumAuhuur/CTFHub): NodeJS project that is based on [`etherpad-lite`](https://yopad.eu) (no MarkDown support).
+- [CTFPad](https://github.com/StratumAuhuur/CTFPad): NodeJS project that is based on [`etherpad-lite`](https://yopad.eu) (no MarkDown support).
