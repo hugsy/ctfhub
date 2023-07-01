@@ -3,6 +3,7 @@ from unittest import TestCase
 
 from django.test import Client
 import pytest
+from ctfhub import helpers
 from ctfhub.models import Ctf, Member
 
 from ctfhub.tests.utils import MockCtf, MockTeamWithMembers
@@ -13,6 +14,16 @@ class TestMemberView(TestCase):
     def setUp(self):
         self.client = Client()
         self.team, self.members = MockTeamWithMembers()
+
+    def tearDown(self) -> None:
+        for member in self.members:
+            cli = helpers.HedgeDoc(member)
+            cli.login()
+            cli.delete()
+            member.delete()
+
+        self.team.delete()
+        return super().tearDown()
 
     def test_ctf_is_permanent(self):
         #

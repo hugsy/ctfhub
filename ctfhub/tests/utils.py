@@ -44,16 +44,16 @@ def MockTeamWithAdmin() -> tuple[Team, Member]:
 
     admin = Member.objects.create(
         user=User.objects.create_superuser(
-            username="admin",
-            password="admin",
-            email="admin@admin.com",
+            username="superuser01",
+            password="superuser01",
+            email="superuser01@superusers.com",
         ),
         team=team,
     )
     return (team, admin)
 
 
-def MockTeamWithMembers(nb: int = 10) -> tuple[Team, list[Member]]:
+def MockTeamWithMembers(nb: int = 5) -> tuple[Team, list[Member]]:
     members = []
     nb = max(2, nb)
 
