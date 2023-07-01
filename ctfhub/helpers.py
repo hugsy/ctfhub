@@ -27,27 +27,27 @@ if TYPE_CHECKING:
 
 
 class HedgeDoc:
-    __username: str
-    __password: str
-    __session: Optional[requests.Session]
+    email: str
+    password: str
+    session: Optional[requests.Session]
     __url: Optional[str]
 
     def __init__(
         self, credentials: Union["ctfhub.models.Member", tuple[str, str]]
     ) -> None:
         if isinstance(credentials, ctfhub.models.Member):
-            self.__username = credentials.hedgedoc_username
+            self.email = credentials.hedgedoc_username
             if not credentials.hedgedoc_password:
                 raise AttributeError(
                     "Member is not registered on the hedgedoc instance"
                 )
-            self.__password = credentials.hedgedoc_password
+            self.password = credentials.hedgedoc_password
         elif isinstance(credentials, tuple):
-            self.__username, self.__password = credentials
+            self.email, self.password = credentials
         else:
             raise TypeError("Invalid type for credentials")
 
-        self.__session = None
+        self.session = None
         self.__url = None
         return
 
@@ -56,12 +56,15 @@ class HedgeDoc:
             self.logout()
         return
 
+    def username(self) -> str:
+        return self.email[: self.email.find("@")]
+
     @property
     def logged_in(self) -> bool:
-        if not self.__session:
+        if not self.session:
             return False
 
-        response = self.__session.get(
+        response = self.session.get(
             f"{self.url}/me",
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
@@ -133,11 +136,9 @@ class HedgeDoc:
             bool: if the register action succeeded, returns True; False in any other cases
         """
 
-        sess = requests.Session()
-
-        res = sess.post(
+        res = requests.post(
             f"{self.url}/register",
-            data={"email": self.__username, "password": self.__password},
+            data={"email": self.email, "password": self.password},
             allow_redirects=False,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
@@ -171,12 +172,12 @@ class HedgeDoc:
         if not self.logged_in:
             return False
 
-        assert self.__session
+        assert self.session
 
         #
         # Retrieve the delete `nonce` hidden in <a> tag
         #
-        response = self.__session.get(
+        response = self.session.get(
             f"{self.url}/",
             allow_redirects=False,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
@@ -190,8 +191,8 @@ class HedgeDoc:
 
         nonce = text
 
-        self.__session.cookies["connect.sid"]
-        response = self.__session.get(
+        self.session.cookies["connect.sid"]
+        response = self.session.get(
             f"{self.url}/me/delete/{nonce}",
             allow_redirects=False,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
@@ -209,8 +210,8 @@ class HedgeDoc:
         if not response.headers["set-cookie"].lower().startswith("connect.sid"):
             return False
 
-        self.__session.close()
-        self.__session = None
+        self.session.close()
+        self.session = None
         return True
 
     def login(self) -> bool:
@@ -218,18 +219,17 @@ class HedgeDoc:
         return successfully immediately.
 
         Returns:
-            bool: true if the operation succeeded, false otherwise
+            bool: true if logged in, false otherwise
         """
         if self.logged_in:
             return True
 
-        assert not self.__session
         sess = requests.Session()
         response = sess.post(
             f"{self.url}/login",
             data={
-                "email": self.__username,
-                "password": self.__password,
+                "email": self.email,
+                "password": self.password,
             },
             allow_redirects=False,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
@@ -243,25 +243,37 @@ class HedgeDoc:
             return False
 
         if "connect.sid" not in sess.cookies:
+            sess.close()
             return False
 
-        self.__session = sess
+        #
+        # Affect the session, and run a sanity check, get the user id
+        #
+        self.session = sess
+        data = self.info()
+        if not data or data.get("status", "") != "ok":
+            self.session = None
+            return False
+
+        if not data.get("name") != self.username:
+            self.session = None
+            return False
+
         return True
 
     def logout(self) -> bool:
         """Logout the current user, invalidate the session
 
         Returns:
-            bool: true on success, false otherwise
+            bool: true if logged out, false otherwise
         """
         if not self.logged_in:
-            return False
+            return True
 
-        assert self.__session
+        assert self.session
+        old_auth_cookie = self.session.cookies["connect.sid"]
 
-        old_auth_cookie = self.__session.cookies["connect.sid"]
-
-        response = self.__session.get(
+        response = self.session.get(
             f"{self.url}/logout",
             allow_redirects=False,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
@@ -273,13 +285,13 @@ class HedgeDoc:
         if response.status_code != requests.codes.found:
             return False
 
-        new_auth_cookie = self.__session.cookies["connect.sid"]
+        new_auth_cookie = self.session.cookies["connect.sid"]
 
         if old_auth_cookie == new_auth_cookie:
             return False
 
-        self.__session.close()
-        self.__session = None
+        self.session.close()
+        self.session = None
         return True
 
     def info(self) -> dict:
@@ -288,25 +300,21 @@ class HedgeDoc:
         Returns:
             dict: _description_
         """
-        if not self.logged_in:
-            print("logging in")
-            assert self.login()
-            assert self.logged_in
-
-        assert self.__session
-        response = self.__session.get(
-            f"{self.url}/me",
-            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
-        )
+        if self.session:
+            response = self.session.get(
+                f"{self.url}/me",
+                timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+            )
+        else:
+            response = requests.get(
+                f"{self.url}/me",
+                timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+            )
 
         if response.status_code != requests.codes.ok:
             return {}
 
         data = response.json()
-        print(data)
-        if data["status"] == "forbidden":
-            return {}
-
         return data
 
     def create_note(self) -> str:
@@ -330,8 +338,8 @@ class HedgeDoc:
             self.login()
             assert self.logged_in
 
-        assert self.__session
-        res = self.__session.head(
+        assert self.session
+        res = self.session.head(
             f"{self.url}/{note_id}",
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
@@ -354,8 +362,8 @@ class HedgeDoc:
             if not self.login():
                 raise AttributeError
 
-        assert self.__session
-        response = self.__session.get(
+        assert self.session
+        response = self.session.get(
             f"{self.url}/{note_id}/download",
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )

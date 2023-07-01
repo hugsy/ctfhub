@@ -244,10 +244,9 @@ class MemberDeleteView(
         team.save()
 
         # delete the hedgedoc user
-        if member.hedgedoc_password:
-            cli = helpers.HedgeDoc((member.hedgedoc_username, member.hedgedoc_password))
-            assert cli.login()
-            cli.delete()
+        cli = helpers.HedgeDoc((member.hedgedoc_username, member.hedgedoc_password))
+        assert cli.login()
+        cli.delete()
 
         # propagate to the super() method to trigger the deletion
         return super().post(request, *args, **kwargs)

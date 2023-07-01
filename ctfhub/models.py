@@ -1294,7 +1294,9 @@ class Member(TimeStampedModel):
     show_pending_notifications = models.BooleanField(default=False)
     last_active_notification = models.DateTimeField(null=True)
     joined_time = models.DateTimeField(null=True)
-    hedgedoc_password = models.CharField(max_length=64, null=True)
+    hedgedoc_password = models.CharField(
+        max_length=64, editable=False, default=get_random_string_64
+    )
     twitter_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
@@ -1381,29 +1383,32 @@ class Member(TimeStampedModel):
 
     def save(self, **kwargs):
         #
-        # First create/save the user, otherwise `hedgedoc_username` may not exist
+        # Validate the hedgedoc user is registered
         #
-        is_create = self.hedgedoc_password is None
-
-        super(Member, self).save(**kwargs)
-
-        #
-        # If this is an insert, also register the same username in hedgedoc
-        #
-        if is_create:
-            hedgedoc_password = get_random_string_64()
-            hedgedoc_cli = helpers.HedgeDoc((self.hedgedoc_username, hedgedoc_password))
-
+        hedgedoc_cli = helpers.HedgeDoc(
+            (self.hedgedoc_username, self.hedgedoc_password)
+        )
+        if hedgedoc_cli.login() == False:
+            print(
+                f"not logged in, registering {self.hedgedoc_username}/{self.hedgedoc_password}"
+            )
             if not hedgedoc_cli.register():
                 #
                 # Register the user in hedgedoc failed, delete the user, and raise
                 #
                 raise ExternalError(
-                    f"Registration of user {self.username} on hedgedoc failed"
+                    f"Registration of user {self.hedgedoc_username} on hedgedoc failed"
                 )
+        else:
+            print(
+                f"logged in, registering {self.hedgedoc_username}/{self.hedgedoc_password}"
+            )
 
-            self.hedgedoc_password = hedgedoc_password
-            self.save()
+        #
+        # Create/save the user
+        #
+        super(Member, self).save(**kwargs)
+
         return
 
     @property
