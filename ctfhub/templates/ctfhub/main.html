@@ -29,7 +29,7 @@
             </div>
         </main>
 
-        {% if request.user.is_authenticated and show_footer %}
+        {% if request.user.is_authenticated %}
             {% include 'ctfhub/shortcuts.html' %}
             {% include 'ctfhub/footer.html' %}
         {% endif %}

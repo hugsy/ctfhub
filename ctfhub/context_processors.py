@@ -4,7 +4,7 @@ from django.conf import settings
 from ctfhub.models import Member
 
 
-def add_debug_context(request: django.http.HttpRequest) -> dict[str, str]:
+def add_debug_context(request: django.http.HttpRequest) -> dict[str, dict[str, str]]:
     """Adds some CTFHub environment information to every context
 
     Args:
@@ -14,8 +14,11 @@ def add_debug_context(request: django.http.HttpRequest) -> dict[str, str]:
         dict[str, str]: _description_
     """
     return {
-        "DEBUG": settings.DEBUG,
-        "VERSION": settings.VERSION,
+        "CTFHub": {
+            "DEBUG": settings.DEBUG,
+            "VERSION": settings.PROJECT_VERSION,
+            "URL": settings.PROJECT_URL,
+        }
     }
 
 
