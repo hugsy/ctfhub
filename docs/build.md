@@ -39,7 +39,7 @@ $ nano .env
 
 ## Receive Discord notifications
 
-Create a [HTTP Webhook]() on your Discord and paste that link to the setting `CTFHUB_DISCORD_WEBHOOK_URL` in your `.env` file.
+Create a [HTTP Webhook](https://support.discord.com/hc/en-us/articles/228383668-Intro-to-Webhooks) on your Discord and paste that link to the setting `CTFHUB_DISCORD_WEBHOOK_URL` in your `.env` file.
 
 ## Receive Email notifications
 
