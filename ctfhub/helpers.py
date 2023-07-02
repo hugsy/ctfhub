@@ -4,8 +4,6 @@ import pathlib
 import smtplib
 import time
 import uuid
-import zipfile
-
 from datetime import datetime
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Optional, Union
@@ -15,15 +13,14 @@ import django.utils.crypto
 import magic
 import requests
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.core.files.storage import get_storage_class
 from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 
 import ctfhub.models
 
-
 if TYPE_CHECKING:
-    from ctfhub.models import ChallengeFile, Ctf
+    from ctfhub.models import ChallengeFile
 
 
 class HedgeDoc:

@@ -71,11 +71,11 @@ class TestUnauthHedgedocHelper(TestCase):
     def tearDown(self) -> None:
         return super().tearDown()
 
-    @django_set_temporary_setting("USE_INTERNAL_HEDGEDOC", False)
-    @django_set_temporary_setting("HEDGEDOC_URL", "http://localhost:8000")
+    @django_set_temporary_setting("USE_INTERNAL_HEDGEDOC", True)
+    @django_set_temporary_setting("HEDGEDOC_URL", "http://IShouldNotWork:3000")
     def test_hedgedoc_url_valid(self):
         cli = helpers.HedgeDoc((self.email, self.password))
-        assert cli.url
+        assert cli.url != "http://IShouldNotWork:3000"
 
     @django_set_temporary_setting("USE_INTERNAL_HEDGEDOC", False)
     @django_set_temporary_setting("HEDGEDOC_URL", "http://not_valid:1337")

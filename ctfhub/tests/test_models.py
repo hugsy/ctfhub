@@ -1,11 +1,10 @@
 import datetime
 from unittest import TestCase
 
-from django.test import Client
 import pytest
-from ctfhub import helpers
-from ctfhub.models import Ctf, Member, Team
+from django.test import Client
 
+from ctfhub.models import Ctf, Member
 from ctfhub.tests.utils import MockCtf, MockTeamWithMembers, clean_slate
 
 

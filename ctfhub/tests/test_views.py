@@ -3,7 +3,6 @@ from typing import Union
 
 from django.test import Client, TestCase
 from django.urls import reverse
-from ctfhub.helpers import HedgeDoc
 
 import ctfhub.urls
 from ctfhub.models import Team
@@ -248,7 +247,6 @@ class TestMemberViewAsMember(TestCase):
 
     def tearDown(self) -> None:
         self.client.logout()
-        print("tearing down")
         clean_slate()
         return super().tearDown()
 
