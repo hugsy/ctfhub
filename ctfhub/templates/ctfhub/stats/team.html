@@ -1,4 +1,5 @@
 {% load static %}
+{% load tz %}
 {% load ctfhub_filters %}
 <div class="row">
     <div class="col-md-4">
@@ -68,11 +69,12 @@
                     <tr>
                         <th scope="col"></th>
                         <th scope="col">Name</th>
-                        <th scope="col">Country</th>
                         <th scope="col">Status</th>
+                        <th scope="col">Country</th>
+                        <th scope="col">Local Time</th>
                         <th scope="col">Master Skill</th>
-                        <th scope="col">Member Since</th>
-                        <th scope="col">Social Media</th>
+                        <th scope="col">Joined In</th>
+                        <th scope="col">Links</th>
                         <th scope="col"></th>
                         {% if request.user.member.has_superpowers %}
                             <th scope="col"></th>
@@ -81,23 +83,18 @@
                 </thead>
                 <tbody>
                     {% for member in members %}
-                        <tr class="table-row" data-href="{% url 'ctfhub:users-detail' member.pk %}">
+                        <tr class="table-row" data-href="{{ member.get_absolute_url}}">
                             <td>
                                 <img width="25px" height="25px" src="{{member.avatar_url}}" title="{{member.username}}" alt="avatar" class="rounded-circle">
                             </td>
                             <td>
-                                <a href="{% url 'ctfhub:users-detail' member.pk %}">{{member.username}}</a>
+                                <a href="{{ member.get_absolute_url }}">{{member.username}}</a>
                             </td>
-                            <td style="text-align: center;"><img height="25px" width="25px" src="{{member.country_flag_url}}" alt="{{member.country}}" class="rounded-circle"></td>
-                            <td>
-                                {% if not member.is_active %}
-                                    Inactive
-                                {% else %}
-                                    {{member.status | title}}
-                                {% endif %}
-                            </td>
+                            <td> {{member.get_status_display }} </td>
+                            <td style="text-align: center;"><img height="25px" width="25px" src="{{member.country_flag_url}}" title="{{member.get_country_display}}" class="rounded-circle"></td>
+                            <td>{{ NOW | timezone:member.timezone | date:'Y/m/d H:i' }}</td>
                             <td>{% best_category member year_pick %}</td>
-                            <td>{{member.joined_time | date:'Y'}}</td>
+                            <td>{{member.joined_time | date:'Y' }}</td>
                             <td>
                                 &nbsp;●&nbsp;<a href="mailto:{{member.email}}" target="_blank"><i class="fas fa-envelope"></i></a>
                                 {% if member.blog_url%}
