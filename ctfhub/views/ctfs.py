@@ -136,9 +136,11 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
     }
 
     def get_context_data(self, **kwargs):
+        obj = self.get_object()
+        assert isinstance(obj, Ctf)
         ctx = super().get_context_data(**kwargs)
         ctx |= {
-            "team_timeline": self.object.team_timeline(),
+            "team_timeline": obj.team_timeline(),
         }
         return ctx
 
@@ -159,7 +161,9 @@ class CtfUpdateView(
         return ctx
 
     def get_success_url(self):
-        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.object.pk})
+        obj = self.get_object()
+        assert isinstance(obj, Ctf)
+        return reverse("ctfhub:ctfs-detail", kwargs={"pk": obj.pk})
 
     def form_valid(self, form):
         if (

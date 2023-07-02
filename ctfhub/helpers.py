@@ -474,7 +474,7 @@ def ctftime_ctfs(running=True, future=True) -> list:
     Returns:
         list: current and future CTFs
     """
-    ctfs = settings.CTFTIME_fetch_ctfs()
+    ctfs = ctftime_fetch_ctfs()
     now = datetime.now()
 
     result = []

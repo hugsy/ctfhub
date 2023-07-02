@@ -19,14 +19,14 @@
                     {% if request.user.member.has_superpowers %}
                         <div class="col">
                             <div class="d-grid gap-2">
-                                <a class="btn btn-primary btn-sm" href="{% url 'ctfhub:users-register' %}">Add a
+                                <a class="btn btn-primary btn-sm" href="{% url 'ctfhub:users-register' %}"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Add a
                                     Member</a>
                             </div>
                         </div>
                     {% endif %}
                     <div class="col">
                         <div class="d-grid gap-2">
-                            <a class="btn btn-success btn-sm" href="{% url 'ctfhub:stats-detail' %}">View Team</a>
+                            <a class="btn btn-success btn-sm" href="{% url 'ctfhub:stats-detail' %}"><i class="fa fa-users" aria-hidden="true"></i>&nbsp;&nbsp;Team Info</a>
                         </div>
                     </div>
                 </div>
@@ -51,18 +51,18 @@
                 <div class="row mb-3">
                     <div class="col-md-3">
                         <div class="d-grid gap-2">
-                            <a class="btn btn-primary btn-sm" href="{% url 'ctfhub:ctfs-create' %}"><i class="fas fa-plus-circle"></i> Create CTF</a>
+                            <a class="btn btn-primary btn-sm" href="{% url 'ctfhub:ctfs-create' %}"><i class="fas fa-plus-circle"></i>&nbsp;&nbsp;Create CTF</a>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="d-grid gap-2">
-                            <a class="btn btn-primary btn-sm" href="{% url 'ctfhub:ctfs-list' %}#list_ctftime_ctfs">Import
+                            <a class="btn btn-primary btn-sm" href="{% url 'ctfhub:ctfs-list' %}#list_ctftime_ctfs"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp;Import
                                 CTF</a>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="d-grid gap-2">
-                            <a class="btn btn-success btn-sm" href="{% url 'ctfhub:ctfs-list' %}">View All
+                            <a class="btn btn-success btn-sm" href="{% url 'ctfhub:ctfs-list' %}"><i class="fa fa-flag" aria-hidden="true"></i>&nbsp;&nbsp;View All
                                 CTFs</a>
                         </div>
                     </div>
