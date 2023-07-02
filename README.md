@@ -23,51 +23,36 @@ _Note_: If you're looking for a platform for hosting CTFs use [CTFd](https://git
 
 A non-exhaustive list of features:
 
- - Full Django + Python 3.10 code
- - Clean (Bootstrap 5+) interface
+ - Django 4 running on Python 3.10, with a clean Bootstrap 5 interface
  - Key-in-hands setup via [`docker-compose`](https://docs.docker.com/compose)
  - Fully integrated around [HedgeDoc](https://github.com/hedgedoc/hedgedoc): smart markdown note mechanism, with [tons of features](https://demo.hedgedoc.org/features)
- - Possibility to create and play private CTFs
- - Create "guests" to your CTFs
+ - Possibility to create and play private CTFs for one player only, making it easy to track your progress on learning platforms like [Root-Me](https://www.root-me.org/), [PicoCTF](https://picoctf.com/), [PentesterLab](https://pentesterlab.com/) and others.
+ - Add "guests" to specific CTFs, allowing non team members to have a limited view of the context
  - View CTF stats, and track members' involment through a cool podium ranking
- - [Jitsi](https://meet.jit.si) integration: instantly jump on video chat with your team mate
- - CTFTime integration: import CTF (+ data) from CTFTime in 2 clicks
+ - CTFTime API integration:  CTF information from CTFTime in one click
  - CTFd/rCTF challenge(s) can optionally be pre-populated locally
  - Basic search engine
- - One step "challenge-notes" → "blog post" export feature
+ - Easily export your challenge notes to create a blog post on Github Pages
+ - [Jitsi](https://meet.jit.si) integration: instantly jump on video chat with your team mate
  - Public & Self-hosted [Excalidraw](https://github.com/excalidraw/excalidraw) integration: draw & share ideas with your team mates
- - Discord notifications
- - ...and more to come...
- - and of course, a Dark mode
+ - [Discord](https://discord.gg) notifications on events (CTF registration, challenge scoring, etc.)
+  - and of course, a Dark mode to save your eyes during those painful sleepless nights
 
 
 ## Build
 
-
 For most people, this will suffice:
 
 ```bash
-$ git clone https://github.com/hugsy/ctfhub
-$ cd ctfhub
+$ git clone https://github.com/hugsy/ctfhub && cd ctfhub
 $ cp .env.example .env
 ### CHANGE THE CREDENTIALS IN .env ###
 $ nano .env
 ### BUILD EXCALIDRAW USING .env VARIABLES ###
-$ make build
 $ docker compose up -d --build
 ```
 
-If you want to use SSL locally, follow the [instructions to generate local SSL certificates](./conf/certs/README.md)
-and run:
-
-```bash
-$ cp scripts/proxy/.env.nginx-proxy.example scripts/proxy/.env
-$ nano scripts/proxy/.env
-### Edit the file to your need
-$ docker compose -f scripts/proxy/docker-compose.yml -f ./docker-compose.yml up -d --build
-```
-
-If you're migrating from the first versions called `ctpad`, check out see [PR #83](https://github.com/hugsy/ctfhub/pull/83) to migrate the data to the new environment, search the `Setup > Migration` part.
+For more advanced building cases, refer to the [Build page](docs/build.md) in the documentation.
 
 
 ## Gallery
