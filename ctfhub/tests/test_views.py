@@ -3,6 +3,7 @@ from typing import Union
 
 from django.test import Client, TestCase
 from django.urls import reverse
+from ctfhub.helpers import HedgeDoc
 
 import ctfhub.urls
 from ctfhub.models import Team
@@ -10,6 +11,7 @@ from ctfhub.tests.utils import (
     MockTeam,
     MockTeamWithMembers,
     get_messages,
+    clean_slate,
 )
 
 
@@ -74,6 +76,7 @@ class TestTeamView(TestCase):
         return super().setUp()
 
     def tearDown(self) -> None:
+        clean_slate()
         return super().tearDown()
 
     def test_team_register_get(self):
@@ -164,6 +167,10 @@ class TestAdminView(TestCase):
         self.client = Client()
         self.team = MockTeam()
 
+    def tearDown(self) -> None:
+        clean_slate()
+        return super().tearDown()
+
     def test_admin_get(self):
         url = reverse("ctfhub:users-register")
         response = self.client.get(url)
@@ -241,6 +248,8 @@ class TestMemberViewAsMember(TestCase):
 
     def tearDown(self) -> None:
         self.client.logout()
+        print("tearing down")
+        clean_slate()
         return super().tearDown()
 
     def test_member_cannot_access_team_settings_page(self):
@@ -310,8 +319,16 @@ class TestCtfView(TestCase):
         self.client = Client()
         self.team, self.members = MockTeamWithMembers()
 
+    def tearDown(self) -> None:
+        clean_slate()
+        return super().tearDown()
+
 
 class TestChallengeView(TestCase):
     def setUp(self):
         self.client = Client()
         self.team, self.members = MockTeamWithMembers()
+
+    def tearDown(self) -> None:
+        clean_slate()
+        return super().tearDown()

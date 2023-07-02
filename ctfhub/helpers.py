@@ -172,24 +172,23 @@ class HedgeDoc:
         if not self.logged_in:
             return False
 
+        def get_nonce() -> str:
+            """Retrieve the delete `nonce` hidden in <a> tag"""
+            assert self.session
+            response = self.session.get(
+                f"{self.url}/",
+                allow_redirects=False,
+                timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+            )
+            if response.status_code != requests.codes.ok:
+                return ""
+
+            text = response.text
+            text = text[text.find("/me/delete/") + 11 :]
+            return text[: text.find('"')]
+
         assert self.session
-
-        #
-        # Retrieve the delete `nonce` hidden in <a> tag
-        #
-        response = self.session.get(
-            f"{self.url}/",
-            allow_redirects=False,
-            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
-        )
-        if response.status_code != requests.codes.ok:
-            return False
-
-        text = response.text
-        text = text[text.find("/me/delete/") + 11 :]
-        text = text[: text.find('"')]
-
-        nonce = text
+        nonce = get_nonce()
 
         self.session.cookies["connect.sid"]
         response = self.session.get(

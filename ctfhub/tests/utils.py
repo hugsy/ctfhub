@@ -1,6 +1,7 @@
 import django.contrib.messages.api
 import django.utils.crypto
 from django.contrib.auth.models import User
+from ctfhub.helpers import HedgeDoc
 from ctfhub.models import Member, Team, Ctf
 
 from django.conf import settings
@@ -39,7 +40,13 @@ def MockTeam() -> Team:
     return team
 
 
-def MockTeamWithAdmin() -> tuple[Team, Member]:
+def MockTeamWithMembers(nb: int = 5) -> tuple[Team, list[Member]]:
+    members = []
+    nb = max(2, nb)
+
+    # Make sure we're starting from nothing
+    clean_slate()
+
     team = MockTeam()
 
     admin = Member.objects.create(
@@ -50,14 +57,7 @@ def MockTeamWithAdmin() -> tuple[Team, Member]:
         ),
         team=team,
     )
-    return (team, admin)
 
-
-def MockTeamWithMembers(nb: int = 5) -> tuple[Team, list[Member]]:
-    members = []
-    nb = max(2, nb)
-
-    team, admin = MockTeamWithAdmin()
     members.append(admin)
     assert admin.has_superpowers
 
@@ -81,3 +81,15 @@ def MockCtf() -> Ctf:
         name=django.utils.crypto.get_random_string(10),
     )
     return ctf
+
+
+def clean_slate():
+    """Clean team, members and hedgedoc account"""
+    team = Team.objects.first()
+    if team:
+        for member in team.members:
+            cli = HedgeDoc(member)
+            cli.login()
+            cli.delete()
+            member.delete()
+        team.delete()
