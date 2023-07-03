@@ -12,9 +12,10 @@ $ nano .env
 $ docker compose up -d --build
 ```
 
-## Integrated SSL + reverse-proxy
+## SSL + nginx reverse-proxy on Docker
 
-If you want to use SSL locally, follow the [instructions to generate local SSL certificates](../conf/certs/README.md) and run:
+A standard secure way to deploy an instance of CTFHub is to use it over an SSL layer, and behind a reverse proxy.
+Using [Let's Encrypt]() you can easily generate a valid SSL certificate, which can be used with an nginx container acting as a reverse-proxy. A boilerplate template was provided to you in `scripts/nginx`, which you can use in combination of the [instructions to generate local SSL certificates](../conf/certs/README.md). Then run `docker compose` with multiple files as such:
 
 ```bash
 $ cp scripts/proxy/.env.nginx-proxy.example scripts/proxy/.env
@@ -22,6 +23,8 @@ $ nano scripts/proxy/.env
 ### Edit the file to your need
 $ docker compose -f scripts/proxy/docker-compose.yml -f ./docker-compose.yml up -d --build
 ```
+
+Note that the example env file have default variables that may not suit your environment. Adjust them to your needs.
 
 ## Deploy your instance for Excalidraw
 
@@ -36,6 +39,8 @@ $ cd ../..
 $ nano .env
 ### update the CTFHUB_EXCALIDRAW_URL setting to point to your local excalidraw
 ```
+
+Note that the example env file have default variables that may not suit your environment. Adjust them to your needs.
 
 ## Receive Discord notifications
 
