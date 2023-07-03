@@ -21,7 +21,7 @@ Using [Let's Encrypt]() you can easily generate a valid SSL certificate, which c
 $ cp scripts/proxy/.env.nginx-proxy.example scripts/proxy/.env
 $ nano scripts/proxy/.env
 ### Edit the file to your need
-$ docker compose -f scripts/proxy/docker-compose.yml -f ./docker-compose.yml up -d --build
+$ docker compose -f ./docker-compose.yml -f scripts/proxy/docker-compose.yml up -d --build
 ```
 
 Note that the example env file have default variables that may not suit your environment. Adjust them to your needs.
@@ -38,6 +38,7 @@ $ nano .env
 $ cd ../..
 $ nano .env
 ### update the CTFHUB_EXCALIDRAW_URL setting to point to your local excalidraw
+$ docker compose -f ./docker-compose.yml -f scripts/excalidraw/docker-compose.yml up -d --build
 ```
 
 Note that the example env file have default variables that may not suit your environment. Adjust them to your needs.
