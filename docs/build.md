@@ -15,7 +15,7 @@ $ docker compose up -d --build
 ## SSL + nginx reverse-proxy on Docker
 
 A standard secure way to deploy an instance of CTFHub is to use it over an SSL layer, and behind a reverse proxy.
-Using [Let's Encrypt]() you can easily generate a valid SSL certificate, which can be used with an nginx container acting as a reverse-proxy. A boilerplate template was provided to you in `scripts/nginx`, which you can use in combination of the [instructions to generate local SSL certificates](../conf/certs/README.md). Then run `docker compose` with multiple files as such:
+Using [Let's Encrypt](https://letsencrypt.org/) you can easily generate a valid SSL certificate, which can be used with an nginx container acting as a reverse-proxy. A boilerplate template was provided to you in `scripts/nginx`, which you can use in combination of the [instructions to generate local SSL certificates](./ssl-setup.md). Then run `docker compose` with multiple files as such:
 
 ```bash
 $ cp scripts/proxy/.env.nginx-proxy.example scripts/proxy/.env

@@ -5,16 +5,12 @@ services:
     networks:
       - ctfhub
     ports:
-      - 80:80
-      - 443:443
+      - 80:80 # change here the public port to your own setup
+      - 443:443 # change here the public port to your own setup
     depends_on:
       - ctfhub
       - hedgedoc
-      - excalidraw
-      - excalidraw-room
-      - excalidraw-storage-backend
     volumes:
       - ./conf/nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./conf/certs:/etc/nginx/certs
     restart: always
-
