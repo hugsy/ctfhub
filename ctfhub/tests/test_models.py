@@ -1,11 +1,11 @@
 import datetime
 from unittest import TestCase
 
-from django.test import Client
 import pytest
-from ctfhub.models import Ctf, Member
+from django.test import Client
 
-from ctfhub.tests.utils import MockCtf, MockTeamWithMembers
+from ctfhub.models import Ctf, Member
+from ctfhub.tests.utils import MockCtf, MockTeamWithMembers, clean_slate
 
 
 @pytest.mark.django_db
@@ -13,6 +13,10 @@ class TestMemberView(TestCase):
     def setUp(self):
         self.client = Client()
         self.team, self.members = MockTeamWithMembers()
+
+    def tearDown(self) -> None:
+        clean_slate()
+        return super().tearDown()
 
     def test_ctf_is_permanent(self):
         #

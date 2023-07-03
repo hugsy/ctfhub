@@ -1,9 +1,11 @@
 import datetime
+from django.forms import ValidationError
 import pytest
 
 from django.test import TestCase
 import requests
 from ctfhub import helpers
+from ctfhub.tests.utils import django_set_temporary_setting
 from ctfhub_project import settings
 
 
@@ -58,3 +60,78 @@ class TestHelpers(TestCase):
         except (RuntimeError, requests.exceptions.ReadTimeout):
             # CTFTime is probably down, discard test
             pytest.skip("CTFTime.org is not responding")
+
+
+class TestUnauthHedgedocHelper(TestCase):
+    def setUp(self) -> None:
+        self.email: str = "testuser01@ctfhub.localdomain"
+        self.password: str = "testuser01"
+        return super().setUp()
+
+    def tearDown(self) -> None:
+        return super().tearDown()
+
+    @django_set_temporary_setting("USE_INTERNAL_HEDGEDOC", True)
+    @django_set_temporary_setting("HEDGEDOC_URL", "http://IShouldNotWork:3000")
+    def test_hedgedoc_url_valid(self):
+        cli = helpers.HedgeDoc((self.email, self.password))
+        assert cli.url != "http://IShouldNotWork:3000"
+
+    @django_set_temporary_setting("USE_INTERNAL_HEDGEDOC", False)
+    @django_set_temporary_setting("HEDGEDOC_URL", "http://not_valid:1337")
+    def test_hedgedoc_url_invalid(self):
+        cli = helpers.HedgeDoc((self.email, self.password))
+        with pytest.raises(ValidationError):
+            assert cli.url
+
+    def test_hedgedoc_ping(self):
+        assert helpers.HedgeDoc((self.email, self.password)).ping(
+            url="https://google.com"
+        )
+
+        cli = helpers.HedgeDoc((self.email, self.password))
+        assert not cli.ping(url="http://meh:1337")
+
+    def test_hedgedoc_register(self):
+        valid_client = helpers.HedgeDoc((self.email, self.password))
+        assert valid_client.register()
+        assert valid_client.logged_in
+        assert valid_client.delete()
+
+        invalid_client = helpers.HedgeDoc(("bad_user_name!!", "1234"))
+        assert not invalid_client.register()
+        assert not invalid_client.logged_in
+
+
+class TestAuthHedgedocHelper(TestCase):
+    def setUp(self) -> None:
+        self.email: str = "testuser02@ctfhub.localdomain"
+        self.password: str = "testuser02"
+        self.cli = helpers.HedgeDoc((self.email, self.password))
+        assert self.cli.register()
+        assert self.cli.logged_in
+        return super().setUp()
+
+    def tearDown(self) -> None:
+        assert self.cli.delete()
+        return super().tearDown()
+
+    def test_hedgedoc_login_logout(self):
+        assert self.cli.logout()
+        assert not self.cli.logged_in
+
+        for _ in range(10):
+            # do a bunch of login/logout to make sure the session cookies are properly rotated
+            assert self.cli.login()
+            assert self.cli.logged_in
+            assert self.cli.logout()
+            assert not self.cli.logged_in
+
+        assert self.cli.login()  # must stay because of the destructor
+
+    def test_hedgedoc_info(self):
+        data = self.cli.info()
+        username = self.email[: self.email.find("@")]
+        assert data
+        assert data["status"] == "ok"
+        assert data["name"] == username

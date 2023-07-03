@@ -1,3 +1,4 @@
+import requests
 from ctfhub.forms import CategoryCreateForm, CtfCreateUpdateForm, TagCreateForm
 from ctfhub.helpers import ctftime_ctfs, ctftime_get_ctf_info, ctftime_parse_date
 from ctfhub.mixins import MembersOnlyMixin
@@ -41,7 +42,7 @@ class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
     def get_queryset(self):
         qs = super(CtfListView, self).get_queryset()
         return qs.filter(
-            Q(visibility="public") | Q(created_by=self.request.user.member)
+            Q(visibility=Ctf.VisibilityType.PUBLIC) | Q(created_by=self.member)
         ).order_by("-start_date")
 
 
@@ -68,6 +69,7 @@ class CtfCreateView(
     success_message = "CTF '%(name)s' created"
 
     def get(self, request, *args, **kwargs):
+        assert self.form_class
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {"form": form})
 
@@ -117,6 +119,7 @@ class CtfImportView(CtfCreateView):
             except (RuntimeError, requests.exceptions.ReadTimeout) as e:
                 messages.warning(self.request, f"CTFTime GET request failed: {str(e)}")
 
+        assert self.form_class
         form = self.form_class(initial=initial)
         return render(request, self.template_name, {"form": form})
 
@@ -133,9 +136,11 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
     }
 
     def get_context_data(self, **kwargs):
+        obj = self.get_object()
+        assert isinstance(obj, Ctf)
         ctx = super().get_context_data(**kwargs)
         ctx |= {
-            "team_timeline": self.object.team_timeline(),
+            "team_timeline": obj.team_timeline(),
         }
         return ctx
 
@@ -156,18 +161,20 @@ class CtfUpdateView(
         return ctx
 
     def get_success_url(self):
-        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.object.pk})
+        obj = self.get_object()
+        assert isinstance(obj, Ctf)
+        return reverse("ctfhub:ctfs-detail", kwargs={"pk": obj.pk})
 
     def form_valid(self, form):
         if (
             "visibility" in form.changed_data
-            and self.request.user.member != form.instance.created_by
+            and self.member != form.instance.created_by
         ):
             messages.error(
                 self.request,
                 f"Visibility can only by updated by {form.instance.created_by}",
             )
-            return render(self.request, self.template_name, {"form": form})
+            return super().form_invalid(form)
         return super().form_valid(form)
 
 
@@ -191,6 +198,6 @@ class CtfExportNotesView(LoginRequiredMixin, DetailView):
     def get(self, request, *args, **kwargs):
         self.ctf = self.get_object()
         response = HttpResponse(content_type="application/zip")
-        zip_filename = self.ctf.export_notes_as_zipstream(response, request.user.member)
+        zip_filename = self.ctf.export_notes_as_zipstream(response, self.member)
         response["Content-Disposition"] = f"attachment; filename={zip_filename}"
         return response

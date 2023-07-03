@@ -12,7 +12,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import BaseModelForm
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseForbidden, HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -21,6 +21,7 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+from ctfhub import helpers
 
 from ctfhub.forms import (
     MemberCreateForm,
@@ -68,7 +69,7 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
             not request.user.member.has_superpowers
             and self.object.pk != request.user.id
         ):
-            raise Http403()
+            return HttpResponseForbidden()
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
@@ -224,28 +225,31 @@ class MemberDeleteView(
     LoginRequiredMixin, RequireSuperPowersMixin, SuccessMessageMixin, DeleteView
 ):
     model = Member
-    success_url = reverse_lazy("ctfhub:dashboard")
+    success_url = reverse_lazy("ctfhub:stats-detail")
     template_name = "users/confirm_delete.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
     success_message = "Member successfully deleted"
 
     def post(self, request, *args, **kwargs):
-        member = self.get_object()
+        member: Member = self.get_object()  # type: ignore
         if member.has_superpowers:
             messages.error(request, "Refusing to delete super-user")
             return redirect("ctfhub:home")
 
-        # rotate the team api key
-        t = Team.objects.first()
-        t.api_key = get_random_string_128()
-        t.save()
+        # rotate the team api key as it might have been shared with the to-be deleted user
+        team = Team.objects.first()
+        assert team
+        team.api_key = get_random_string_128()
+        team.save()
 
-        # delete the associated django user
-        member.user.delete()
+        # delete the hedgedoc user
+        cli = helpers.HedgeDoc((member.hedgedoc_username, member.hedgedoc_password))
+        assert cli.login()
+        cli.delete()
 
-        # delete the member entry
-        return self.delete(request, *args, **kwargs)
+        # propagate to the super() method to trigger the deletion
+        return super().post(request, *args, **kwargs)
 
 
 class MemberListView(LoginRequiredMixin, RequireSuperPowersMixin, ListView):

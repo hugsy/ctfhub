@@ -1,7 +1,27 @@
 import django.contrib.messages.api
 import django.utils.crypto
 from django.contrib.auth.models import User
+from ctfhub.helpers import HedgeDoc
 from ctfhub.models import Member, Team, Ctf
+
+from django.conf import settings
+from functools import wraps
+
+
+def django_set_temporary_setting(setting_name, temporary_value):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            original_value = getattr(settings, setting_name)
+            setattr(settings, setting_name, temporary_value)
+            try:
+                return func(*args, **kwargs)
+            finally:
+                setattr(settings, setting_name, original_value)
+
+        return wrapper
+
+    return decorator
 
 
 def get_messages(response) -> list[str]:
@@ -20,25 +40,24 @@ def MockTeam() -> Team:
     return team
 
 
-def MockTeamWithAdmin() -> tuple[Team, Member]:
+def MockTeamWithMembers(nb: int = 5) -> tuple[Team, list[Member]]:
+    members = []
+    nb = max(2, nb)
+
+    # Make sure we're starting from nothing
+    clean_slate()
+
     team = MockTeam()
 
     admin = Member.objects.create(
         user=User.objects.create_superuser(
-            username="admin",
-            password="admin",
-            email="admin@admin.com",
+            username="superuser01",
+            password="superuser01",
+            email="superuser01@superusers.com",
         ),
         team=team,
     )
-    return (team, admin)
 
-
-def MockTeamWithMembers(nb: int = 10) -> tuple[Team, list[Member]]:
-    members = []
-    nb = max(2, nb)
-
-    team, admin = MockTeamWithAdmin()
     members.append(admin)
     assert admin.has_superpowers
 
@@ -62,3 +81,15 @@ def MockCtf() -> Ctf:
         name=django.utils.crypto.get_random_string(10),
     )
     return ctf
+
+
+def clean_slate():
+    """Clean team, members and hedgedoc account"""
+    team = Team.objects.first()
+    if team:
+        for member in team.members:
+            cli = HedgeDoc(member)
+            cli.login()
+            cli.delete()
+            member.delete()
+        team.delete()

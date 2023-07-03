@@ -32,7 +32,7 @@ def theme_cookie(context):
 
 
 @register.filter
-def html_sanitize(html):
+def html_sanitize(html: str) -> str:
     """Only authorize links (a tags) html. Escape the rest
 
     Args:
@@ -52,7 +52,7 @@ def html_sanitize(html):
 
 
 @register.filter(is_safe=True, needs_autoescape=False)
-def as_tick_or_cross(b):
+def as_tick_or_cross(b: bool):
     if b:
         return mark_safe(
             """<strong><i class="fas fa-check" style="color: green;"></i><strong>"""

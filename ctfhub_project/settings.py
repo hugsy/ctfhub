@@ -21,7 +21,8 @@ SECRET_KEY = (
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = get_boolean("CTFHUB_DEBUG") or False
-VERSION: float = 0.1
+PROJECT_VERSION: float = 0.1
+PROJECT_URL = "https://github.com/hugsy/ctfhub"
 
 CTFHUB_PROTOCOL = os.getenv("CTFHUB_PROTOCOL") or "http"
 CTFHUB_DOMAIN = os.getenv("CTFHUB_DOMAIN") or "localhost"
@@ -137,7 +138,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
-USE_TZ = False
+USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)

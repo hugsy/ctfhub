@@ -1,8 +1,10 @@
 import hashlib
 import os
+import pathlib
 import tempfile
 import uuid
 import zipfile
+from django.conf import settings
 import requests
 
 from collections import Counter, namedtuple
@@ -20,16 +22,15 @@ from django.db import models
 from django.db.models import Count, Q, Sum
 from django.db.models.functions import TruncMonth
 from django.urls.base import reverse
-from django.utils.crypto import get_random_string
 from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices, FieldTracker
 from model_utils.fields import MonitorField, StatusField
+from ctfhub import helpers
 from ctfhub.exceptions import ExternalError
 
 from ctfhub.helpers import (
-    create_new_note,
     ctftime_ctfs,
     ctftime_get_ctf_logo_url,
     generate_excalidraw_room_id,
@@ -39,7 +40,7 @@ from ctfhub.helpers import (
     get_file_mime,
     get_named_storage,
     get_random_string_128,
-    register_new_hedgedoc_user,
+    get_random_string_64,
     which_hedgedoc,
 )
 from ctfhub.validators import challenge_file_max_size_validator
@@ -143,7 +144,7 @@ class Ctf(TimeStampedModel):
     )
     weight = models.FloatField(default=1.0, blank=False, null=False)
     rating = models.FloatField(default=0.0, blank=False, null=False)
-    note_id = models.CharField(default=create_new_note, max_length=38, blank=False)
+    note_id = models.UUIDField(default=uuid.uuid4, editable=True)
 
     #
     # Typing
@@ -322,55 +323,57 @@ class Ctf(TimeStampedModel):
         return members
 
     def export_notes_as_zipstream(
-        self, stream, member: Optional["Member"] = None
+        self, stream: pathlib.Path, member: "Member", include_files: bool = False
     ) -> str:
-        zip_file = zipfile.ZipFile(stream, "w")
+        """Export the CTF as a ZIP arhchive
+
+        Returns:
+            str: the file name of the archive
+        """
+        archive = zipfile.ZipFile(stream, "w")
         now = datetime.now()
         ts = (now.year, now.month, now.day, 0, 0, 0)
 
-        session = requests.Session()
+        cli = helpers.HedgeDoc(member)
+        if not cli.login():
+            raise RuntimeError(f"Failed to authenticate {member}")
 
         #
-        # try impersonating requesting user on HedgeDoc, this way we're sure anonymous & unauthorized users
-        # can't dump data
+        # Add the CTF notes
         #
-        if member:
-            session.post(
-                f"{which_hedgedoc()}/login",
-                data={
-                    "email": member.hedgedoc_username,
-                    "password": member.hedgedoc_password,
-                },
-                allow_redirects=False,
-            )
-
-        # add ctf notes
-        fname = slugify(f"{self.name}.md")
+        fname = f"{slugify(self.name)}.md"
         with tempfile.TemporaryFile():
-            result = session.get(f"{which_hedgedoc()}{self.note_id}/download")
-            zip_file.writestr(
-                zipfile.ZipInfo(filename=fname, date_time=ts), result.text
-            )
+            text = cli.export_note(self.note_id)
+            archive.writestr(zipfile.ZipInfo(filename=fname, date_time=ts), text)
 
-        # add challenge notes
+        #
+        # Add the notes of every challenge
+        #
         for challenge in self.challenges:
             fname = f"{slugify(self.name)}-{slugify(challenge.name)}.md"
             with tempfile.TemporaryFile():
-                result = session.get(f"{which_hedgedoc()}{challenge.note_id}/download")
-                if result.status_code != requests.codes.ok:
-                    continue
-                zinfo = zipfile.ZipInfo(filename=fname, date_time=ts)
-                zip_file.writestr(zinfo, result.text)
+                data = cli.export_note(challenge.note_id)
+                sub_stream = zipfile.ZipInfo(filename=fname, date_time=ts)
+                archive.writestr(sub_stream, data)
 
-        if member:
-            session.post(f"{which_hedgedoc()}/logout", allow_redirects=False)
+            if include_files:
+                #
+                # Add all the challenge files
+                #
+                fname = f"{slugify(self.name)}-{slugify(challenge.name)}"
+                for challenge_file in challenge.challengefile_set:
+                    fname += f"-{challenge_file.name}.bin"
+                    with tempfile.TemporaryFile():
+                        data = challenge_file.file.open("rb").read()
+                        sub_stream = zipfile.ZipInfo(filename=fname, date_time=ts)
+                        archive.writestr(sub_stream, data)
 
-        return f"{slugify(self.name)}-notes.zip"
+        suffix = "notes" if not include_files else "full"
+        return f"{slugify(self.name)}-{suffix}.zip"
 
     @property
     def note_url(self) -> str:
-        note_id = self.note_id or "/"
-        return f"{which_hedgedoc()}{note_id}"
+        return f"{settings.HEDGEDOC_URL}/{self.note_id}"
 
     def get_absolute_url(self):
         return reverse(
@@ -393,6 +396,7 @@ class Member(TimeStampedModel):
     class StatusType(models.IntegerChoices):
         MEMBER = 0, _("Member")
         GUEST = 1, _("Guest")
+        INACTIVE = 2, _("Inactive")
 
     class Country(models.TextChoices):
         ANDORRA = "AD", _("Andorra")
@@ -1290,7 +1294,9 @@ class Member(TimeStampedModel):
     show_pending_notifications = models.BooleanField(default=False)
     last_active_notification = models.DateTimeField(null=True)
     joined_time = models.DateTimeField(null=True)
-    hedgedoc_password = models.CharField(max_length=64, null=True)
+    hedgedoc_password = models.CharField(
+        max_length=64, editable=False, default=get_random_string_64
+    )
     twitter_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
@@ -1377,33 +1383,31 @@ class Member(TimeStampedModel):
 
     def save(self, **kwargs):
         #
-        # First create/save the user, otherwise `hedgedoc_username` may not exist
+        # Validate the hedgedoc user is registered
         #
-        super(Member, self).save(**kwargs)
-
-        #
-        # If this is an insert, also register the same username in hedgedoc
-        #
-        is_create = bool(kwargs.get("force_insert", False))
-        if is_create:
-            hedgedoc_password = get_random_string(64)
-            if not register_new_hedgedoc_user(
-                self.hedgedoc_username, hedgedoc_password
-            ):
+        hedgedoc_cli = helpers.HedgeDoc(
+            (self.hedgedoc_username, self.hedgedoc_password)
+        )
+        if hedgedoc_cli.login() == False:
+            print(
+                f"not logged in, registering {self.hedgedoc_username}/{self.hedgedoc_password}"
+            )
+            if not hedgedoc_cli.register():
                 #
                 # Register the user in hedgedoc failed, delete the user, and raise
                 #
-                username = self.username
-                self.delete()
                 raise ExternalError(
-                    f"Registration of user {username} on hedgedoc failed"
+                    f"Registration of user {self.hedgedoc_username} on hedgedoc failed"
                 )
-            else:
-                #
-                # Save the password
-                #
-                self.hedgedoc_password = hedgedoc_password
-                self.save()
+        else:
+            print(
+                f"logged in, registering {self.hedgedoc_username}/{self.hedgedoc_password}"
+            )
+
+        #
+        # Create/save the user
+        #
+        super(Member, self).save(**kwargs)
 
         return
 
@@ -1525,7 +1529,7 @@ class Challenge(TimeStampedModel):
     category = models.ForeignKey(
         ChallengeCategory, on_delete=models.DO_NOTHING, null=True
     )
-    note_id = models.CharField(default=create_new_note, max_length=38, blank=True)
+    note_id = models.UUIDField(default=uuid.uuid4, editable=True)
     excalidraw_room_id = models.CharField(
         default=generate_excalidraw_room_id,
         validators=[
@@ -1587,8 +1591,8 @@ class Challenge(TimeStampedModel):
 
     @property
     def note_url(self) -> str:
-        note_id = self.note_id or "/"
-        return f"{HEDGEDOC_URL}{note_id}"
+        note_id = self.note_id or ""
+        return f"{settings.HEDGEDOC_URL}/{note_id}"
 
     def get_excalidraw_url(self, member=None) -> str:
         """

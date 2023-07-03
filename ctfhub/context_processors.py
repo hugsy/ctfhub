@@ -1,10 +1,12 @@
+import datetime
+from typing import Union
 import django.http
 from django.conf import settings
 
 from ctfhub.models import Member
 
 
-def add_debug_context(request: django.http.HttpRequest) -> dict[str, str]:
+def add_debug_context(request: django.http.HttpRequest) -> dict[str, dict[str, str]]:
     """Adds some CTFHub environment information to every context
 
     Args:
@@ -14,12 +16,17 @@ def add_debug_context(request: django.http.HttpRequest) -> dict[str, str]:
         dict[str, str]: _description_
     """
     return {
-        "DEBUG": settings.DEBUG,
-        "VERSION": settings.VERSION,
+        "CTFHub": {
+            "DEBUG": settings.DEBUG,
+            "VERSION": settings.PROJECT_VERSION,
+            "URL": settings.PROJECT_URL,
+        }
     }
 
 
-def add_timezone_context(request: django.http.HttpRequest) -> dict[str, str]:
+def add_timezone_context(
+    request: django.http.HttpRequest,
+) -> dict[str, Union[str, datetime.datetime]]:
     """Add the client timezone information to the HTTP context
 
     Args:
@@ -30,6 +37,6 @@ def add_timezone_context(request: django.http.HttpRequest) -> dict[str, str]:
     """
     try:
         member = Member.objects.get(user=request.user)
-        return {"TZ": member.timezone}
+        return {"TZ": member.timezone, "NOW": datetime.datetime.now()}
     except Exception:
         return {"TZ": "UTC"}
