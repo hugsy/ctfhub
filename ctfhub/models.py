@@ -51,7 +51,6 @@ from ctfhub_project.settings import (
     EXCALIDRAW_ROOM_ID_REGEX,
     EXCALIDRAW_ROOM_KEY_REGEX,
     EXCALIDRAW_URL,
-    HEDGEDOC_URL,
     IMAGE_URL,
     JITSI_URL,
     USERS_FILE_PATH,
@@ -86,7 +85,14 @@ class Team(TimeStampedModel):
     youtube_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
     api_key = models.CharField(max_length=128, default=get_random_string_128)
-    avatar = models.ImageField(blank=True, upload_to=USERS_FILE_PATH)
+    avatar = models.ImageField(
+        blank=True,
+        upload_to=USERS_FILE_PATH,
+        storage=get_named_storage("MEDIA"),
+        validators=[
+            challenge_file_max_size_validator,
+        ],
+    )
     ctftime_id = models.IntegerField(default=0, blank=True, null=True)
 
     #
