@@ -34,9 +34,8 @@ CTFHUB_URL = (
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-# SECURITY WARNING: harden for production!
-ALLOWED_HOSTS = [CTFHUB_DOMAIN, "localhost", "127.0.0.1"]
-CSRF_TRUSTED_ORIGINS = ["http://127.0.0.1", CTFHUB_URL]
+ALLOWED_HOSTS = [CTFHUB_DOMAIN, ] + os.getenv("CTFHUB_ALLOWED_HOSTS", "").split(";")
+CSRF_TRUSTED_ORIGINS = [CTFHUB_URL, ] + os.getenv("CTFHUB_TRUSTED_ORIGINS", "").split(";")
 
 CSRF_COOKIE_NAME = "ctfhub-csrf"
 SESSION_COOKIE_NAME = "ctfhub-session"
