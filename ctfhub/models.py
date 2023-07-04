@@ -86,7 +86,7 @@ class Team(TimeStampedModel):
     blog_url = models.URLField(blank=True)
     api_key = models.CharField(max_length=128, default=get_random_string_128)
     avatar = models.ImageField(
-        null=True,
+        blank=True,
         upload_to=USERS_FILE_PATH,
         storage=get_named_storage("MEDIA"),
         validators=[
