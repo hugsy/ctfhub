@@ -31,11 +31,11 @@
         <div class="col-md">
             <div class="card text-center text-white  mb-3" id="current-ctf">
                 <div class="card-header">
-                    <h5 class="card-title"><i class="fa fa-rocket" aria-hidden="true"></i>&nbsp;&nbsp;Currently running CTF(s): {{current_ctfs | length}} {% if current_ctfs|length == 0 %}😴{% endif %}</h5>
+                    <h5 class="card-title"><i class="fa fa-rocket" aria-hidden="true"></i>&nbsp;&nbsp;Running CTF(s): {{temporary_running_ctfs | length}} {% if current_ctfs|length == 0 %}😴{% endif %}</h5>
                 </div>
                 <div class="card-body">
                     <ul>
-                        {% for ctf in current_ctfs %}
+                        {% for ctf in temporary_running_ctfs %}
                             <li>
                                 <strong><a href="{% url 'ctfhub:ctfs-detail' ctf.id %}">{{ctf.name | upper}}</a></strong>
                                 (ends in {{ctf.end_date | timeuntil}})

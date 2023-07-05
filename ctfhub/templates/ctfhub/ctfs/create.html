@@ -82,28 +82,26 @@
                                     </select>
                                 </div>
 
-                                <label class="label"><strong>Start Date</strong>(leave empty for permanent CTFs)</label>
+                                <label class="label"><strong>Start Date</strong>(clear field for permanent CTFs)</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fas fa-calendar-day"></i>
                                     </span>
                                     <input type="datetime-local"
-                                           id={{ form.start_date.id_for_label }} name="{{ form.start_date.html_name }}"
-                                           placeholder="{{ form.start_date.label }}"
+                                           id="{{ form.start_date.id_for_label }}" name="{{ form.start_date.html_name }}"
                                            {% if form.start_date.value %}
                                                value="{{ form.start_date.value | date:'Y-m-d\TH:i' }}"
                                            {% endif %}
                                            class="form-control">
                                 </div>
 
-                                <label class="label"><strong>End Date</strong>(leave empty for permanent CTFs)</label>
+                                <label class="label"><strong>End Date</strong>(clear field for permanent CTFs)</label>
                                 <div class="input-group mb-3">
                                     <span class="input-group-text">
                                         <i class="fas fa-calendar-day"></i>
                                     </span>
                                     <input type="datetime-local"
-                                           id={{ form.end_date.id_for_label }} name="{{ form.end_date.html_name }}"
-                                           placeholder="{{ form.end_date.label }}"
+                                           id="{{ form.end_date.id_for_label }}" name="{{ form.end_date.html_name }}"
                                            {% if form.end_date.value %}
                                                value="{{ form.end_date.value | date:'Y-m-d\TH:i' }}"
                                            {% endif %}

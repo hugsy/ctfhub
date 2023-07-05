@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Optional, Union
+import warnings
 
 import django.core.mail
 import django.utils.crypto
@@ -396,6 +397,7 @@ def which_hedgedoc() -> str:
 
 def create_new_note() -> str:
     """OBSOLETE FUNCTION: use the HedgeDoc() class"""
+    warnings.warn("Obsolete function, do not use it")
     return f"/{uuid.uuid4()}"
 
 
