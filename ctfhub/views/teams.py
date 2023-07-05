@@ -32,9 +32,10 @@ class TeamCreateView(SuccessMessageMixin, CreateView):
             handler = self.http_method_not_allowed
         return handler(request, *args, **kwargs)
 
-    def get_success_message(self, cleaned_data):
-        msg = f"Team '{self.object.name}' successfully created!"
-        msg += f"Use the API key '{self.object.api_key}' to register new members."
+    def get_success_message(self, cleaned_data) -> str:
+        obj: Team = self.object  # type: ignore
+        msg = f"Team '{obj.name}' successfully created!"
+        msg += f"Use the API key '{obj.api_key}' to register new members."
         return msg
 
 
