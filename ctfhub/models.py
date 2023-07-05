@@ -276,7 +276,7 @@ class Ctf(TimeStampedModel):
             bool: _description_
         """
         if self.is_permanent:
-            return True
+            return False
         if not self.is_time_limited:
             raise AttributeError
 
