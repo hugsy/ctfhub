@@ -2,7 +2,7 @@ import requests
 from ctfhub.forms import CategoryCreateForm, CtfCreateUpdateForm, TagCreateForm
 from ctfhub.helpers import ctftime_ctfs, ctftime_get_ctf_info, ctftime_parse_date
 from ctfhub.mixins import MembersOnlyMixin
-from ctfhub.models import Ctf, Team
+from ctfhub.models import Ctf, Member, Team
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -73,7 +73,7 @@ class CtfCreateView(
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {"form": form})
 
-    def form_valid(self, form):
+    def form_valid(self, form: CtfCreateUpdateForm) -> HttpResponse:
         if Ctf.objects.filter(name=form.instance.name, visibility="public").count() > 0:
             form.errors["name"] = "CtfAlreadyExistError"
             return render(self.request, self.template_name, {"form": form})
@@ -89,11 +89,13 @@ class CtfCreateView(
                 form.instance.end_date = ctftime_parse_date(ctf["finish"])
             except (RuntimeError, requests.exceptions.ReadTimeout) as e:
                 messages.warning(self.request, f"CTFTime GET request failed: {str(e)}")
-        form.instance.created_by = self.request.user.member
+
+        member = Member.objects.get(user=self.request.user)
+        form.instance.created_by = member
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.object.pk})
+        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.get_object().pk})
 
 
 class CtfImportView(CtfCreateView):
@@ -165,7 +167,7 @@ class CtfUpdateView(
         assert isinstance(obj, Ctf)
         return reverse("ctfhub:ctfs-detail", kwargs={"pk": obj.pk})
 
-    def form_valid(self, form):
+    def form_valid(self, form: CtfCreateUpdateForm):
         if (
             "visibility" in form.changed_data
             and self.member != form.instance.created_by
@@ -195,9 +197,11 @@ class CtfExportNotesView(LoginRequiredMixin, DetailView):
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
 
-    def get(self, request, *args, **kwargs):
-        self.ctf = self.get_object()
+    def get(self, request, *args, **kwargs) -> HttpResponse:
+        ctf = self.get_object()
+        assert isinstance(ctf, Ctf)
         response = HttpResponse(content_type="application/zip")
-        zip_filename = self.ctf.export_notes_as_zipstream(response, self.member)
+        member = Member.objects.get(user=self.request.user)
+        zip_filename = ctf.export_notes_as_zipstream(response, member)  # type: ignore HttpResponse is compatible with IO[bytes]
         response["Content-Disposition"] = f"attachment; filename={zip_filename}"
         return response

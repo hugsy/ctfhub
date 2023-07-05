@@ -5,13 +5,14 @@ import tempfile
 import uuid
 import zipfile
 from django.conf import settings
+from django.http import HttpResponse
 import requests
 
 from collections import Counter, namedtuple
 from datetime import datetime, timedelta
 from pathlib import Path
 from statistics import mean
-from typing import TYPE_CHECKING, Optional, OrderedDict
+from typing import IO, TYPE_CHECKING, Optional, OrderedDict, Union
 from urllib.parse import quote
 
 import django.db.models.manager
@@ -329,9 +330,17 @@ class Ctf(TimeStampedModel):
         return members
 
     def export_notes_as_zipstream(
-        self, stream: pathlib.Path, member: "Member", include_files: bool = False
+        self,
+        stream: Union[pathlib.Path, IO[bytes]],
+        member: "Member",
+        include_files: bool = False,
     ) -> str:
         """Export the CTF as a ZIP arhchive
+
+        Arguments:
+            stream (pathlib.Path | IO[bytes]):
+            member (Member):
+            include_files (bool): default - False
 
         Returns:
             str: the file name of the archive
