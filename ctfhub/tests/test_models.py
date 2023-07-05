@@ -28,6 +28,7 @@ class TestMemberView(TestCase):
         assert not ctf.start_date and not ctf.end_date
         assert ctf.is_permanent
         assert not ctf.is_time_limited
+        assert not ctf.is_finished
 
         # both date => not permanent
         ctf.start_date = datetime.datetime(1970, 1, 1, 0, 0, 0)
