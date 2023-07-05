@@ -20,10 +20,10 @@ class TagCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     }
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class(initial=self.initial)
+        form = self.form_class(initial=self.initial) if self.form_class else {}
         return render(request, self.template_name, {"form": form})
 
-    def form_valid(self, form):
+    def form_valid(self, form: TagCreateForm):
         form.cleaned_data["name"] = form.instance.name.strip().lower()
         return super().form_valid(form)
 
