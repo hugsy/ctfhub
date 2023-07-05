@@ -126,7 +126,6 @@ class ChallengeCreateForm(forms.ModelForm):
             "points",
             "description",
             "category",
-            "note_id",
             "ctf",
         ]
 
