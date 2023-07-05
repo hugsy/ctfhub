@@ -59,8 +59,10 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             self.initial["ctf"] = Ctf.objects.get(pk=self.kwargs.get("ctf"))
         except Ctf.DoesNotExist:
             pass
-        assert isinstance(self.form_class, ChallengeCreateForm)
-        form = self.form_class(initial=self.initial)
+        if self.form_class:
+            form = self.form_class(initial=self.initial)
+        else:
+            form = {}
         return render(request, self.template_name, {"form": form})
 
     def form_valid(self, form: ChallengeCreateForm):
@@ -75,7 +77,8 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("ctfhub:challenges-detail", kwargs={"pk": self.get_object().pk})
+        obj: Challenge = self.object  # type: ignore
+        return reverse("ctfhub:challenges-detail", kwargs={"pk": obj.pk})
 
 
 class ChallengeImportView(LoginRequiredMixin, FormView):
