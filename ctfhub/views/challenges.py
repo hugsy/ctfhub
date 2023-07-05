@@ -91,7 +91,7 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
 
     def get(self, request, *args, **kwargs):
         self.initial["ctf"] = get_object_or_404(Ctf, pk=self.kwargs.get("ctf"))
-        assert isinstance(self.form_class, ChallengeImportForm)
+        assert self.form_class
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {"form": form})
 
@@ -102,7 +102,7 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
 
         try:
             for challenge in data:
-                category, created = ChallengeCategory.objects.get_or_create(
+                category, _ = ChallengeCategory.objects.get_or_create(
                     name=challenge["category"].strip().lower()
                 )
                 points = 0

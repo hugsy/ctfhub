@@ -46,6 +46,7 @@ def discord_notify_ctf_creation(
         if instance.is_permanent
         else f"Date: {instance.start_date} - {instance.end_date}"
     )
+    username: str = instance.created_by.username if instance.created_by else "Unknown"
     defaults = {
         "username": DISCORD_BOT_NAME,
         "content": msg,
@@ -53,7 +54,7 @@ def discord_notify_ctf_creation(
             {
                 "url": url,
                 "description": f"""
-`{instance.created_by.username}` added the team for `{instance.name}`!
+`{username}` added the team for `{instance.name}`!
 {date_and_time}
 Link: [{url}]({url})
 """,
@@ -77,7 +78,7 @@ def discord_notify_scored_challenge(
     if not instance.flag:
         return False
 
-    if not instance.flag_tracker.has_changed("flag"):
+    if not instance.flag_tracker.has_changed("flag"):  # type: ignore
         return False
 
     # HACK check if the flag was scored "recently"
@@ -90,6 +91,10 @@ def discord_notify_scored_challenge(
     msg = random.choice(SCORED_FLAG_MESSAGES).format(instance.name)
     points = f"{instance.points} "
     points += "points" if instance.points > 1 else "point"
+    username = (
+        instance.last_update_by.username if instance.last_update_by else "Unknown"
+    )
+    category = instance.category.name if instance.category else "Uncategorized"
     js = {
         "username": DISCORD_BOT_NAME,
         "content": msg,
@@ -97,7 +102,7 @@ def discord_notify_scored_challenge(
             {
                 "url": challenge_url,
                 "description": f"""
-`{instance.last_update_by.username}` scored {points} with `{instance.name}` (ctf:[`{instance.ctf.name}`]({ctf_url}), category:`{instance.category.name}`)!
+`{username}` scored {points} with `{instance.name}` (ctf:[`{instance.ctf.name}`]({ctf_url}), category:`{category}`)!
 
 Flag: `{instance.flag}`
 """,
