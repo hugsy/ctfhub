@@ -30,7 +30,7 @@ class TestHelpers(TestCase):
 
     def test_helpers_ctftime(self):
         try:
-            ctfs = helpers.ctftime_fetch_ctfs(5)
+            ctfs = helpers.CtfTime.fetch_ctfs(5)
             assert len(ctfs) == 5
             for ctf in ctfs:
                 assert isinstance(ctf["organizers"], list)

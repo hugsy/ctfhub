@@ -4,10 +4,6 @@ import pathlib
 import tempfile
 import uuid
 import zipfile
-from django.conf import settings
-from django.http import HttpResponse
-import requests
-
 from collections import Counter, namedtuple
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -16,7 +12,7 @@ from typing import IO, TYPE_CHECKING, Optional, OrderedDict, Union
 from urllib.parse import quote
 
 import django.db.models.manager
-
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
@@ -28,34 +24,11 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from model_utils import Choices, FieldTracker
 from model_utils.fields import MonitorField, StatusField
+
 from ctfhub import helpers
 from ctfhub.exceptions import ExternalError
-
-from ctfhub.helpers import (
-    ctftime_ctfs,
-    ctftime_get_ctf_logo_url,
-    generate_excalidraw_room_id,
-    generate_excalidraw_room_key,
-    get_challenge_upload_path,
-    get_file_magic,
-    get_file_mime,
-    get_named_storage,
-    get_random_string_128,
-    get_random_string_64,
-    which_hedgedoc,
-)
 from ctfhub.validators import challenge_file_max_size_validator
-from ctfhub_project.settings import (
-    CTF_CHALLENGE_FILE_ROOT,
-    CTFHUB_DEFAULT_COUNTRY_LOGO,
-    CTFTIME_URL,
-    EXCALIDRAW_ROOM_ID_REGEX,
-    EXCALIDRAW_ROOM_KEY_REGEX,
-    EXCALIDRAW_URL,
-    IMAGE_URL,
-    JITSI_URL,
-    USERS_FILE_PATH,
-)
+
 
 if TYPE_CHECKING:
     from django.db.models.manager import Manager
@@ -85,11 +58,11 @@ class Team(TimeStampedModel):
     github_url = models.URLField(blank=True)
     youtube_url = models.URLField(blank=True)
     blog_url = models.URLField(blank=True)
-    api_key = models.CharField(max_length=128, default=get_random_string_128)
+    api_key = models.CharField(max_length=128, default=helpers.get_random_string_128)
     avatar = models.ImageField(
         blank=True,
-        upload_to=USERS_FILE_PATH,
-        storage=get_named_storage("MEDIA"),
+        upload_to=settings.USERS_FILE_PATH,
+        storage=helpers.get_named_storage("MEDIA"),
         validators=[
             challenge_file_max_size_validator,
         ],
@@ -106,9 +79,7 @@ class Team(TimeStampedModel):
 
     @property
     def ctftime_url(self) -> str:
-        if not self.ctftime_id:
-            return "#"
-        return f"{CTFTIME_URL}/team/{self.ctftime_id}"
+        return helpers.CtfTime.team_url(self.ctftime_id or -1)
 
     @property
     def members(self):
@@ -287,18 +258,17 @@ class Ctf(TimeStampedModel):
 
     @cached_property
     def ctftime_url(self):
-        return f"{CTFTIME_URL}/event/{self.ctftime_id}"
+        if not self.ctftime_id:
+            return "#"
+        return helpers.CtfTime.event_url(self.ctftime_id)
 
     @cached_property
     def ctftime_logo_url(self):
-        try:
-            return ctftime_get_ctf_logo_url(self.ctftime_id)
-        except (RuntimeError, requests.exceptions.ReadTimeout):
-            return f"{IMAGE_URL}/blank-ctf.png"
+        return helpers.CtfTime.event_logo_url(self.ctftime_id or -1)
 
     @cached_property
     def jitsi_url(self):
-        return f"{JITSI_URL}/{self.id}"
+        return f"{settings.JITSI_URL}/{self.id}"
 
     def team_timeline(self):
         challs = (
@@ -1298,7 +1268,9 @@ class Member(TimeStampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
     avatar = models.ImageField(
-        blank=True, upload_to=USERS_FILE_PATH, storage=get_named_storage("MEDIA")
+        blank=True,
+        upload_to=settings.USERS_FILE_PATH,
+        storage=helpers.get_named_storage("MEDIA"),
     )
     description = models.TextField(blank=True)
     country = models.CharField(
@@ -1310,7 +1282,7 @@ class Member(TimeStampedModel):
     last_active_notification = models.DateTimeField(null=True)
     joined_time = models.DateTimeField(null=True)
     hedgedoc_password = models.CharField(
-        max_length=64, editable=False, default=get_random_string_64
+        max_length=64, editable=False, default=helpers.get_random_string_64
     )
     twitter_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True)
@@ -1428,9 +1400,9 @@ class Member(TimeStampedModel):
 
     @property
     def country_flag_url(self):
-        url_prefix = f"{IMAGE_URL}flags"
+        url_prefix = f"{settings.IMAGE_URL}flags"
         if not self.country:
-            return f"{url_prefix}/{CTFHUB_DEFAULT_COUNTRY_LOGO}"
+            return f"{url_prefix}/{settings.CTFHUB_DEFAULT_COUNTRY_LOGO}"
         return f"{url_prefix}/{slugify(Member.Country(self.country).label)}.png"
 
     @property
@@ -1443,7 +1415,7 @@ class Member(TimeStampedModel):
 
     @cached_property
     def jitsi_url(self):
-        return f"{JITSI_URL}/{str(self)}"
+        return f"{settings.JITSI_URL}/{str(self)}"
 
     @cached_property
     def private_ctfs(self):
@@ -1560,21 +1532,21 @@ class Challenge(TimeStampedModel):
     )
     note_id = models.UUIDField(default=uuid.uuid4, editable=True)
     excalidraw_room_id = models.CharField(
-        default=generate_excalidraw_room_id,
+        default=helpers.generate_excalidraw_room_id,
         validators=[
             RegexValidator(
-                regex=EXCALIDRAW_ROOM_ID_REGEX,
-                message=f"Please follow regex format {EXCALIDRAW_ROOM_ID_REGEX}",
+                regex=settings.EXCALIDRAW_ROOM_ID_REGEX,
+                message=f"Please follow regex format {settings.EXCALIDRAW_ROOM_ID_REGEX}",
                 code="nomatch",
             )
         ],
     )
     excalidraw_room_key = models.CharField(
-        default=generate_excalidraw_room_key,
+        default=helpers.generate_excalidraw_room_key,
         validators=[
             RegexValidator(
-                regex=EXCALIDRAW_ROOM_KEY_REGEX,
-                message=f"Please follow regex format {EXCALIDRAW_ROOM_KEY_REGEX}",
+                regex=settings.EXCALIDRAW_ROOM_KEY_REGEX,
+                message=f"Please follow regex format {settings.EXCALIDRAW_ROOM_KEY_REGEX}",
                 code="nomatch",
             )
         ],
@@ -1627,7 +1599,7 @@ class Challenge(TimeStampedModel):
         """
         Ensure presence of a trailing slash at the end
         """
-        url = os.path.join(EXCALIDRAW_URL, "")
+        url = os.path.join(settings.EXCALIDRAW_URL, "")
         url += f"#room={self.excalidraw_room_id},{self.excalidraw_room_key}"
         return url
 
@@ -1637,7 +1609,7 @@ class Challenge(TimeStampedModel):
 
     @cached_property
     def jitsi_url(self):
-        return f"{JITSI_URL}/{self.ctf.id}--{self.id}"
+        return f"{settings.JITSI_URL}/{self.ctf.id}--{self.id}"
 
     def save(self, **kwargs):
         if self.flag_tracker.has_changed("flag"):  # type: ignore
@@ -1664,8 +1636,8 @@ class ChallengeFile(TimeStampedModel):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     file = models.FileField(
         null=True,
-        upload_to=get_challenge_upload_path,
-        storage=get_named_storage("MEDIA"),
+        upload_to=helpers.get_challenge_upload_path,
+        storage=helpers.get_named_storage("MEDIA"),
         validators=[
             challenge_file_max_size_validator,
         ],
@@ -1696,13 +1668,13 @@ class ChallengeFile(TimeStampedModel):
         #
         # update missing properties
         #
-        fpath = Path(CTF_CHALLENGE_FILE_ROOT) / self.name
+        fpath = Path(settings.CTF_CHALLENGE_FILE_ROOT) / self.name
         if fpath.exists():
             abs_path = str(fpath.absolute())
             if not self.mime:
-                self.mime = get_file_mime(fpath)
+                self.mime = helpers.get_file_mime(fpath)
             if not self.type:
-                self.type = get_file_magic(fpath)
+                self.type = helpers.get_file_magic(fpath)
             if not self.hash:
                 self.hash = hashlib.sha256(open(abs_path, "rb").read()).hexdigest()
             super(ChallengeFile, self).save()
@@ -2043,7 +2015,7 @@ class SearchEngine:
             list: [description]
         """
         results = []
-        for entry in ctftime_ctfs(running=False, future=True):
+        for entry in helpers.CtfTime.ctfs(running=False, future=True):
             if query in entry["title"].lower() or query in entry["description"].lower():
                 results.append(
                     SearchResult(

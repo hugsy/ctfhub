@@ -1,6 +1,8 @@
 import datetime
 import random
 
+from django.conf import settings
+
 from ctfhub.helpers import discord_send_message, get_current_site
 from ctfhub.models import Challenge, Ctf
 from django.db.models.signals import post_save
@@ -38,7 +40,7 @@ def discord_notify_ctf_creation(
     if not instance.is_public:
         return False
 
-    root = get_current_site()
+    root = settings.CTFHUB_URL
     url = f"{root}{instance.get_absolute_url()}"
     msg = random.choice(NEW_CTF_MESSAGES).format(instance.name)
     date_and_time = (
@@ -85,7 +87,7 @@ def discord_notify_scored_challenge(
     if datetime.datetime.now() - instance.solved_time >= datetime.timedelta(seconds=1):
         return False
 
-    root = get_current_site()
+    root = settings.CTFHUB_URL
     ctf_url = f"{root}{instance.ctf.get_absolute_url()}"
     challenge_url = f"{root}{instance.get_absolute_url()}"
     msg = random.choice(SCORED_FLAG_MESSAGES).format(instance.name)

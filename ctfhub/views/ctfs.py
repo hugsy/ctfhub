@@ -1,7 +1,6 @@
 import requests
 from ctfhub import helpers
 from ctfhub.forms import CategoryCreateForm, CtfCreateUpdateForm, TagCreateForm
-from ctfhub.helpers import ctftime_ctfs, ctftime_get_ctf_info, ctftime_parse_date
 from ctfhub.mixins import MembersOnlyMixin
 from ctfhub.models import Ctf, Member, Team
 from django.contrib import messages
@@ -19,8 +18,6 @@ from django.views.generic import (
     UpdateView,
 )
 
-from ctfhub_project.settings import HEDGEDOC_URL
-
 
 class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
     model = Ctf
@@ -33,7 +30,7 @@ class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         try:
-            ctfs = ctftime_ctfs(running=True, future=True)
+            ctfs = helpers.CtfTime.ctfs(running=True, future=True)
         except RuntimeError:
             ctfs = []
             messages.warning(self.request, "CTFTime GET request failed")
@@ -81,13 +78,13 @@ class CtfCreateView(
 
         if form.instance.ctftime_id:
             try:
-                ctf = ctftime_get_ctf_info(form.instance.ctftime_id)
+                ctf = helpers.CtfTime.fetch_ctf_info(form.instance.ctftime_id)
                 form.instance.ctftime_id = ctf["id"]
                 form.instance.name = ctf["title"]
                 form.instance.url = ctf["url"]
                 form.instance.description = ctf["description"]
-                form.instance.start_date = ctftime_parse_date(ctf["start"])
-                form.instance.end_date = ctftime_parse_date(ctf["finish"])
+                form.instance.start_date = helpers.CtfTime.parse_date(ctf["start"])
+                form.instance.end_date = helpers.CtfTime.parse_date(ctf["finish"])
             except (RuntimeError, requests.exceptions.ReadTimeout) as e:
                 messages.warning(self.request, f"CTFTime GET request failed: {str(e)}")
 
@@ -96,7 +93,8 @@ class CtfCreateView(
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.get_object().pk})
+        obj: Ctf = self.object  # type: ignore
+        return reverse("ctfhub:ctfs-detail", kwargs={"pk": obj.pk})
 
 
 class CtfImportView(CtfCreateView):
@@ -111,13 +109,13 @@ class CtfImportView(CtfCreateView):
 
         if initial["ctftime_id"]:
             try:
-                ctf = ctftime_get_ctf_info(initial["ctftime_id"])
+                ctf = helpers.CtfTime.fetch_ctf_info(initial["ctftime_id"])
                 initial["ctftime_id"] = ctf["id"]
                 initial["name"] = ctf["title"]
                 initial["url"] = ctf["url"]
                 initial["description"] = ctf["description"]
-                initial["start_date"] = ctftime_parse_date(ctf["start"])
-                initial["end_date"] = ctftime_parse_date(ctf["finish"])
+                initial["start_date"] = helpers.CtfTime.parse_date(ctf["start"])
+                initial["end_date"] = helpers.CtfTime.parse_date(ctf["finish"])
                 initial["weight"] = ctf["weight"]
             except (RuntimeError, requests.exceptions.ReadTimeout) as e:
                 messages.warning(self.request, f"CTFTime GET request failed: {str(e)}")

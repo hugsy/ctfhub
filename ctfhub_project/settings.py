@@ -201,12 +201,6 @@ HEDGEDOC_URL_PRIVATE = (
     os.getenv("CTFHUB_HEDGEDOC_PRIVATE_URL") or "http://hedgedoc:3000"
 )
 
-CTFTIME_URL = "https://ctftime.org"
-CTFTIME_API_EVENTS_URL = f"{CTFTIME_URL}/api/v1/events/"
-CTFTIME_USER_AGENT = (
-    "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"
-)
-
 LOGIN_URL = "ctfhub:user-login"
 LOGIN_REDIRECT_URL = "ctfhub:dashboard"
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2 * 1024 * 1024
