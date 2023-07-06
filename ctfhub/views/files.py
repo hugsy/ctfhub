@@ -22,9 +22,8 @@ class ChallengeFileCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateVie
     success_message = "File added!"
 
     def get_success_url(self):
-        return reverse(
-            "ctfhub:challenges-detail", kwargs={"pk": self.object.challenge.id}
-        )
+        obj: ChallengeFile = self.object  # type: ignore
+        return reverse("ctfhub:challenges-detail", kwargs={"pk": obj.challenge.id})
 
 
 class ChallengeFileDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
@@ -35,14 +34,17 @@ class ChallengeFileDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteVie
     success_message = "File deleted!"
 
     def get_success_url(self):
-        return reverse(
-            "ctfhub:challenges-detail", kwargs={"pk": self.object.challenge.id}
-        )
+        obj = self.get_object()
+        assert isinstance(obj, ChallengeFile)
+        return reverse("ctfhub:challenges-detail", kwargs={"pk": obj.challenge.id})
 
     def post(self, request, *args, **kwargs):
-        fpath = Path(self.get_object().file.path)
+        obj = self.get_object()
+        assert isinstance(obj, ChallengeFile)
+        fpath = Path(obj.file.path)
         res = self.delete(request, *args, **kwargs)
-        # delete the file on-disk: https://docs.djangoproject.com/en/3.1/releases/1.3/#deleting-a-model-doesn-t-delete-associated-files
+        # delete the file on-disk
+        # https://docs.djangoproject.com/en/3.1/releases/1.3/#deleting-a-model-doesn-t-delete-associated-files
         if fpath.exists():
             fpath.unlink()
         return res
@@ -53,11 +55,9 @@ class ChallengeFileDetailView(LoginRequiredMixin, SuccessMessageMixin, DetailVie
     template_name = "ctfhub/challenges/files/detail.html"
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
-    initial = {}
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class(initial=self.initial)
-        return render(request, self.template_name, {"form": form})
+        return render(request, self.template_name, {"form": {}})
 
 
 @login_required

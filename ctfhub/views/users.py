@@ -1,6 +1,6 @@
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import (
     LoginView,
@@ -65,18 +65,23 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if (
-            not request.user.member.has_superpowers
-            and self.object.pk != request.user.id
-        ):
+        member = Member.objects.get(user=request.user)
+
+        if not member.has_superpowers:
+            # Not admin
             return HttpResponseForbidden()
+
+        if self.object.pk != member.pk:
+            # Trying to edit a different user/member
+            return HttpResponseForbidden()
+
         return super().get(request, *args, **kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
         password = form.cleaned_data["current_password"]
         if not self.request.user.check_password(password):
             messages.error(self.request, "Incorrect password")
-            return redirect("ctfhub:users-update-advanced", self.request.user.member.id)
+            return super().form_invalid(form)
         return super().form_valid(form)
 
 
@@ -99,20 +104,14 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
 
-    def form_valid(self, form):
-        # validate team presence
-        teams = Team.objects.all()
-        if teams.count() == 0:
-            messages.error(self.request, "A team must be registered first!")
-            return redirect("ctfhub:team-register")
-
+    def form_valid(self, form: MemberCreateForm):
         # validate passwords
         if form.cleaned_data["password1"] != form.cleaned_data["password2"]:
             messages.error(self.request, "Password mismatch")
             return self.form_invalid(form)
 
-        # validate api_key
-        team = teams.first()
+        # validate team and get api_key
+        team = Team.objects.first()
         if not team:
             return redirect("ctfhub:team-register")
 
@@ -158,7 +157,9 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         return reverse("ctfhub:dashboard")
 
 
-class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class MemberUpdateView(
+    UserPassesTestMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView
+):
     model = Member
     success_url = reverse_lazy("ctfhub:dashboard")
     template_name = "users/edit.html"
@@ -167,45 +168,28 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_message = "Member successfully updated"
     form_class = MemberUpdateForm
 
-    def get(self, request, *args, **kwargs):
+    def test_func(self) -> bool:
         self.object = self.get_object()
-        if (
-            not request.user.member.has_superpowers
-            and self.object.pk != request.user.member.id
-        ):
-            return HttpResponseForbidden()
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        #
-        # If not admin and different user id, simply reject
-        #
-        self.object = self.get_object()
-        if (
-            not request.user.member.has_superpowers
-            and self.object.pk != request.user.member.id
-        ):
-            return HttpResponseForbidden()
-        return super().post(request, *args, **kwargs)
+        member = Member.objects.get(user=self.request.user)
+        return member.has_superpowers or self.object.pk == member.pk
 
     def get_context_data(self, **kwargs):
+        obj = self.get_object()
+        assert isinstance(obj, Member)
         if "form" not in kwargs:
             kwargs["form"] = self.get_form()
-        kwargs["form"].initial["has_superpowers"] = self.get_object().has_superpowers
+        kwargs["form"].initial["has_superpowers"] = obj.has_superpowers
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form: BaseModelForm) -> HttpResponse:
-        if (
-            self.request.user.member.has_superpowers
-            and "has_superpowers" in form.cleaned_data
-        ):
-            member = self.get_object()
+        member = Member.objects.get(user=self.request.user)
+        if member.has_superpowers and "has_superpowers" in form.cleaned_data:
             if form.cleaned_data["has_superpowers"] is True:
                 # any superuser can make another user become a superuser
                 member.user.is_superuser = True
             else:
                 # any superuser can be downgraded to user, except user_id = 1
-                if member.user.id != 1:
+                if member.user.pk != 1:
                     member.user.is_superuser = False
             member.user.save()
         return super().form_valid(form)
@@ -215,10 +199,12 @@ class MemberMarkAsSelectedView(MemberUpdateView):
     form_class = MemberMarkAsSelectedForm
 
     def get_success_url(self):
-        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.object.selected_ctf.id})
+        obj: Member = self.object  # type: ignore
+        assert obj.selected_ctf, f"CTF was just assigned, should not be None"
+        return reverse("ctfhub:ctfs-detail", kwargs={"pk": obj.selected_ctf.pk})
 
     def get_success_message(self, cleaned_data):
-        return f"CTF {cleaned_data['selected_ctf']} mark as Current"
+        return f"Marked as Working On CTF {cleaned_data['selected_ctf']}"
 
 
 class MemberDeleteView(

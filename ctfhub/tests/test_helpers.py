@@ -30,7 +30,7 @@ class TestHelpers(TestCase):
 
     def test_helpers_ctftime(self):
         try:
-            ctfs = helpers.ctftime_fetch_ctfs(5)
+            ctfs = helpers.CtfTime.fetch_ctfs(5)
             assert len(ctfs) == 5
             for ctf in ctfs:
                 assert isinstance(ctf["organizers"], list)
@@ -64,23 +64,19 @@ class TestHelpers(TestCase):
 
 class TestUnauthHedgedocHelper(TestCase):
     def setUp(self) -> None:
-        self.email: str = "testuser01@ctfhub.localdomain"
-        self.password: str = "testuser01"
+        self.email: str = "user1@ctfhub.localdomain"
+        self.password: str = "user1"
         return super().setUp()
 
     def tearDown(self) -> None:
         return super().tearDown()
 
-    @django_set_temporary_setting("USE_INTERNAL_HEDGEDOC", True)
-    @django_set_temporary_setting("HEDGEDOC_URL", "http://IShouldNotWork:3000")
+    @django_set_temporary_setting("HEDGEDOC_URL", "http://IShouldNotWork.com:3000")
+    @django_set_temporary_setting("HEDGEDOC_URL_PRIVATE", "http://not_valid:1337")
     def test_hedgedoc_url_valid(self):
         cli = helpers.HedgeDoc((self.email, self.password))
-        assert cli.url != "http://IShouldNotWork:3000"
+        assert cli.public_url == "http://IShouldNotWork.com:3000"
 
-    @django_set_temporary_setting("USE_INTERNAL_HEDGEDOC", False)
-    @django_set_temporary_setting("HEDGEDOC_URL", "http://not_valid:1337")
-    def test_hedgedoc_url_invalid(self):
-        cli = helpers.HedgeDoc((self.email, self.password))
         with pytest.raises(ValidationError):
             assert cli.url
 

@@ -1,6 +1,8 @@
 import datetime
 import random
 
+from django.conf import settings
+
 from ctfhub.helpers import discord_send_message, get_current_site
 from ctfhub.models import Challenge, Ctf
 from django.db.models.signals import post_save
@@ -35,10 +37,10 @@ def discord_notify_ctf_creation(
     if not created:
         return False
 
-    if instance.visibility != "public":
+    if not instance.is_public:
         return False
 
-    root = get_current_site()
+    root = settings.CTFHUB_URL
     url = f"{root}{instance.get_absolute_url()}"
     msg = random.choice(NEW_CTF_MESSAGES).format(instance.name)
     date_and_time = (
@@ -46,6 +48,7 @@ def discord_notify_ctf_creation(
         if instance.is_permanent
         else f"Date: {instance.start_date} - {instance.end_date}"
     )
+    username: str = instance.created_by.username if instance.created_by else "Unknown"
     defaults = {
         "username": DISCORD_BOT_NAME,
         "content": msg,
@@ -53,7 +56,7 @@ def discord_notify_ctf_creation(
             {
                 "url": url,
                 "description": f"""
-`{instance.created_by.username}` added the team for `{instance.name}`!
+`{username}` added the team for `{instance.name}`!
 {date_and_time}
 Link: [{url}]({url})
 """,
@@ -71,25 +74,29 @@ def discord_notify_scored_challenge(
     if created:
         return False
 
-    if instance.ctf.visibility != "public":
+    if not instance.ctf.is_public:
         return False
 
     if not instance.flag:
         return False
 
-    if not instance.flag_tracker.has_changed("flag"):
+    if not instance.flag_tracker.has_changed("flag"):  # type: ignore
         return False
 
     # HACK check if the flag was scored "recently"
     if datetime.datetime.now() - instance.solved_time >= datetime.timedelta(seconds=1):
         return False
 
-    root = get_current_site()
+    root = settings.CTFHUB_URL
     ctf_url = f"{root}{instance.ctf.get_absolute_url()}"
     challenge_url = f"{root}{instance.get_absolute_url()}"
     msg = random.choice(SCORED_FLAG_MESSAGES).format(instance.name)
     points = f"{instance.points} "
     points += "points" if instance.points > 1 else "point"
+    username = (
+        instance.last_update_by.username if instance.last_update_by else "Unknown"
+    )
+    category = instance.category.name if instance.category else "Uncategorized"
     js = {
         "username": DISCORD_BOT_NAME,
         "content": msg,
@@ -97,7 +104,7 @@ def discord_notify_scored_challenge(
             {
                 "url": challenge_url,
                 "description": f"""
-`{instance.last_update_by.username}` scored {points} with `{instance.name}` (ctf:[`{instance.ctf.name}`]({ctf_url}), category:`{instance.category.name}`)!
+`{username}` scored {points} with `{instance.name}` (ctf:[`{instance.ctf.name}`]({ctf_url}), category:`{category}`)!
 
 Flag: `{instance.flag}`
 """,

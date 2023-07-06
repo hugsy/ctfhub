@@ -1,3 +1,4 @@
+from typing import Any
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -14,6 +15,7 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+from ctfhub import helpers
 
 from ctfhub.forms import (
     ChallengeCreateForm,
@@ -22,9 +24,8 @@ from ctfhub.forms import (
     ChallengeSetFlagForm,
     ChallengeUpdateForm,
 )
-from ctfhub.helpers import export_challenge_note, generate_github_page_header
+from ctfhub.helpers import generate_github_page_header
 from ctfhub.models import Challenge, ChallengeCategory, Ctf, Member
-from ctfhub_project.settings import HEDGEDOC_URL
 
 
 class ChallengeListView(LoginRequiredMixin, ListView):
@@ -58,10 +59,13 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             self.initial["ctf"] = Ctf.objects.get(pk=self.kwargs.get("ctf"))
         except Ctf.DoesNotExist:
             pass
-        form = self.form_class(initial=self.initial)
+        if self.form_class:
+            form = self.form_class(initial=self.initial)
+        else:
+            form = {}
         return render(request, self.template_name, {"form": form})
 
-    def form_valid(self, form):
+    def form_valid(self, form: ChallengeCreateForm):
         if (
             Challenge.objects.filter(
                 name=form.instance.name, ctf=form.instance.ctf
@@ -73,7 +77,8 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse("ctfhub:challenges-detail", kwargs={"pk": self.object.pk})
+        obj: Challenge = self.object  # type: ignore
+        return reverse("ctfhub:challenges-detail", kwargs={"pk": obj.pk})
 
 
 class ChallengeImportView(LoginRequiredMixin, FormView):
@@ -85,7 +90,8 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
     success_message = "Challenges were successfully imported!"
 
     def get(self, request, *args, **kwargs):
-        self.initial["ctf"] = self.kwargs.get("ctf")
+        self.initial["ctf"] = get_object_or_404(Ctf, pk=self.kwargs.get("ctf"))
+        assert self.form_class
         form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {"form": form})
 
@@ -96,7 +102,7 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
 
         try:
             for challenge in data:
-                category, created = ChallengeCategory.objects.get_or_create(
+                category, _ = ChallengeCategory.objects.get_or_create(
                     name=challenge["category"].strip().lower()
                 )
                 points = 0
@@ -138,13 +144,17 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
     login_url = "/users/login/"
     redirect_field_name = "redirect_to"
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs) -> dict[str, Any]:
+        obj = self.get_object()
+        assert isinstance(obj, Challenge)
+        member = Member.objects.get(user=self.request.user)
+        cli = helpers.HedgeDoc(member)
         ctx = super().get_context_data(**kwargs)
         ctx |= {
             "flag_form": ChallengeSetFlagForm(),
             "file_upload_form": ChallengeFileCreateForm(),
-            "hedgedoc_url": HEDGEDOC_URL,
-            "excalidraw_url": self.object.get_excalidraw_url(self.request.user.member),
+            "hedgedoc_url": cli.public_url,
+            "excalidraw_url": obj.get_excalidraw_url(member),
         }
         return ctx
 
@@ -158,9 +168,9 @@ class ChallengeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_message = "Challenge successfully updated"
 
     def get_success_url(self):
-        return reverse("ctfhub:challenges-detail", kwargs={"pk": self.object.pk})
+        return reverse("ctfhub:challenges-detail", kwargs={"pk": self.get_object().pk})
 
-    def form_valid(self, form):
+    def form_valid(self, form: ChallengeUpdateForm):
         if "solvers" in form.cleaned_data:
             if (
                 len(form.cleaned_data["solvers"]) > 0 and not form.cleaned_data["flag"]
@@ -176,12 +186,12 @@ class ChallengeSetFlagView(ChallengeUpdateView):
     template_name = "ctfhub/challenges/detail.html"
 
     def get_success_url(self):
-        return reverse("ctfhub:challenges-detail", kwargs={"pk": self.object.pk})
+        return reverse("ctfhub:challenges-detail", kwargs={"pk": self.get_object().pk})
 
     def form_valid(self, form):
         if form.instance.ctf.is_finished:
             messages.error(self.request, "Cannot score when CTF is over")
-            return redirect("ctfhub:challenges-detail", self.object.id)
+            return redirect("ctfhub:challenges-detail", self.get_object().pk)
 
         if form.instance.ctf.flag_prefix and "flag" in form.cleaned_data:
             if not form.cleaned_data["flag"].startswith(form.instance.ctf.flag_prefix):
@@ -201,7 +211,9 @@ class ChallengeDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
     success_message = "Challenge deleted successfully"
 
     def get_success_url(self):
-        return reverse("ctfhub:ctfs-detail", kwargs={"pk": self.object.ctf.id})
+        obj = self.get_object()
+        assert isinstance(obj, Challenge)
+        return reverse("ctfhub:ctfs-detail", kwargs={"pk": obj.ctf.pk})
 
 
 class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
@@ -211,18 +223,17 @@ class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
     redirect_field_name = "redirect_to"
 
     def get(self, request, *args, **kwargs):
-        c = self.get_object()
-        u = request.user.member
-        tags = "[" + c.category.name + ","
-        for t in c.tags.all():
-            tags += t.name + ","
-        tags += "]"
+        obj = self.get_object()
+        assert isinstance(obj, Challenge)
+        member = Member.objects.get(user=self.request.user)
+        assert obj.category, "Challenge must always have category"
+        tags = f"[{obj.category.name}, {','.join([t.name for t in obj.tags.all()])} ]"
         content = generate_github_page_header(
-            title=c.name, author=u.username, tags=tags
+            title=obj.name, author=member.username, tags=tags
         )
-        if c.description:
-            content += f"Description:\n> {c.description}\n\n"
-        content += export_challenge_note(u, c.note_id)
+        if obj.description:
+            content += f"Description:\n> {obj.description}\n\n"
+        content += member.export_note(obj.note_id)
         response = HttpResponse(content, content_type="text/markdown; charset=utf-8")
         response["Content-Length"] = len(content)
         return response

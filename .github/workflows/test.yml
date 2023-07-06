@@ -52,8 +52,8 @@ jobs:
           echo CTFHUB_DB_PASSWORD=ctfhub >> $GITHUB_ENV
           echo CTFHUB_DB_HOST=localhost >> $GITHUB_ENV
           echo CTFHUB_DB_PORT=5432 >> $GITHUB_ENV
-          echo CTFHUB_HEDGEDOC_URL=http://localhost:3000 >> $GITHUB_ENV
-          echo CTFHUB_HEDGEDOC_IS_INTERNAL=0 >> $GITHUB_ENV
+          echo CTFHUB_HEDGEDOC_PRIVATE_URL=http://localhost:3000 >> $GITHUB_ENV
+          echo CTFHUB_HEDGEDOC_PUBLIC_URL=http://localhost:3000 >> $GITHUB_ENV
           echo CTFHUB_ALLOWED_HOSTS="localhost;127.0.0.1" >> $GITHUB_ENV
           echo CTFHUB_TRUSTED_ORIGINS="http://127.0.0.1;http://localhost" >> $GITHUB_ENV
       - name: Setup Python

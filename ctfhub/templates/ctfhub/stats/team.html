@@ -27,7 +27,22 @@
                 {% if request.user.member.has_superpowers %}
                     <li class="list-group-item list-group-item-action">
                         <strong>API Key:</strong>
-                        <code>{{team.api_key}}</code>
+                        <i class="fa fa-clipboard" aria-hidden="true"
+                           id="api_to_clipboard" onclick="
+                                                          var text = document.getElementById('api_to_clipboard').innerHTML;
+                                                          navigator.clipboard.writeText(document.getElementById('team_api_key').innerText).then(
+                                                          () => {
+                                                          document.getElementById('api_to_clipboard').innerHTML = text + ' ✅';
+                                                          },
+                                                          () => {
+                                                          document.getElementById('api_to_clipboard').innerHTML = text + ' ❌';
+                                                          }
+                                                          );
+                                                          setTimeout(()=>{
+                                                          document.getElementById('api_to_clipboard').innerHTML = text;
+                                                          }, 2500);
+                                                         "></i>
+                        <code id="team_api_key">{{team.api_key}}</code>
                     </li>
                 {% endif %}
 

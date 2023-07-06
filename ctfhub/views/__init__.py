@@ -56,14 +56,17 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
+    DEFAULT_LATEST_CTF_NUMBER = 25
     member = Member.objects.get(user=request.user)
     if member.is_guest:
         members = Member.objects.filter(selected_ctf=member.selected_ctf)
     else:
         members = Member.objects.all()
-    latest_ctfs = member.ctfs.order_by("-start_date")
+    latest_ctfs = member.ctfs.order_by("-start_date")[:DEFAULT_LATEST_CTF_NUMBER]
     now = datetime.datetime.now()
     nb_ctf_played = member.ctfs.count()
+
+    # `current_ctfs` holds all the ctfs currently running, including permanent (always running)
     current_ctfs = (ctf for ctf in member.public_ctfs.all() if ctf.is_running)
     next_ctf = (
         member.public_ctfs.filter(
@@ -75,8 +78,9 @@ def dashboard(request: HttpRequest) -> HttpResponse:
 
     context = {
         "members": members,
-        "latest_ctfs": latest_ctfs[:10],
+        "latest_ctfs": latest_ctfs,
         "current_ctfs": current_ctfs,
+        "temporary_running_ctfs": [ctf for ctf in current_ctfs if not ctf.is_running],
         "next_ctf": next_ctf,
         "nb_ctf_played": nb_ctf_played,
     }

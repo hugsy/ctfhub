@@ -7,6 +7,7 @@ import uuid
 from datetime import datetime
 from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Optional, Union
+import warnings
 
 import django.core.mail
 import django.utils.crypto
@@ -18,6 +19,7 @@ from django.core.files.storage import get_storage_class
 from django.core.validators import URLValidator
 
 import ctfhub.models
+
 
 if TYPE_CHECKING:
     from ctfhub.models import ChallengeFile
@@ -75,7 +77,8 @@ class HedgeDoc:
 
     @property
     def url(self) -> str:
-        """Get the URL base to the hedgedoc.
+        """Get the URL base to hedgedoc. This is the URL as it must be used for CTFHub to reach HedgeDoc.
+        To get the URL as must be used by web browsers, use `public_url`
 
         Raises:
             ValidationError: if the url is invalid (bad pattern OR unreachable)
@@ -87,20 +90,39 @@ class HedgeDoc:
             #
             # lazy fetching, cache it, raises ValidationError on failure
             #
-            if settings.USE_INTERNAL_HEDGEDOC:
-                self.__url = "http://hedgedoc:3000"
-            else:
-                #
-                # If specified an HedgeDoc URL outside of the docker-compose env, also ping it
-                #
-                url = settings.HEDGEDOC_URL.rstrip("/")
-                is_valid = URLValidator(schemes=["http", "https"])
-                is_valid(url)
-                if not self.ping(url):
-                    raise ValidationError(f"Failed to reach {url}")
-                self.__url = url
+            url = settings.HEDGEDOC_URL_PRIVATE.rstrip("/").lower()
+            if not url.startswith("http://") and not url.startswith("https://"):
+                raise ValidationError(f"Invalid URL protocol for {url}")
+            if not self.ping(url):
+                raise ValidationError(f"Failed to reach {url}")
+            self.__url = url
 
         return self.__url
+
+    @property
+    def public_url(self) -> str:
+        """Get the URL to HedgeDoc as it must be used by web browsers.
+
+        Raises:
+            ValidationError: if the url is invalid (bad pattern OR unreachable)
+
+        Returns:
+            str: _description_
+        """
+        url = settings.HEDGEDOC_URL.rstrip("/")
+        is_valid = URLValidator(schemes=["http", "https"])
+        is_valid(url)
+        return url
+
+    @staticmethod
+    def Url() -> str:
+        """Static method to always return the public URL
+
+        Returns:
+            str: _description_
+        """
+        cli = HedgeDoc(("anonymous", ""))
+        return cli.public_url
 
     def ping(self, url: Optional[str] = None) -> bool:
         """Sends a simple ping to the server
@@ -369,38 +391,162 @@ class HedgeDoc:
         return response.text
 
 
+class CtfTime:
+    url = "https://ctftime.org"
+    api_events_url = f"{url}/api/v1/events"
+    user_agent = "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"
+
+    @staticmethod
+    def team_url(team_id: int):
+        if team_id < 0:
+            return "#"
+        return f"{CtfTime.url}/team/{team_id}"
+
+    @staticmethod
+    def event_url(event_id: int):
+        return f"{CtfTime.url}/event/{event_id}"
+
+    @lru_cache(maxsize=128)
+    @staticmethod
+    def event_logo_url(event_id: int):
+        """_summary_
+
+        Args:
+            event_id (int): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        default_logo = f"{settings.IMAGE_URL}/{settings.CTFHUB_DEFAULT_CTF_LOGO}"
+        if not event_id:
+            return default_logo
+
+        try:
+            ctf_info = CtfTime.fetch_ctf_info(event_id)
+            logo: str = ctf_info.setdefault("logo", default_logo)
+            _, ext = os.path.splitext(logo)
+            if ext.lower() not in settings.CTFHUB_ACCEPTED_IMAGE_EXTENSIONS:
+                return default_logo
+        except ValueError:
+            logo = default_logo
+        return logo
+
+    @lru_cache(maxsize=128)
+    @staticmethod
+    def fetch_ctf_info(ctf_id: int) -> dict[str, Any]:
+        """Retrieve all the information for a specific CTF from CTFTime.
+
+        Args:
+            ctftime_id (int): CTFTime event ID
+
+        Returns:
+            dict: JSON output from CTFTime
+        """
+        response = requests.get(
+            f"{CtfTime.api_events_url}/{ctf_id}/",
+            headers={"user-agent": CtfTime.user_agent},
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+        if response.status_code != requests.codes.ok:
+            raise RuntimeError(
+                f"CTFTime returned HTTP code {response.status_code} on {response.url} (expected {requests.codes.ok}):"
+                f"{response.reason}"
+            )
+        return response.json()
+
+    @staticmethod
+    def parse_date(date: str) -> datetime:
+        """Parse a CTFTime date
+
+        Args:
+            date (str): the date to parse
+        Returns:
+            datetime: the date object or "" if there was a parsing error
+        """
+        return datetime.strptime(date[:19], "%Y-%m-%dT%H:%M:%S")
+
+    @staticmethod
+    def ctfs(running=True, future=True) -> list:
+        """Return CTFs that are currently running and starting in the next 6 months.
+
+        Returns:
+            list: current and future CTFs
+        """
+        ctfs = CtfTime.fetch_ctfs()
+        now = datetime.now()
+
+        result = []
+        for ctf in ctfs:
+            start = ctf["start"]
+            finish = ctf["finish"]
+
+            assert isinstance(start, datetime) and isinstance(finish, datetime)
+            if running and start < now < finish:
+                result.append(ctf)
+            if future and now < start < finish:
+                result.append(ctf)
+
+        return result
+
+    @staticmethod
+    def fetch_ctfs(limit=100) -> list[dict[str, str | int | datetime]]:
+        """Retrieve CTFs from CTFTime API with a wide start/finish window (-1/+26 weeks) so we can later run our own filters
+        on the cached results for better performance and accuracy.
+
+        Returns:
+            list: JSON output from CTFTime
+        """
+        start = time.time() - (3600 * 24 * 60)
+        end = time.time() + (3600 * 24 * 7 * 26)
+        res = requests.get(
+            f"{CtfTime.api_events_url}/?limit={limit}&start={start:.0f}&finish={end:.0f}",
+            headers={"user-agent": CtfTime.user_agent},
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+        if res.status_code != requests.codes.ok:
+            raise RuntimeError(
+                f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}"
+            )
+
+        result: list[dict[str, Union[str, int, datetime]]] = []
+        for ctf in res.json():
+            ctf["start"] = CtfTime.parse_date(ctf["start"])
+            ctf["finish"] = CtfTime.parse_date(ctf["finish"])
+            ctf["duration"] = ctf["finish"] - ctf["start"]
+            result.append(ctf)
+
+        return result
+
+
 @lru_cache(maxsize=1)
 def get_current_site() -> str:
-    r = "https://" if settings.CTFHUB_USE_SSL else "http://"
-    r += f"{settings.CTFHUB_DOMAIN}:{settings.CTFHUB_PORT}"
-    return r
+    warnings.warn("get_current_site() is obsolete, use `settings.CTFHUB_URL`")
+    return settings.CTFHUB_URL
 
 
 @lru_cache(maxsize=1)
 def which_hedgedoc() -> str:
-    """Returns the docker container hostname if the default URL from the config is not accessible.
+    """OBSOLETE FUNCTION
+    Returns the docker container hostname if the default URL from the config is not accessible.
     This is so that ctfhub works out of the box with `docker-compose up` as most people wanting to
     trial it out won't bother changing the default values with public FQDN/IPs.
 
     Returns:
         str: the base HedgeDoc URL
     """
-    if settings.USE_INTERNAL_HEDGEDOC:
-        return "http://hedgedoc:3000"
-
-    requests.get(
-        settings.HEDGEDOC_URL, timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT
-    )
-    return settings.HEDGEDOC_URL
+    warnings.warn("which_hedgedoc() is obsolete, use `helpers.HedgeDoc`")
+    raise NotImplementedError
 
 
 def create_new_note() -> str:
     """OBSOLETE FUNCTION: use the HedgeDoc() class"""
+    warnings.warn("Obsolete function, do not use it")
     return f"/{uuid.uuid4()}"
 
 
 def check_note_id(id: str) -> bool:
-    """ "Checks if a specific note exists from its ID.
+    """OBSOLETE FUNCTION
+    Checks if a specific note exists from its ID.
 
     Args:
         id (str): the identifier to check
@@ -408,8 +554,8 @@ def check_note_id(id: str) -> bool:
     Returns:
         bool: returns True if it exists
     """
-    res = requests.head(f"{settings.HEDGEDOC_URL}/{id}")
-    return res.status_code == requests.codes.found
+    warnings.warn("check_note_id() is obsolete, use `helpers.HedgeDoc`")
+    raise NotImplementedError
 
 
 def get_file_magic(
@@ -455,116 +601,6 @@ def get_file_mime(challenge_file: Union[io.BufferedReader, pathlib.Path]) -> str
         str: the file mime type, or "application/octet-stream" if the file doesn't exist on FS
     """
     return get_file_magic(challenge_file, True)
-
-
-def ctftime_parse_date(date: str) -> datetime:
-    """Parse a CTFTime date
-
-    Args:
-        date (str): the date to parse
-    Returns:
-        datetime: the date object or "" if there was a parsing error
-    """
-    return datetime.strptime(date[:19], "%Y-%m-%dT%H:%M:%S")
-
-
-def ctftime_ctfs(running=True, future=True) -> list:
-    """Return CTFs that are currently running and starting in the next 6 months.
-
-    Returns:
-        list: current and future CTFs
-    """
-    ctfs = ctftime_fetch_ctfs()
-    now = datetime.now()
-
-    result = []
-    for ctf in ctfs:
-        start = ctf["start"]
-        finish = ctf["finish"]
-
-        if running and start < now < finish:
-            result.append(ctf)
-        if future and now < start < finish:
-            result.append(ctf)
-
-    return result
-
-
-def ctftime_fetch_ctfs(limit=100) -> list:
-    """Retrieve CTFs from CTFTime API with a wide start/finish window (-1/+26 weeks) so we can later run our own filters
-    on the cached results for better performance and accuracy.
-
-    Returns:
-        list: JSON output from CTFTime
-    """
-    start = time.time() - (3600 * 24 * 60)
-    end = time.time() + (3600 * 24 * 7 * 26)
-    res = requests.get(
-        f"{settings.CTFTIME_API_EVENTS_URL}?limit={limit}&start={start:.0f}&finish={end:.0f}",
-        headers={"user-agent": settings.CTFTIME_USER_AGENT},
-        timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
-    )
-    if res.status_code != requests.codes.ok:
-        raise RuntimeError(
-            f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}"
-        )
-
-    result = []
-    for ctf in res.json():
-        ctf["start"] = ctftime_parse_date(ctf["start"])
-        ctf["finish"] = ctftime_parse_date(ctf["finish"])
-        ctf["duration"] = ctf["finish"] - ctf["start"]
-        result.append(ctf)
-
-    return result
-
-
-@lru_cache(maxsize=128)
-def ctftime_get_ctf_info(ctftime_id: int) -> dict:
-    """Retrieve all the information for a specific CTF from CTFTime.
-
-    Args:
-        ctftime_id (int): CTFTime event ID
-
-    Returns:
-        dict: JSON output from CTFTime
-    """
-    url = f"{settings.CTFTIME_API_EVENTS_URL}{ctftime_id}/"
-    res = requests.get(
-        url,
-        headers={"user-agent": settings.CTFTIME_USER_AGENT},
-        timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
-    )
-    if res.status_code != requests.codes.ok:
-        raise RuntimeError(
-            f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}"
-        )
-    result = res.json()
-    return result
-
-
-@lru_cache(maxsize=128)
-def ctftime_get_ctf_logo_url(ctftime_id: int) -> str:
-    """[summary]
-
-    Args:
-        ctftime_id (int): [description]
-
-    Returns:
-        str: [description]
-    """
-    default_logo = f"{settings.IMAGE_URL}/{settings.CTFHUB_DEFAULT_CTF_LOGO}"
-    if ctftime_id != 0:
-        try:
-            ctf_info = ctftime_get_ctf_info(ctftime_id)
-            logo = ctf_info.setdefault("logo", default_logo)
-            _, ext = os.path.splitext(logo)
-            if ext.lower() not in settings.CTFHUB_ACCEPTED_IMAGE_EXTENSIONS:
-                return default_logo
-        except ValueError:
-            logo = default_logo
-        return logo
-    return default_logo
 
 
 def send_mail(recipients: list[str], subject: str, body: str) -> bool:
@@ -685,35 +721,6 @@ date: {date}
 
 """
     return content
-
-
-def export_challenge_note(member: "ctfhub.models.Member", note_id: uuid.UUID) -> str:
-    """Export a challenge note. `member` is required for privilege requirements
-
-    Args:
-        member (ctfhub.models.Member): [description]
-        note_id (uuid.UUID): [description]
-
-    Returns:
-        str: The body of the note if successful; an empty string otherwise
-    """
-    result = ""
-    url = which_hedgedoc()
-    with requests.Session() as session:
-        h = session.post(
-            f"{url}/login",
-            data={
-                "email": member.hedgedoc_username,
-                "password": member.hedgedoc_password,
-            },
-            allow_redirects=False,
-        )
-        if h.status_code == requests.codes.ok:
-            h2 = session.get(f"{url}{note_id}/download")
-            if h2.status_code == requests.codes.ok:
-                result = h2.text
-            session.post(f"{url}/logout")
-    return result
 
 
 def get_named_storage(name: str) -> Any:
