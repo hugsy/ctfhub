@@ -1,4 +1,5 @@
 import requests
+from ctfhub import helpers
 from ctfhub.forms import CategoryCreateForm, CtfCreateUpdateForm, TagCreateForm
 from ctfhub.helpers import ctftime_ctfs, ctftime_get_ctf_info, ctftime_parse_date
 from ctfhub.mixins import MembersOnlyMixin
@@ -134,7 +135,7 @@ class CtfDetailView(LoginRequiredMixin, DetailView):
     extra_context = {
         "add_category_form": CategoryCreateForm(),
         "add_tag_form": TagCreateForm(),
-        "hedgedoc_url": HEDGEDOC_URL,
+        "hedgedoc_url": helpers.HedgeDoc(("anonymous", "")).public_url,
     }
 
     def get_context_data(self, **kwargs):

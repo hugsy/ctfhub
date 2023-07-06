@@ -76,7 +76,8 @@ class HedgeDoc:
 
     @property
     def url(self) -> str:
-        """Get the URL base to the hedgedoc.
+        """Get the URL base to hedgedoc. This is the URL as it must be used for CTFHub to reach HedgeDoc.
+        To get the URL as must be used by web browsers, use `public_url`
 
         Raises:
             ValidationError: if the url is invalid (bad pattern OR unreachable)
@@ -88,20 +89,39 @@ class HedgeDoc:
             #
             # lazy fetching, cache it, raises ValidationError on failure
             #
-            if settings.USE_INTERNAL_HEDGEDOC:
-                self.__url = "http://hedgedoc:3000"
-            else:
-                #
-                # If specified an HedgeDoc URL outside of the docker-compose env, also ping it
-                #
-                url = settings.HEDGEDOC_URL.rstrip("/")
-                is_valid = URLValidator(schemes=["http", "https"])
-                is_valid(url)
-                if not self.ping(url):
-                    raise ValidationError(f"Failed to reach {url}")
-                self.__url = url
+            url = settings.HEDGEDOC_URL_PRIVATE.rstrip("/").lower()
+            if not url.startswith("http://") and not url.startswith("https://"):
+                raise ValidationError(f"Invalid URL protocol for {url}")
+            if not self.ping(url):
+                raise ValidationError(f"Failed to reach {url}")
+            self.__url = url
 
         return self.__url
+
+    @property
+    def public_url(self) -> str:
+        """Get the URL to HedgeDoc as it must be used by web browsers.
+
+        Raises:
+            ValidationError: if the url is invalid (bad pattern OR unreachable)
+
+        Returns:
+            str: _description_
+        """
+        url = settings.HEDGEDOC_URL.rstrip("/")
+        is_valid = URLValidator(schemes=["http", "https"])
+        is_valid(url)
+        return url
+
+    @staticmethod
+    def Url() -> str:
+        """Static method to always return the public URL
+
+        Returns:
+            str: _description_
+        """
+        cli = HedgeDoc(("anonymous", ""))
+        return cli.public_url
 
     def ping(self, url: Optional[str] = None) -> bool:
         """Sends a simple ping to the server
@@ -379,20 +399,16 @@ def get_current_site() -> str:
 
 @lru_cache(maxsize=1)
 def which_hedgedoc() -> str:
-    """Returns the docker container hostname if the default URL from the config is not accessible.
+    """OBSOLETE FUNCTION
+    Returns the docker container hostname if the default URL from the config is not accessible.
     This is so that ctfhub works out of the box with `docker-compose up` as most people wanting to
     trial it out won't bother changing the default values with public FQDN/IPs.
 
     Returns:
         str: the base HedgeDoc URL
     """
-    if settings.USE_INTERNAL_HEDGEDOC:
-        return "http://hedgedoc:3000"
-
-    requests.get(
-        settings.HEDGEDOC_URL, timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT
-    )
-    return settings.HEDGEDOC_URL
+    warnings.warn("which_hedgedoc() is obsolete, use `helpers.HedgeDoc`")
+    raise NotImplementedError
 
 
 def create_new_note() -> str:
@@ -402,7 +418,8 @@ def create_new_note() -> str:
 
 
 def check_note_id(id: str) -> bool:
-    """ "Checks if a specific note exists from its ID.
+    """OBSOLETE FUNCTION
+    Checks if a specific note exists from its ID.
 
     Args:
         id (str): the identifier to check
@@ -410,8 +427,8 @@ def check_note_id(id: str) -> bool:
     Returns:
         bool: returns True if it exists
     """
-    res = requests.head(f"{settings.HEDGEDOC_URL}/{id}")
-    return res.status_code == requests.codes.found
+    warnings.warn("check_note_id() is obsolete, use `helpers.HedgeDoc`")
+    raise NotImplementedError
 
 
 def get_file_magic(
@@ -687,35 +704,6 @@ date: {date}
 
 """
     return content
-
-
-def export_challenge_note(member: "ctfhub.models.Member", note_id: uuid.UUID) -> str:
-    """Export a challenge note. `member` is required for privilege requirements
-
-    Args:
-        member (ctfhub.models.Member): [description]
-        note_id (uuid.UUID): [description]
-
-    Returns:
-        str: The body of the note if successful; an empty string otherwise
-    """
-    result = ""
-    url = which_hedgedoc()
-    with requests.Session() as session:
-        h = session.post(
-            f"{url}/login",
-            data={
-                "email": member.hedgedoc_username,
-                "password": member.hedgedoc_password,
-            },
-            allow_redirects=False,
-        )
-        if h.status_code == requests.codes.ok:
-            h2 = session.get(f"{url}{note_id}/download")
-            if h2.status_code == requests.codes.ok:
-                result = h2.text
-            session.post(f"{url}/logout")
-    return result
 
 
 def get_named_storage(name: str) -> Any:

@@ -196,11 +196,13 @@ STORAGES = {
 SENDFILE_BACKEND = "django_sendfile.backends.simple"
 SENDFILE_ROOT = str(BASE_DIR / "uploads/files")
 
-HEDGEDOC_URL = os.getenv("CTFHUB_HEDGEDOC_URL") or "http://localhost:3000"
-USE_INTERNAL_HEDGEDOC = get_boolean("CTFHUB_HEDGEDOC_IS_INTERNAL")
+HEDGEDOC_URL = os.getenv("CTFHUB_HEDGEDOC_PUBLIC_URL") or "http://localhost:3000"
+HEDGEDOC_URL_PRIVATE = (
+    os.getenv("CTFHUB_HEDGEDOC_PRIVATE_URL") or "http://hedgedoc:3000"
+)
 
 CTFTIME_URL = "https://ctftime.org"
-CTFTIME_API_EVENTS_URL = "https://ctftime.org/api/v1/events/"
+CTFTIME_API_EVENTS_URL = f"{CTFTIME_URL}/api/v1/events/"
 CTFTIME_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64; rv:12.0) Gecko/20100101 Firefox/12.0"
 )

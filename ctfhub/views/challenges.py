@@ -15,6 +15,7 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+from ctfhub import helpers
 
 from ctfhub.forms import (
     ChallengeCreateForm,
@@ -23,9 +24,8 @@ from ctfhub.forms import (
     ChallengeSetFlagForm,
     ChallengeUpdateForm,
 )
-from ctfhub.helpers import export_challenge_note, generate_github_page_header
+from ctfhub.helpers import generate_github_page_header
 from ctfhub.models import Challenge, ChallengeCategory, Ctf, Member
-from ctfhub_project.settings import HEDGEDOC_URL
 
 
 class ChallengeListView(LoginRequiredMixin, ListView):
@@ -148,11 +148,12 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
         obj = self.get_object()
         assert isinstance(obj, Challenge)
         member = Member.objects.get(user=self.request.user)
+        cli = helpers.HedgeDoc(member)
         ctx = super().get_context_data(**kwargs)
         ctx |= {
             "flag_form": ChallengeSetFlagForm(),
             "file_upload_form": ChallengeFileCreateForm(),
-            "hedgedoc_url": HEDGEDOC_URL,
+            "hedgedoc_url": cli.public_url,
             "excalidraw_url": obj.get_excalidraw_url(member),
         }
         return ctx
@@ -232,7 +233,7 @@ class ChallengeExportAsGithubPageView(LoginRequiredMixin, DetailView):
         )
         if obj.description:
             content += f"Description:\n> {obj.description}\n\n"
-        content += export_challenge_note(member, obj.note_id)
+        content += member.export_note(obj.note_id)
         response = HttpResponse(content, content_type="text/markdown; charset=utf-8")
         response["Content-Length"] = len(content)
         return response

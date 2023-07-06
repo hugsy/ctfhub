@@ -388,7 +388,7 @@ class Ctf(TimeStampedModel):
 
     @property
     def note_url(self) -> str:
-        return f"{settings.HEDGEDOC_URL}/{self.note_id}"
+        return f"{helpers.HedgeDoc.Url()}/{self.note_id}"
 
     def get_absolute_url(self):
         return reverse(
@@ -1504,6 +1504,20 @@ class Member(TimeStampedModel):
         assert entry
         return entry["category__name"]
 
+    def export_note(self, note_id: uuid.UUID) -> str:
+        """Export a challenge note.
+
+        Args:
+            note_id (uuid.UUID): [description]
+
+        Returns:
+            str: The body of the note if successful; an empty string otherwise
+        """
+        cli = helpers.HedgeDoc(self)
+        if cli.login():
+            return cli.export_note(note_id)
+        return ""
+
 
 class ChallengeCategory(TimeStampedModel):
     """
@@ -1607,7 +1621,7 @@ class Challenge(TimeStampedModel):
     @property
     def note_url(self) -> str:
         note_id = self.note_id or ""
-        return f"{settings.HEDGEDOC_URL}/{note_id}"
+        return f"{helpers.HedgeDoc.Url()}/{note_id}"
 
     def get_excalidraw_url(self, member=None) -> str:
         """
