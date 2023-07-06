@@ -35,7 +35,7 @@ def discord_notify_ctf_creation(
     if not created:
         return False
 
-    if instance.visibility != "public":
+    if not instance.is_public:
         return False
 
     root = get_current_site()
@@ -72,7 +72,7 @@ def discord_notify_scored_challenge(
     if created:
         return False
 
-    if instance.ctf.visibility != "public":
+    if not instance.ctf.is_public:
         return False
 
     if not instance.flag:

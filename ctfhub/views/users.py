@@ -1,6 +1,6 @@
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.views import (
     LoginView,
@@ -157,7 +157,9 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         return reverse("ctfhub:dashboard")
 
 
-class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+class MemberUpdateView(
+    UserPassesTestMixin, LoginRequiredMixin, SuccessMessageMixin, UpdateView
+):
     model = Member
     success_url = reverse_lazy("ctfhub:dashboard")
     template_name = "users/edit.html"
@@ -166,22 +168,10 @@ class MemberUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     success_message = "Member successfully updated"
     form_class = MemberUpdateForm
 
-    def get(self, request, *args, **kwargs):
+    def test_func(self) -> bool:
         self.object = self.get_object()
         member = Member.objects.get(user=self.request.user)
-        if not member.has_superpowers and self.object.pk != member.pk:
-            return HttpResponseForbidden()
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        #
-        # If not admin and different user id, simply reject
-        #
-        self.object = self.get_object()
-        member = Member.objects.get(user=self.request.user)
-        if not member.has_superpowers and self.object.pk != member.pk:
-            return HttpResponseForbidden()
-        return super().post(request, *args, **kwargs)
+        return member.has_superpowers or self.object.pk == member.pk
 
     def get_context_data(self, **kwargs):
         obj = self.get_object()
