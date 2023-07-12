@@ -1,16 +1,16 @@
 from pathlib import Path
 
 from django.contrib.auth.decorators import login_required
-from django.http import HttpRequest
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse
-from django.views.generic import DeleteView, CreateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpRequest
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
+from django.views.generic import CreateView, DeleteView, DetailView
+from django_sendfile import sendfile
 
 from ctfhub.forms import ChallengeFileCreateForm
-from ctfhub.models import ChallengeFile
-from django_sendfile import sendfile
+from ctfhub.models import Challenge, ChallengeFile
 
 
 class ChallengeFileCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -61,6 +61,21 @@ class ChallengeFileDetailView(LoginRequiredMixin, SuccessMessageMixin, DetailVie
 
 
 @login_required
-def challenge_file_download_view(request: HttpRequest, pk: int, challenge_id: int):
+def challenge_file_download_view(request: HttpRequest, challenge_id: int, pk: int):
+    """Download a file from its
+
+    Args:
+        request (HttpRequest): _description_
+        challenge_id (int): _description_
+
+    Raises:
+        AssertionError: if there's a mismatch between the file challenge and the challenge associated to it
+        (sanity check)
+
+    Returns:
+        _type_: _description_
+    """
+    challenge = get_object_or_404(Challenge, pk=challenge_id)
     challenge_file = get_object_or_404(ChallengeFile, pk=pk)
+    assert challenge_file.challenge == challenge
     return sendfile(request, challenge_file.file.path, mimetype=challenge_file.mime)

@@ -32,12 +32,15 @@ __all__ = [
 ]
 
 
+DEFAULT_LATEST_CTF_NUMBER = 25
+DEFAULT_SEARCH_RESULT_PER_PAGE = 25
+
+
 def index(request: HttpRequest) -> HttpResponse:
     """
     Redirects to the dashboard
     """
-    teams = Team.objects.all()
-    if teams.count() == 0:
+    if Team.objects.count() == 0:
         return redirect("ctfhub:team-register")
 
     if Member.objects.all().count() == 0:
@@ -56,7 +59,7 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    DEFAULT_LATEST_CTF_NUMBER = 25
+
     member = Member.objects.get(user=request.user)
     if member.is_guest:
         members = Member.objects.filter(selected_ctf=member.selected_ctf)
@@ -124,19 +127,19 @@ def search(request: HttpRequest) -> HttpResponse:
     Returns:
         HttpResponse: [description]
     """
-    q = request.GET.get("q")
-    if not q:
+    query = request.GET.get("q")
+    if not query:
         messages.warning(request, "No search pattern given")
         return redirect("ctfhub:dashboard")
 
-    search = SearchEngine(q)
-    paginator = Paginator(search.results, 25)
+    engine = SearchEngine(query)
+    paginator = Paginator(engine.results, DEFAULT_SEARCH_RESULT_PER_PAGE)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
     context = {
-        "q": q,
-        "selected_category": search.selected_category or "All",
-        "total_result": len(search.results),
+        "q": query,
+        "selected_category": engine.selected_category or "All",
+        "total_result": len(engine.results),
         "page_obj": page_obj,
         "paginator": paginator,
     }

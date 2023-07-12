@@ -11,9 +11,7 @@ from statistics import mean
 from typing import IO, TYPE_CHECKING, Optional, OrderedDict, Union
 from urllib.parse import quote
 
-import django.db.models.manager
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Count, Q, Sum
@@ -31,6 +29,7 @@ from ctfhub.validators import challenge_file_max_size_validator
 
 
 if TYPE_CHECKING:
+    from django.core import files
     from django.db.models.manager import Manager
 
 
@@ -72,10 +71,10 @@ class Team(TimeStampedModel):
     #
     # Typing
     #
-    member_set: django.db.models.manager.Manager["Member"]
+    member_set: "Manager[Member]"
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
     @property
     def ctftime_url(self) -> str:
@@ -120,22 +119,22 @@ class Ctf(TimeStampedModel):
     visibility = models.CharField(
         max_length=4, choices=VisibilityType.choices, default=VisibilityType.PUBLIC
     )
-    weight = models.FloatField(default=1.0, blank=False, null=False)
-    rating = models.FloatField(default=0.0, blank=False, null=False)
+    weight = models.FloatField(default=1.0, blank=False)
+    rating = models.FloatField(default=0.0, blank=False)
     note_id = models.UUIDField(default=uuid.uuid4, editable=True)
 
     #
     # Typing
     #
 
-    challenge_set: django.db.models.manager.Manager["Challenge"]
-    players: django.db.models.manager.Manager["Member"]
+    challenge_set: "Manager[Challenge]"
+    players: "Manager[Member]"
     member_points: dict["Member", float]
     member_percents: dict["Member", float]
     ranking: list[tuple["Member", float]]
 
     def __str__(self) -> str:
-        return self.name
+        return str(self.name)
 
     @property
     def is_time_limited(self) -> bool:
@@ -317,7 +316,7 @@ class Ctf(TimeStampedModel):
         """
         archive = zipfile.ZipFile(stream, "w")
         now = datetime.now()
-        ts = (now.year, now.month, now.day, 0, 0, 0)
+        timestamp = (now.year, now.month, now.day, 0, 0, 0)
 
         cli = helpers.HedgeDoc(member)
         if not cli.login():
@@ -329,7 +328,7 @@ class Ctf(TimeStampedModel):
         fname = f"{slugify(self.name)}.md"
         with tempfile.TemporaryFile():
             text = cli.export_note(self.note_id)
-            archive.writestr(zipfile.ZipInfo(filename=fname, date_time=ts), text)
+            archive.writestr(zipfile.ZipInfo(filename=fname, date_time=timestamp), text)
 
         #
         # Add the notes of every challenge
@@ -338,7 +337,7 @@ class Ctf(TimeStampedModel):
             fname = f"{slugify(self.name)}-{slugify(challenge.name)}.md"
             with tempfile.TemporaryFile():
                 data = cli.export_note(challenge.note_id)
-                sub_stream = zipfile.ZipInfo(filename=fname, date_time=ts)
+                sub_stream = zipfile.ZipInfo(filename=fname, date_time=timestamp)
                 archive.writestr(sub_stream, data)
 
             if include_files:
@@ -350,7 +349,9 @@ class Ctf(TimeStampedModel):
                     fname += f"-{challenge_file.name}.bin"
                     with tempfile.TemporaryFile():
                         data = challenge_file.file.open("rb").read()
-                        sub_stream = zipfile.ZipInfo(filename=fname, date_time=ts)
+                        sub_stream = zipfile.ZipInfo(
+                            filename=fname, date_time=timestamp
+                        )
                         archive.writestr(sub_stream, data)
 
         suffix = "notes" if not include_files else "full"
@@ -571,7 +572,7 @@ class Member(TimeStampedModel):
         PALAU = "PW", _("Palau")
         PARAGUAY = "PY", _("Paraguay")
         QATAR = "QA", _("Qatar")
-        RÉUNION = "RE", _("Réunion")
+        RÉUNION = "RE", _("Réunion")  # pylint: disable=non-ascii-name
         ROMANIA = "RO", _("Romania")
         SERBIA = "RS", _("Serbia")
         RUSSIA = "RU", _("Russia")
@@ -1265,7 +1266,7 @@ class Member(TimeStampedModel):
         ("Zulu", "Zulu"),
     ]
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.PROTECT)
     avatar = models.ImageField(
         blank=True,
@@ -1300,7 +1301,7 @@ class Member(TimeStampedModel):
     #
     # Typing
     #
-    solved_challenges: django.db.models.manager.Manager["Challenge"]
+    solved_challenges: "Manager[Challenge]"
 
     @property
     def username(self) -> str:
@@ -1318,7 +1319,7 @@ class Member(TimeStampedModel):
         return self.user.is_superuser
 
     def __str__(self):
-        return self.username
+        return str(self.username)
 
     @property
     def is_active(self):
@@ -1361,24 +1362,23 @@ class Member(TimeStampedModel):
     @property
     def avatar_url(self):
         if self.avatar:
-            return self.avatar.url
-        url = "https://www.gravatar.com/avatar/{}?d={}".format(
-            hashlib.md5(self.email.encode()).hexdigest(),
-            quote(f"https://eu.ui-avatars.com/api/{self.username}/64/random/", safe=""),
-        )
+            url = self.avatar.url  # pylint: disable=no-member
+        else:
+            _hash = hashlib.md5(self.email.encode()).hexdigest()
+            _desc = quote(
+                f"https://eu.ui-avatars.com/api/{self.username}/64/random/", safe=""
+            )
+            url = f"https://www.gravatar.com/avatar/{_hash}?d={_desc}"
         return url
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         #
         # Validate the hedgedoc user is registered
         #
         hedgedoc_cli = helpers.HedgeDoc(
             (self.hedgedoc_username, self.hedgedoc_password)
         )
-        if hedgedoc_cli.login() == False:
-            print(
-                f"not logged in, registering {self.hedgedoc_username}/{self.hedgedoc_password}"
-            )
+        if not hedgedoc_cli.login():
             if not hedgedoc_cli.register():
                 #
                 # Register the user in hedgedoc failed, delete the user, and raise
@@ -1386,16 +1386,11 @@ class Member(TimeStampedModel):
                 raise ExternalError(
                     f"Registration of user {self.hedgedoc_username} on hedgedoc failed"
                 )
-        else:
-            print(
-                f"logged in, registering {self.hedgedoc_username}/{self.hedgedoc_password}"
-            )
 
         #
         # Create/save the user
         #
-        super(Member, self).save(**kwargs)
-
+        super().save(*args, **kwargs)
         return
 
     @property
@@ -1504,10 +1499,10 @@ class ChallengeCategory(TimeStampedModel):
     #
     # Typing
     #
-    challenge_set: django.db.models.manager.Manager["Challenge"]
+    challenge_set: "Manager[Challenge]"
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -1580,7 +1575,7 @@ class Challenge(TimeStampedModel):
     # Typing
     #
 
-    challengefile_set: django.db.models.manager.Manager["ChallengeFile"]
+    challengefile_set: "Manager[ChallengeFile]"
 
     @property
     def solved(self) -> bool:
@@ -1595,12 +1590,13 @@ class Challenge(TimeStampedModel):
         note_id = self.note_id or ""
         return f"{helpers.HedgeDoc.Url()}/{note_id}"
 
-    def get_excalidraw_url(self, member=None) -> str:
+    def get_excalidraw_url(self, member: Optional["Member"] = None) -> str:
         """
         Ensure presence of a trailing slash at the end
         """
-        url = os.path.join(settings.EXCALIDRAW_URL, "")
-        url += f"#room={self.excalidraw_room_id},{self.excalidraw_room_key}"
+        url = f"{settings.EXCALIDRAW_URL}/#room={self.excalidraw_room_id},{self.excalidraw_room_key}"
+        if member:
+            url += f"&name={member.username}"
         return url
 
     @cached_property
@@ -1611,12 +1607,12 @@ class Challenge(TimeStampedModel):
     def jitsi_url(self):
         return f"{settings.JITSI_URL}/{self.ctf.id}--{self.id}"
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         if self.flag_tracker.has_changed("flag"):  # type: ignore
             self.status = "solved" if self.flag else "unsolved"
             self.solvers.add(self.last_update_by)
 
-        super(Challenge, self).save()
+        super().save(*args, **kwargs)
         return
 
     def get_absolute_url(self):
@@ -1648,22 +1644,26 @@ class ChallengeFile(TimeStampedModel):
     hash = models.CharField(max_length=64)  # sha256 -> 32*2
 
     @property
-    def name(self):
+    def file_object(self) -> "files.File":
+        return self.file.file  # pylint: disable=no-member
+
+    @property
+    def name(self) -> str:
         return os.path.basename(self.file.name)
 
     @property
-    def size(self):
-        return self.file.size
+    def size(self) -> int:
+        return self.file_object.size
 
     @property
-    def url(self):
-        return self.file.url
+    def url(self) -> str:
+        return self.file.url  # pylint: disable=no-member
 
-    def save(self, **kwargs):
+    def save(self, *args, **kwargs):
         #
         # save() to commit files to proper location
         #
-        super().save()
+        super().save(*args, **kwargs)
 
         #
         # update missing properties
@@ -1676,9 +1676,25 @@ class ChallengeFile(TimeStampedModel):
             if not self.type:
                 self.type = helpers.get_file_magic(fpath)
             if not self.hash:
-                self.hash = hashlib.sha256(open(abs_path, "rb").read()).hexdigest()
-            super(ChallengeFile, self).save()
+                with open(abs_path, "rb") as fd:
+                    self.hash = hashlib.sha256(fd.read()).hexdigest()
+            super().save(*args, **kwargs)
         return
+
+    @property
+    def download_url(self):
+        """Build the direct download url to the challenge file
+
+        Returns:
+            str: the URL to the file
+        """
+        return reverse(
+            "ctfhub:challenge-file-download",
+            args=[
+                str(self.challenge.pk),
+                str(self.pk),
+            ],
+        )
 
 
 class Tag(TimeStampedModel):
@@ -1692,10 +1708,10 @@ class Tag(TimeStampedModel):
     # Typing
     #
 
-    challenges: django.db.models.manager.Manager["Challenge"]
+    challenges: "Manager[Challenge]"
 
     def __str__(self):
-        return self.name
+        return str(self.name)
 
 
 class CtfStats:
@@ -1852,20 +1868,19 @@ class SearchEngine:
         self.selected_category = None
 
         # if a specific category was selected, use it
-        for p in patterns:
-            if p.startswith("cat:"):
-                category = p.split(":", 1)[1]
+        for pattern in patterns:
+            if pattern.startswith("cat:"):
+                category = pattern.split(":", 1)[1]
                 if category in VALID_SEARCH_CATEGORIES:
                     self.selected_category = category
-                    patterns.remove(p)
+                    patterns.remove(pattern)
                     break
 
         query = " ".join(patterns)
         self.results = []
 
         if self.selected_category is None:
-            for cat in VALID_SEARCH_CATEGORIES:
-                handle = VALID_SEARCH_CATEGORIES[cat]
+            for _, handle in VALID_SEARCH_CATEGORIES.items():
                 self.results.extend(handle(query))
         else:
             handle = VALID_SEARCH_CATEGORIES[self.selected_category]

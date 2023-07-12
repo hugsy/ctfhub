@@ -44,14 +44,14 @@ class TestMemberView(TestCase):
             ctf.end_date = datetime.datetime(1970, 1, 1, 0, 0, 0)
             ctf.save()
             assert not ctf.start_date
-            ctf.duration  # trigger
+            print(ctf.duration)  # fake statement, just to trigger
 
         with pytest.raises(AttributeError):
             ctf.start_date = datetime.datetime(1970, 1, 1, 0, 0, 0)
             ctf.end_date = None
             ctf.save()
             assert not ctf.end_date
-            ctf.duration  # trigger
+            print(ctf.duration)  # fake statement, just to trigger
 
     def test_team_basic(self):
         self.team.ctftime_id = None

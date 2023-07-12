@@ -1,7 +1,7 @@
+import django.contrib.auth.models
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.models import User
 from django.contrib.auth.views import (
     LoginView,
     PasswordChangeView,
@@ -11,8 +11,8 @@ from django.contrib.auth.views import (
 from django.contrib.messages.views import SuccessMessageMixin
 from django.forms.models import BaseModelForm
 from django.http.request import HttpRequest
-from django.http.response import HttpResponseForbidden, HttpResponse
-from django.shortcuts import get_object_or_404, redirect
+from django.http.response import HttpResponse, HttpResponseForbidden
+from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -21,8 +21,8 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
-from ctfhub import helpers
 
+from ctfhub import helpers
 from ctfhub.forms import (
     MemberCreateForm,
     MemberMarkAsSelectedForm,
@@ -55,7 +55,7 @@ def logout(request: HttpRequest) -> HttpResponse:
 
 
 class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
-    model = User
+    model = django.contrib.auth.models.User
     success_url = reverse_lazy("ctfhub:dashboard")
     template_name = "users/edit_advanced.html"
     login_url = "/users/login/"
@@ -64,14 +64,14 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     form_class = UserUpdateForm
 
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        obj = self.get_object()
         member = Member.objects.get(user=request.user)
 
         if not member.has_superpowers:
             # Not admin
             return HttpResponseForbidden()
 
-        if self.object.pk != member.pk:
+        if obj.pk != member.pk:
             # Trying to edit a different user/member
             return HttpResponseForbidden()
 
@@ -88,7 +88,7 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
 class UserPasswordUpdateView(
     LoginRequiredMixin, SuccessMessageMixin, PasswordChangeView
 ):
-    model = User
+    model = django.contrib.auth.models.User
     success_url = reverse_lazy("ctfhub:user-logout")
     template_name = "users/edit_advanced_change_password.html"
     login_url = "/users/login/"
@@ -122,8 +122,10 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
             return self.form_invalid(form)
 
         # validate user uniqueness
-        user_cnt = User.objects.all().count()
-        users = User.objects.filter(username=form.cleaned_data["username"])
+        user_cnt = django.contrib.auth.models.User.objects.all().count()
+        users = django.contrib.auth.models.User.objects.filter(
+            username=form.cleaned_data["username"]
+        )
         if users.count() > 0:
             form.errors["name"] = "UsernameAlreadyExistError"
             messages.error(
@@ -132,7 +134,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
             return self.form_invalid(form)
 
         # create the django user
-        user = User.objects.create_user(
+        user = django.contrib.auth.models.User.objects.create_user(
             username=form.cleaned_data["username"],
             password=form.cleaned_data["password1"],
             email=form.cleaned_data["email"],
@@ -152,7 +154,7 @@ class MemberCreateView(SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        if User.objects.all().count() == 1:
+        if django.contrib.auth.models.User.objects.all().count() == 1:
             return reverse("ctfhub:user-login")
         return reverse("ctfhub:dashboard")
 
@@ -169,9 +171,9 @@ class MemberUpdateView(
     form_class = MemberUpdateForm
 
     def test_func(self) -> bool:
-        self.object = self.get_object()
+        obj = self.get_object()
         member = Member.objects.get(user=self.request.user)
-        return member.has_superpowers or self.object.pk == member.pk
+        return member.has_superpowers or obj.pk == member.pk
 
     def get_context_data(self, **kwargs):
         obj = self.get_object()
@@ -200,7 +202,7 @@ class MemberMarkAsSelectedView(MemberUpdateView):
 
     def get_success_url(self):
         obj: Member = self.object  # type: ignore
-        assert obj.selected_ctf, f"CTF was just assigned, should not be None"
+        assert obj.selected_ctf, "CTF was just assigned, should not be None"
         return reverse("ctfhub:ctfs-detail", kwargs={"pk": obj.selected_ctf.pk})
 
     def get_success_message(self, cleaned_data):
@@ -254,12 +256,12 @@ class MemberDetailView(LoginRequiredMixin, DetailView):
     redirect_field_name = "redirect_to"
 
     def get_context_data(self, **kwargs):
-        context = super(MemberDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         return context
 
 
 class UserResetPassword(SuccessMessageMixin, PasswordResetView):
-    model = User
+    model = django.contrib.auth.models.User
     template_name = "users/password_reset.html"
     success_message = "If a match was found, an email will be received with the password reset procedure."
     success_url = reverse_lazy("ctfhub:user-login")
@@ -269,7 +271,7 @@ class UserResetPassword(SuccessMessageMixin, PasswordResetView):
 
 
 class UserChangePassword(SuccessMessageMixin, PasswordResetConfirmView):
-    model = User
+    model = django.contrib.auth.models.User
     template_name = "users/password_change.html"
     success_message = "Password successfully changed."
     success_url = reverse_lazy("ctfhub:user-login")

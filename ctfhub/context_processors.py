@@ -38,5 +38,5 @@ def add_timezone_context(
     try:
         member = Member.objects.get(user=request.user)
         return {"TZ": member.timezone, "NOW": datetime.datetime.now()}
-    except Exception:
-        return {"TZ": "UTC"}
+    except Member.DoesNotExist:
+        return {"TZ": "UTC", "NOW": datetime.datetime.now()}

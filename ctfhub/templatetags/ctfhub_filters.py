@@ -1,7 +1,12 @@
 from collections import namedtuple
+from typing import TYPE_CHECKING, Any
+
+import bleach
 from django import template
 from django.utils.safestring import mark_safe
-import bleach
+
+if TYPE_CHECKING:
+    from ctfhub.models import Challenge
 
 register = template.Library()
 
@@ -12,18 +17,18 @@ def best_category(member, year=None):
 
 
 @register.filter
-def as_time_accumulator_graph(items):
+def as_time_accumulator_graph(items: list["Challenge"]):
     Point = namedtuple("Point", "time accu")
     accu = 0
-    res = []
-    for x in items:
-        accu += x.points
-        res.append(Point(x.solved_time, accu))
+    res: list[Point] = []
+    for item in items:
+        accu += item.points
+        res.append(Point(item.solved_time, accu))
     return res
 
 
 @register.simple_tag(takes_context=True)
-def theme_cookie(context):
+def theme_cookie(context: dict[str, Any]):
     request = context["request"]
     value = request.COOKIES.get("theme", "light")
     if value not in ("light", "dark"):
@@ -52,12 +57,12 @@ def html_sanitize(html: str) -> str:
 
 
 @register.filter(is_safe=True, needs_autoescape=False)
-def as_tick_or_cross(b: bool):
-    if b:
+def as_tick_or_cross(is_on: bool):
+    if is_on:
         return mark_safe(
             """<strong><i class="fas fa-check" style="color: green;"></i><strong>"""
         )
-    else:
-        return mark_safe(
-            """<strong><i class="fas fa-times" style="color: red;"></i><strong>"""
-        )
+
+    return mark_safe(
+        """<strong><i class="fas fa-times" style="color: red;"></i><strong>"""
+    )
