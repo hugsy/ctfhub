@@ -286,7 +286,6 @@ class HedgeDoc:
             return True
 
         assert self.session
-        old_auth_cookie = self.session.cookies["connect.sid"]
 
         response = self.session.get(
             f"{self.url}/logout",
