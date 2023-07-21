@@ -44,7 +44,7 @@ jobs:
 
       - name: Setup environment vars
         run: |
-          echo 127.0.1.1 hedgedoc >> /etc/hosts
+          echo 127.0.1.1 hedgedoc | sudo tee -a /etc/hosts
 
           echo CTFHUB_PROTOCOL="http"                                        >> ${GITHUB_ENV}
           echo CTFHUB_DOMAIN="localhost"                                     >> ${GITHUB_ENV}
