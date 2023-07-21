@@ -295,14 +295,9 @@ class HedgeDoc:
         )
 
         #
-        # Successful logout means HTTP OK + Cookie invalidation
+        # Successful logout means HTTP OK
         #
         if response.status_code != requests.codes["ok"]:
-            return False
-
-        new_auth_cookie = self.session.cookies["connect.sid"]
-
-        if old_auth_cookie == new_auth_cookie:
             return False
 
         self.session.close()
