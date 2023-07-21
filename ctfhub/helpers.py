@@ -290,14 +290,14 @@ class HedgeDoc:
 
         response = self.session.get(
             f"{self.url}/logout",
-            allow_redirects=False,
+            allow_redirects=True,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
 
         #
-        # Successful logout means 302 redirect + Cookie invalidation
+        # Successful logout means HTTP OK + Cookie invalidation
         #
-        if response.status_code != requests.codes["found"]:
+        if response.status_code != requests.codes["ok"]:
             return False
 
         new_auth_cookie = self.session.cookies["connect.sid"]
