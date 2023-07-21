@@ -44,18 +44,23 @@ jobs:
 
       - name: Setup environment vars
         run: |
-          echo CTFHUB_PROTOCOL=http >> $GITHUB_ENV
-          echo CTFHUB_DOMAIN=localhost >> $GITHUB_ENV
-          echo CTFHUB_PORT=8000 >> $GITHUB_ENV
-          echo CTFHUB_DB_NAME=ctfhub >> $GITHUB_ENV
-          echo CTFHUB_DB_USER=ctfhub >> $GITHUB_ENV
-          echo CTFHUB_DB_PASSWORD=ctfhub >> $GITHUB_ENV
-          echo CTFHUB_DB_HOST=localhost >> $GITHUB_ENV
-          echo CTFHUB_DB_PORT=5432 >> $GITHUB_ENV
-          echo CTFHUB_HEDGEDOC_PRIVATE_URL=http://localhost:3000 >> $GITHUB_ENV
-          echo CTFHUB_HEDGEDOC_PUBLIC_URL=http://localhost:3000 >> $GITHUB_ENV
-          echo CTFHUB_ALLOWED_HOSTS="localhost;127.0.0.1" >> $GITHUB_ENV
-          echo CTFHUB_TRUSTED_ORIGINS="http://127.0.0.1;http://localhost" >> $GITHUB_ENV
+          echo 127.0.1.1 hedgedoc >> /etc/hosts
+
+          echo CTFHUB_PROTOCOL="http"                                        >> ${GITHUB_ENV}
+          echo CTFHUB_DOMAIN="localhost"                                     >> ${GITHUB_ENV}
+          echo CTFHUB_PORT="8000"                                            >> ${GITHUB_ENV}
+          echo CTFHUB_DB_NAME="ctfhub"                                       >> ${GITHUB_ENV}
+          echo CTFHUB_DB_USER="ctfhub"                                       >> ${GITHUB_ENV}
+          echo CTFHUB_DB_PASSWORD="ctfhub"                                   >> ${GITHUB_ENV}
+          echo CTFHUB_DB_HOST="localhost"                                    >> ${GITHUB_ENV}
+          echo CTFHUB_DB_PORT="5432"                                         >> ${GITHUB_ENV}
+          echo CTFHUB_HEDGEDOC_USESSL="false"                                >> ${GITHUB_ENV}
+          echo CTFHUB_HEDGEDOC_DOMAIN="hedgedoc"                             >> ${GITHUB_ENV}
+          echo CTFHUB_HEDGEDOC_PORT="3000"                                   >> ${GITHUB_ENV}
+          echo CTFHUB_HEDGEDOC_URL="http://hedgedoc:3000"                    >> ${GITHUB_ENV}
+          echo CTFHUB_ALLOWED_HOSTS="localhost;127.0.0.1"                    >> ${GITHUB_ENV}
+          echo CTFHUB_TRUSTED_ORIGINS="http://127.0.0.1;http://localhost"    >> ${GITHUB_ENV}
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
