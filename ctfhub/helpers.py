@@ -16,7 +16,6 @@ import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.storage import get_storage_class
-from django.core.validators import URLValidator
 
 import ctfhub.models
 
@@ -90,10 +89,10 @@ class HedgeDoc:
             #
             # lazy fetching, cache it, raises ValidationError on failure
             #
-            url = settings.HEDGEDOC_URL_PRIVATE.rstrip("/").lower()
+            url = settings.HEDGEDOC_URL.rstrip("/").lower()
             if not url.startswith("http://") and not url.startswith("https://"):
                 raise ValidationError(f"Invalid URL protocol for {url}")
-            if not self.ping(url):
+            if not self.ping(url):  # TODO add timeout
                 raise ValidationError(f"Failed to reach {url}")
             self.__url = url
 
@@ -109,10 +108,7 @@ class HedgeDoc:
         Returns:
             str: _description_
         """
-        url = settings.HEDGEDOC_URL.rstrip("/")
-        is_valid = URLValidator(schemes=["http", "https"])
-        is_valid(url)
-        return url
+        return self.url
 
     @staticmethod
     def Url() -> str:  # pylint: disable=invalid-name
@@ -158,7 +154,7 @@ class HedgeDoc:
         res = requests.post(
             f"{self.url}/register",
             data={"email": self.email, "password": self.password},
-            allow_redirects=False,
+            allow_redirects=True,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
 
@@ -166,14 +162,13 @@ class HedgeDoc:
         # HedgeDoc successful user registration can be fingerprint by an HTTP/302 to the root
         # and a Cookie `connect.sid`
         #
-        if res.status_code != requests.codes["found"]:
+        if res.status_code != requests.codes["ok"]:
+            print(f"bad response code {res.status_code}")
             return False
 
-        if "Set-Cookie" not in res.headers:
-            return False
-
-        cookie = res.headers["Set-Cookie"].lower()
+        cookie = res.headers.get("Set-Cookie", "").lower()
         if not cookie.startswith("connect.sid"):
+            print(f"missing cookie {res.status_code}")
             return False
 
         #
@@ -248,18 +243,14 @@ class HedgeDoc:
                 "email": self.email,
                 "password": self.password,
             },
-            allow_redirects=False,
+            allow_redirects=True,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
 
         #
-        # On success, expect HTTP/302 + new auth cookie
+        # On success, expect HTTP/200 after redirect + new auth cookie
         #
-        if response.status_code != requests.codes["found"]:
-            sess.close()
-            return False
-
-        if "connect.sid" not in sess.cookies:
+        if response.status_code != requests.codes["ok"]:
             sess.close()
             return False
 
@@ -269,13 +260,18 @@ class HedgeDoc:
         self.session = sess
         data = self.info()
         if not data or data.get("status", "") != "ok":
+            print(f"login(): failed to get status: {data}")
             self.session.close()
             self.session = None
             return False
 
-        if not data.get("name") != self.username:
+        username = data.get("name", "")
+        if username != self.username:
             self.session.close()
             self.session = None
+            print(
+                f"login(): username mismatch: got {username}, expected {self.username}"
+            )
             return False
 
         return True

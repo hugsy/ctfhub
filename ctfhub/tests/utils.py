@@ -1,11 +1,13 @@
+from functools import wraps
+
+import django.contrib.auth
 import django.contrib.messages.api
 import django.utils.crypto
-from django.contrib.auth.models import User
-from ctfhub.helpers import HedgeDoc
-from ctfhub.models import Member, Team, Ctf
-
 from django.conf import settings
-from functools import wraps
+from django.contrib.auth.models import User  # pylint: disable=imported-auth-user
+
+from ctfhub.helpers import HedgeDoc
+from ctfhub.models import Ctf, Member, Team
 
 
 def django_set_temporary_setting(setting_name, temporary_value):
@@ -31,56 +33,65 @@ def get_messages(response) -> list[str]:
     return messages_as_str
 
 
-def MockTeam() -> Team:
-    team = Team.objects.create(
-        name="TestTeam",
-        email="test@test.com",
-        ctftime_id=1234,
-    )
-    return team
-
-
-def MockTeamWithMembers(nb: int = 5) -> tuple[Team, list[Member]]:
-    members = []
-    nb = max(2, nb)
-
-    # Make sure we're starting from nothing
-    clean_slate()
-
-    team = MockTeam()
-
-    admin = Member.objects.create(
-        user=User.objects.create_superuser(
-            username="superuser01",
-            password="superuser01",
-            email="superuser01@superusers.com",
-        ),
-        team=team,
-    )
-
-    members.append(admin)
-    assert admin.has_superpowers
-
-    for i in range(nb - 1):
-        member = Member.objects.create(
-            user=User.objects.create_user(
-                username=f"user{i}",
-                password=f"user{i}",
-                email="user{i}@user.com",
-            ),
-            team=team,
+class MockTeam:
+    def __init__(self):
+        self.team = Team.objects.create(
+            name="TestTeam",
+            email="test@test.com",
+            ctftime_id=1234,
         )
-        assert not member.has_superpowers
-        members.append(member)
+        self.admins = []
+        self.members = []
+        self.__i = 1
 
-    return (team, members)
+    def __del__(self):
+        self.team.delete()
+
+    def add_admin(self):
+        admin = Member.objects.create(
+            user=User.objects.create_superuser(
+                username=f"superuser{self.__i}",
+                password=f"superuser{self.__i}",
+                email=f"superuser{self.__i}@superusers.com",
+            ),
+            team=self.team,
+        )
+        assert admin.has_superpowers
+        self.__i += 1
+        self.admins.append(admin)
+
+    def add_members(self, number: int = 2):
+        members = []
+        for i in range(self.__i, self.__i + number):
+            member = Member.objects.create(
+                user=User.objects.create_user(
+                    username=f"user{i}",
+                    password=f"user{i}",
+                    email=f"user{i}@user.com",
+                ),
+                team=self.team,
+            )
+            assert not member.has_superpowers
+            self.__i += 1
+            members.append(member)
+        self.members += members
+
+    @staticmethod
+    def create_team_with_members() -> "MockTeam":
+        mock = MockTeam()
+        mock.add_admin()
+        mock.add_members(2)
+        return mock
 
 
-def MockCtf() -> Ctf:
-    ctf = Ctf.objects.create(
-        name=django.utils.crypto.get_random_string(10),
-    )
-    return ctf
+class MockCtf:
+    def __init__(self):
+        self.ctf = Ctf.objects.create(
+            name=django.utils.crypto.get_random_string(10),
+        )
+
+    def __del__(self):
+        self.ctf.delete()
 
 
 def clean_slate():
@@ -92,4 +103,16 @@ def clean_slate():
             cli.login()
             cli.delete()
             member.delete()
+
+        # dont care if those fail
+        for login, password in (
+            ("testtesttest", "passpasspass"),
+            (
+                "testuser",
+                "testtesttest",
+            ),
+        ):
+            cli = HedgeDoc((login + "@ctfhub.localdomain", password))
+            cli.login()
+            cli.delete()
         team.delete()

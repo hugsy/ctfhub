@@ -30,7 +30,7 @@ services:
       - CMD_DOMAIN=${CTFHUB_HEDGEDOC_DOMAIN}
       - CMD_PORT=${CTFHUB_HEDGEDOC_PORT}
       - CMD_URL_ADDPORT=true
-      - CMD_PROTOCOL_USESSL=false
+      - CMD_PROTOCOL_USESSL=${CTFHUB_HEDGEDOC_USESSL}
       - CMD_REQUIRE_FREEURL_AUTHENTICATION=true
     networks:
       - ctfhub

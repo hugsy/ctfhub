@@ -5,16 +5,18 @@ import pytest
 from django.test import Client
 
 from ctfhub.models import Ctf, Member
-from ctfhub.tests.utils import MockCtf, MockTeamWithMembers, clean_slate
+from ctfhub.tests.utils import MockCtf, MockTeam, clean_slate
 
 
 @pytest.mark.django_db
 class TestMemberView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.team, self.members = MockTeamWithMembers()
+        self.__mock_team = MockTeam.create_team_with_members()
+        self.team, self.members = self.__mock_team.team, self.__mock_team.members
 
     def tearDown(self) -> None:
+        del self.__mock_team
         clean_slate()
         return super().tearDown()
 
@@ -24,7 +26,8 @@ class TestMemberView(TestCase):
         #
 
         # no date => permanent
-        ctf = MockCtf()
+        mock_ctf = MockCtf()
+        ctf = mock_ctf.ctf
         assert not ctf.start_date and not ctf.end_date
         assert ctf.is_permanent
         assert not ctf.is_time_limited
@@ -98,8 +101,8 @@ class TestMemberView(TestCase):
         assert ctf.is_running
 
     def test_member_basic(self):
-        member = self.members[1]
-        guest = self.members[2]
+        member = self.members[0]
+        guest = self.members[1]
 
         ctf1 = Ctf.objects.create(name="Ctf1", visibility=Ctf.VisibilityType.PUBLIC)
         ctf2 = Ctf.objects.create(name="Ctf2", visibility=Ctf.VisibilityType.PUBLIC)
