@@ -1,4 +1,5 @@
 from typing import Any
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -15,8 +16,8 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
-from ctfhub import helpers
 
+from ctfhub import helpers
 from ctfhub.forms import (
     ChallengeCreateForm,
     ChallengeFileCreateForm,
@@ -59,10 +60,8 @@ class ChallengeCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             self.initial["ctf"] = Ctf.objects.get(pk=self.kwargs.get("ctf"))
         except Ctf.DoesNotExist:
             pass
-        if self.form_class:
-            form = self.form_class(initial=self.initial)
-        else:
-            form = {}
+        assert self.form_class
+        form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {"form": form})
 
     def form_valid(self, form: ChallengeCreateForm):
@@ -130,8 +129,8 @@ class ChallengeImportView(LoginRequiredMixin, FormView):
 
             messages.success(self.request, "Import successful!")
             return super().form_valid(form)
-        except Exception as e:
-            messages.error(self.request, f"Error: {str(e)}")
+        except (ChallengeCategory.DoesNotExist,) as exc:
+            messages.error(self.request, f"Error: {str(exc)}")
             return self.form_invalid(form)
 
     def get_success_url(self):
@@ -154,7 +153,7 @@ class ChallengeDetailView(LoginRequiredMixin, DetailView):
             "flag_form": ChallengeSetFlagForm(),
             "file_upload_form": ChallengeFileCreateForm(),
             "hedgedoc_url": cli.public_url,
-            "excalidraw_url": obj.get_excalidraw_url(member),
+            "excalidraw_url": obj.get_excalidraw_url(None),
         }
         return ctx
 

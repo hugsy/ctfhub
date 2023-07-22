@@ -16,7 +16,6 @@ import requests
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.files.storage import get_storage_class
-from django.core.validators import URLValidator
 
 import ctfhub.models
 
@@ -55,6 +54,7 @@ class HedgeDoc:
             self.logout()
         return
 
+    @property
     def username(self) -> str:
         return self.email[: self.email.find("@")]
 
@@ -68,11 +68,10 @@ class HedgeDoc:
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
 
-        if response.status_code != requests.codes.ok:
+        if response.status_code != requests.codes["ok"]:
             return False
 
         data = response.json()
-        print(data)
         return data["status"] == "ok"
 
     @property
@@ -90,10 +89,10 @@ class HedgeDoc:
             #
             # lazy fetching, cache it, raises ValidationError on failure
             #
-            url = settings.HEDGEDOC_URL_PRIVATE.rstrip("/").lower()
+            url = settings.HEDGEDOC_URL.rstrip("/").lower()
             if not url.startswith("http://") and not url.startswith("https://"):
                 raise ValidationError(f"Invalid URL protocol for {url}")
-            if not self.ping(url):
+            if not self.ping(url):  # TODO add timeout
                 raise ValidationError(f"Failed to reach {url}")
             self.__url = url
 
@@ -109,13 +108,10 @@ class HedgeDoc:
         Returns:
             str: _description_
         """
-        url = settings.HEDGEDOC_URL.rstrip("/")
-        is_valid = URLValidator(schemes=["http", "https"])
-        is_valid(url)
-        return url
+        return self.url
 
     @staticmethod
-    def Url() -> str:
+    def Url() -> str:  # pylint: disable=invalid-name
         """Static method to always return the public URL
 
         Returns:
@@ -158,7 +154,7 @@ class HedgeDoc:
         res = requests.post(
             f"{self.url}/register",
             data={"email": self.email, "password": self.password},
-            allow_redirects=False,
+            allow_redirects=True,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
 
@@ -166,14 +162,13 @@ class HedgeDoc:
         # HedgeDoc successful user registration can be fingerprint by an HTTP/302 to the root
         # and a Cookie `connect.sid`
         #
-        if res.status_code != requests.codes.found:
+        if res.status_code != requests.codes["ok"]:
+            print(f"bad response code {res.status_code}")
             return False
 
-        if "Set-Cookie" not in res.headers:
-            return False
-
-        cookie = res.headers["Set-Cookie"].lower()
+        cookie = res.headers.get("Set-Cookie", "").lower()
         if not cookie.startswith("connect.sid"):
+            print(f"missing cookie {res.status_code}")
             return False
 
         #
@@ -199,7 +194,7 @@ class HedgeDoc:
                 allow_redirects=False,
                 timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
             )
-            if response.status_code != requests.codes.ok:
+            if response.status_code != requests.codes["ok"]:
                 return ""
 
             text = response.text
@@ -209,7 +204,6 @@ class HedgeDoc:
         assert self.session
         nonce = get_nonce()
 
-        self.session.cookies["connect.sid"]
         response = self.session.get(
             f"{self.url}/me/delete/{nonce}",
             allow_redirects=False,
@@ -219,7 +213,7 @@ class HedgeDoc:
         #
         # On successful user delete, expect HTTP/302 + a new `connect.sid` cookie
         #
-        if response.status_code != requests.codes.found:
+        if response.status_code != requests.codes["found"]:
             return False
 
         if "set-cookie" not in response.headers:
@@ -249,18 +243,14 @@ class HedgeDoc:
                 "email": self.email,
                 "password": self.password,
             },
-            allow_redirects=False,
+            allow_redirects=True,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
 
         #
-        # On success, expect HTTP/302 + new auth cookie
+        # On success, expect HTTP/200 after redirect + new auth cookie
         #
-        if response.status_code != requests.codes.found:
-            sess.close()
-            return False
-
-        if "connect.sid" not in sess.cookies:
+        if response.status_code != requests.codes["ok"]:
             sess.close()
             return False
 
@@ -270,11 +260,18 @@ class HedgeDoc:
         self.session = sess
         data = self.info()
         if not data or data.get("status", "") != "ok":
+            print(f"login(): failed to get status: {data}")
+            self.session.close()
             self.session = None
             return False
 
-        if not data.get("name") != self.username:
+        username = data.get("name", "")
+        if username != self.username:
+            self.session.close()
             self.session = None
+            print(
+                f"login(): username mismatch: got {username}, expected {self.username}"
+            )
             return False
 
         return True
@@ -289,23 +286,17 @@ class HedgeDoc:
             return True
 
         assert self.session
-        old_auth_cookie = self.session.cookies["connect.sid"]
 
         response = self.session.get(
             f"{self.url}/logout",
-            allow_redirects=False,
+            allow_redirects=True,
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
 
         #
-        # Successful logout means 302 redirect + Cookie invalidation
+        # Successful logout means HTTP OK
         #
-        if response.status_code != requests.codes.found:
-            return False
-
-        new_auth_cookie = self.session.cookies["connect.sid"]
-
-        if old_auth_cookie == new_auth_cookie:
+        if response.status_code != requests.codes["ok"]:
             return False
 
         self.session.close()
@@ -329,7 +320,7 @@ class HedgeDoc:
                 timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
             )
 
-        if response.status_code != requests.codes.ok:
+        if response.status_code != requests.codes["ok"]:
             return {}
 
         data = response.json()
@@ -361,7 +352,7 @@ class HedgeDoc:
             f"{self.url}/{note_id}",
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
-        return res.status_code == requests.codes.found
+        return res.status_code == requests.codes["found"]
 
     def export_note(self, note_id: uuid.UUID) -> str:
         """Export a challenge note as string
@@ -385,7 +376,7 @@ class HedgeDoc:
             f"{self.url}/{note_id}/download",
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
-        if response.status_code != requests.codes.ok:
+        if response.status_code != requests.codes["ok"]:
             raise KeyError(f"Note {note_id} doesn't exist")
 
         return response.text
@@ -427,7 +418,7 @@ class CtfTime:
             _, ext = os.path.splitext(logo)
             if ext.lower() not in settings.CTFHUB_ACCEPTED_IMAGE_EXTENSIONS:
                 return default_logo
-        except ValueError:
+        except (ValueError, RuntimeError):
             logo = default_logo
         return logo
 
@@ -447,9 +438,9 @@ class CtfTime:
             headers={"user-agent": CtfTime.user_agent},
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
-        if response.status_code != requests.codes.ok:
+        if response.status_code != requests.codes["ok"]:
             raise RuntimeError(
-                f"CTFTime returned HTTP code {response.status_code} on {response.url} (expected {requests.codes.ok}):"
+                f"CTFTime returned HTTP code {response.status_code} on {response.url} (expected {requests.codes['ok']}):"
                 f"{response.reason}"
             )
         return response.json()
@@ -503,9 +494,9 @@ class CtfTime:
             headers={"user-agent": CtfTime.user_agent},
             timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
         )
-        if res.status_code != requests.codes.ok:
+        if res.status_code != requests.codes["ok"]:
             raise RuntimeError(
-                f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes.ok}): {res.reason}"
+                f"CTFTime service returned HTTP code {res.status_code} (expected {requests.codes['ok']}): {res.reason}"
             )
 
         result: list[dict[str, Union[str, int, datetime]]] = []
@@ -544,7 +535,7 @@ def create_new_note() -> str:
     return f"/{uuid.uuid4()}"
 
 
-def check_note_id(id: str) -> bool:
+def check_note_id(_: str) -> bool:
     """OBSOLETE FUNCTION
     Checks if a specific note exists from its ID.
 
@@ -586,7 +577,7 @@ def get_file_magic(
 
     try:
         return magic.from_buffer(challenge_file_data, mime=use_mime)
-    except Exception:
+    except (ValueError, magic.MagicException):
         return "Data" if not use_mime else "application/octet-stream"
 
 
@@ -671,7 +662,7 @@ def generate_excalidraw_room_key() -> str:
     )
 
 
-def discord_send_message(js: dict) -> bool:
+def discord_send_message(json_data: dict) -> bool:
     """Send a notification on a Discord channel
 
     Args:
@@ -688,11 +679,15 @@ def discord_send_message(js: dict) -> bool:
         return False
 
     try:
-        h = requests.post(settings.DISCORD_WEBHOOK_URL, json=js)
-        if h.status_code not in (200, 204):
-            raise Exception(f"Incorrect response, got {h.status_code}")
+        response = requests.post(
+            settings.DISCORD_WEBHOOK_URL,
+            json=json_data,
+            timeout=settings.CTFHUB_HTTP_REQUEST_DEFAULT_TIMEOUT,
+        )
+        if response.status_code not in (200, 204):
+            raise RuntimeError(f"Incorrect response, got {response.status_code}")
 
-    except Exception:
+    except (RuntimeError, requests.exceptions.Timeout):
         return False
 
     return True

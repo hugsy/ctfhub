@@ -1,0 +1,177 @@
+[MASTER]
+extension-pkg-allow-list=
+extension-pkg-whitelist=
+fail-on=
+fail-under=10.0
+ignore=CVS
+ignore-paths=ctfhub/tests/
+ignore-patterns=test_.*\.py
+jobs=0
+limit-inference-results=100
+load-plugins= pylint_django
+persistent=yes
+py-version=3.10
+suggestion-mode=yes
+unsafe-load-any-extension=no
+
+[MESSAGES CONTROL]
+confidence=
+enable = all
+disable = missing-class-docstring,
+      missing-function-docstring,
+      missing-module-docstring,
+      suppressed-message,
+      locally-disabled,
+      useless-return
+
+[REPORTS]
+evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
+output-format=text
+reports=no
+score=yes
+
+[REFACTORING]
+max-nested-blocks=5
+never-returning-functions=sys.exit,argparse.parse_error
+
+[FORMAT]
+expected-line-ending-format=LF
+ignore-long-lines=^\s*(# )?<?https?://\S+>?$
+indent-after-paren=4
+indent-string='    '
+max-line-length=200
+max-module-lines=15000
+single-line-class-stmt=no
+single-line-if-stmt=no
+
+[SPELLING]
+max-spelling-suggestions=4
+spelling-dict=
+spelling-ignore-comment-directives=fmt: on,fmt: off,noqa:,noqa,nosec,isort:skip,mypy:
+spelling-ignore-words=
+spelling-private-dict-file=
+spelling-store-unknown-words=no
+
+[LOGGING]
+logging-format-style=new
+logging-modules=logging
+
+[VARIABLES]
+additional-builtins=
+allow-global-unused-variables=yes
+allowed-redefined-builtins=
+callbacks=cb_,
+          _cb
+dummy-variables-rgx=_+$|(_[a-zA-Z0-9_]*[a-zA-Z0-9]+?$)|dummy|^ignored_|^unused_
+ignored-argument-names=_.*|^ignored_|^unused_
+init-import=no
+redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
+
+[SIMILARITIES]
+ignore-comments=yes
+ignore-docstrings=yes
+ignore-imports=no
+ignore-signatures=no
+min-similarity-lines=4
+
+[MISCELLANEOUS]
+notes=FIXME,
+      XXX,
+      TODO
+
+[BASIC]
+argument-naming-style=snake_case
+attr-naming-style=snake_case
+bad-names=foo,
+          bar,
+          baz,
+          toto,
+          tutu,
+          tata
+bad-names-rgxs=
+class-attribute-naming-style=any
+class-const-naming-style=UPPER_CASE
+class-naming-style=PascalCase
+const-naming-style=UPPER_CASE
+docstring-min-length=-1
+function-naming-style=snake_case
+good-names=i,
+           j,
+           k,
+           ex,
+           Run,
+           fd,
+           id,
+           pk,
+           _
+good-names-rgxs=
+include-naming-hint=no
+inlinevar-naming-style=any
+method-naming-style=snake_case
+module-naming-style=snake_case
+name-group=
+no-docstring-rgx=^_
+property-classes=abc.abstractproperty
+variable-naming-style=snake_case
+
+[STRING]
+check-quote-consistency=no
+check-str-concat-over-line-jumps=no
+
+[TYPECHECK]
+contextmanager-decorators=contextlib.contextmanager
+generated-members=
+ignore-mixin-members=yes
+ignore-none=yes
+ignore-on-opaque-inference=yes
+ignored-classes=optparse.Values,thread._local,_thread._local
+ignored-modules=
+missing-member-hint=yes
+missing-member-hint-distance=1
+missing-member-max-choices=1
+mixin-class-rgx=.*[Mm]ixin
+signature-mutators=
+
+[IMPORTS]
+allow-any-import-level=
+allow-wildcard-with-all=no
+analyse-fallback-blocks=no
+deprecated-modules=
+ext-import-graph=
+import-graph=
+int-import-graph=
+known-standard-library=
+known-third-party=enchant
+preferred-modules=
+
+[DESIGN]
+exclude-too-few-public-methods=
+ignored-parents=
+max-args=5
+max-attributes=7
+max-bool-expr=5
+max-branches=12
+max-locals=15
+max-parents=10
+max-public-methods=30
+max-returns=6
+max-statements=50
+min-public-methods=2
+
+[CLASSES]
+check-protected-access-in-special-methods=no
+defining-attr-methods=__init__,
+                      __new__,
+                      setUp,
+                      __post_init__
+exclude-protected=_asdict,
+                  _fields,
+                  _replace,
+                  _source,
+                  _make
+valid-classmethod-first-arg=cls
+valid-metaclass-classmethod-first-arg=cls
+
+[EXCEPTIONS]
+overgeneral-exceptions=builtins.BaseException,
+                       builtins.Exception

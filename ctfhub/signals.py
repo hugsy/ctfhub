@@ -2,12 +2,11 @@ import datetime
 import random
 
 from django.conf import settings
-
-from ctfhub.helpers import discord_send_message, get_current_site
-from ctfhub.models import Challenge, Ctf
 from django.db.models.signals import post_save
-from django.dispatch import receiver
+from django import dispatch
 
+from ctfhub.helpers import discord_send_message
+from ctfhub.models import Challenge, Ctf
 from ctfhub_project.settings import DISCORD_BOT_NAME
 
 # formatted with the ctf name
@@ -30,9 +29,9 @@ SCORED_FLAG_MESSAGES = [
 ]
 
 
-@receiver(post_save, sender=Ctf, dispatch_uid="ctf_create_notify_discord")
+@dispatch.receiver(post_save, sender=Ctf, dispatch_uid="ctf_create_notify_discord")
 def discord_notify_ctf_creation(
-    sender, instance: Ctf, created: bool, **kwargs: dict
+    _, instance: Ctf, created: bool, **kwargs: dict
 ) -> bool:
     if not created:
         return False
@@ -67,9 +66,11 @@ Link: [{url}]({url})
     return discord_send_message(data)
 
 
-@receiver(post_save, sender=Challenge, dispatch_uid="discord_notify_scored_challenge")
+@dispatch.receiver(
+    post_save, sender=Challenge, dispatch_uid="discord_notify_scored_challenge"
+)
 def discord_notify_scored_challenge(
-    sender, instance: Challenge, created: bool, **kwargs: dict
+    _, instance: Challenge, created: bool, **kwargs: dict
 ) -> bool:
     if created:
         return False
@@ -83,7 +84,6 @@ def discord_notify_scored_challenge(
     if not instance.flag_tracker.has_changed("flag"):  # type: ignore
         return False
 
-    # HACK check if the flag was scored "recently"
     if datetime.datetime.now() - instance.solved_time >= datetime.timedelta(seconds=1):
         return False
 
@@ -97,7 +97,7 @@ def discord_notify_scored_challenge(
         instance.last_update_by.username if instance.last_update_by else "Unknown"
     )
     category = instance.category.name if instance.category else "Uncategorized"
-    js = {
+    json_data = {
         "username": DISCORD_BOT_NAME,
         "content": msg,
         "embeds": [
@@ -111,4 +111,4 @@ Flag: `{instance.flag}`
             }
         ],
     }
-    return discord_send_message(js)
+    return discord_send_message(json_data)

@@ -196,10 +196,7 @@ STORAGES = {
 SENDFILE_BACKEND = "django_sendfile.backends.simple"
 SENDFILE_ROOT = str(BASE_DIR / "uploads/files")
 
-HEDGEDOC_URL = os.getenv("CTFHUB_HEDGEDOC_PUBLIC_URL") or "http://localhost:3000"
-HEDGEDOC_URL_PRIVATE = (
-    os.getenv("CTFHUB_HEDGEDOC_PRIVATE_URL") or "http://hedgedoc:3000"
-)
+HEDGEDOC_URL = os.getenv("CTFHUB_HEDGEDOC_URL", "")
 
 LOGIN_URL = "ctfhub:user-login"
 LOGIN_REDIRECT_URL = "ctfhub:dashboard"

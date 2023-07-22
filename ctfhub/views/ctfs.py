@@ -1,8 +1,4 @@
 import requests
-from ctfhub import helpers
-from ctfhub.forms import CategoryCreateForm, CtfCreateUpdateForm, TagCreateForm
-from ctfhub.mixins import MembersOnlyMixin
-from ctfhub.models import Ctf, Member, Team
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
@@ -17,6 +13,11 @@ from django.views.generic import (
     ListView,
     UpdateView,
 )
+
+from ctfhub import helpers
+from ctfhub.forms import CategoryCreateForm, CtfCreateUpdateForm, TagCreateForm
+from ctfhub.mixins import MembersOnlyMixin
+from ctfhub.models import Ctf, Member, Team
 
 
 class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
@@ -38,7 +39,7 @@ class CtfListView(LoginRequiredMixin, MembersOnlyMixin, ListView):
         return ctx
 
     def get_queryset(self):
-        qs = super(CtfListView, self).get_queryset()
+        qs = super().get_queryset()
         return qs.filter(
             Q(visibility=Ctf.VisibilityType.PUBLIC) | Q(created_by=self.member)
         ).order_by("-start_date")
@@ -85,8 +86,10 @@ class CtfCreateView(
                 form.instance.description = ctf["description"]
                 form.instance.start_date = helpers.CtfTime.parse_date(ctf["start"])
                 form.instance.end_date = helpers.CtfTime.parse_date(ctf["finish"])
-            except (RuntimeError, requests.exceptions.ReadTimeout) as e:
-                messages.warning(self.request, f"CTFTime GET request failed: {str(e)}")
+            except (RuntimeError, requests.exceptions.ReadTimeout) as exc:
+                messages.warning(
+                    self.request, f"CTFTime GET request failed: {str(exc)}"
+                )
 
         member = Member.objects.get(user=self.request.user)
         form.instance.created_by = member
@@ -117,8 +120,10 @@ class CtfImportView(CtfCreateView):
                 initial["start_date"] = helpers.CtfTime.parse_date(ctf["start"])
                 initial["end_date"] = helpers.CtfTime.parse_date(ctf["finish"])
                 initial["weight"] = ctf["weight"]
-            except (RuntimeError, requests.exceptions.ReadTimeout) as e:
-                messages.warning(self.request, f"CTFTime GET request failed: {str(e)}")
+            except (RuntimeError, requests.exceptions.ReadTimeout) as exc:
+                messages.warning(
+                    self.request, f"CTFTime GET request failed: {str(exc)}"
+                )
 
         assert self.form_class
         form = self.form_class(initial=initial)

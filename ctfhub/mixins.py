@@ -10,7 +10,7 @@ class RequireSuperPowersMixin(AccessMixin):
         if not request.user.member.has_superpowers:
             return self.handle_no_permission()
         self.member: Member = request.user.member
-        return super().dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)  # type: ignore
 
 
 class MembersOnlyMixin(AccessMixin):
@@ -20,4 +20,4 @@ class MembersOnlyMixin(AccessMixin):
         if request.user.member.is_guest:
             return self.handle_no_permission()
         self.member: Member = request.user.member
-        return super().dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)  # type: ignore

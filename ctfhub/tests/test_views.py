@@ -8,13 +8,16 @@ import ctfhub.urls
 from ctfhub.models import Team
 from ctfhub.tests.utils import (
     MockTeam,
-    MockTeamWithMembers,
     get_messages,
     clean_slate,
 )
 
 
 class TestAuthView(TestCase):
+    def tearDown(self) -> None:
+        clean_slate()
+        return super().tearDown()
+
     def test_required_login_no_team(self):
         #
         # All pages require authentication
@@ -136,7 +139,8 @@ class TestTeamView(TestCase):
         #
         # Should fail, no admin
         #
-        team = MockTeam()
+        mock = MockTeam()
+        team = mock.team
         url = reverse(
             "ctfhub:team-edit",
             args=[
@@ -155,7 +159,8 @@ class TestTeamView(TestCase):
         #
         # Should fail, no admin
         #
-        team = MockTeam()
+        mock = MockTeam()
+        team = mock.team
         url = reverse("ctfhub:team-delete")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
@@ -169,7 +174,8 @@ class TestTeamView(TestCase):
 class TestAdminView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.team = MockTeam()
+        self.__mock_team = MockTeam()
+        self.team = self.__mock_team.team
 
     def tearDown(self) -> None:
         clean_slate()
@@ -183,10 +189,10 @@ class TestAdminView(TestCase):
 
     def test_admin_post(self):
         data: dict[str, Union[str, int]] = {
-            "username": "testuser",
-            "email": "admin@test.com",
-            "password1": "testtesttest",
-            "password2": "testtesttest",
+            "username": "testtesttest",
+            "email": "testtesttest@test.com",
+            "password1": "passpasspass",
+            "password2": "passpasspass",
             "api_key": self.team.api_key,
         }
         url = reverse("ctfhub:users-register")
@@ -242,9 +248,10 @@ class TestAdminView(TestCase):
 class TestMemberViewAsMember(TestCase):
     def setUp(self):
         self.client = Client()
-        self.team, self.members = MockTeamWithMembers()
-        self.member = self.members[1]
-        self.other_member = self.members[2]
+        self.__mock_team = MockTeam.create_team_with_members()
+        self.team, self.members = self.__mock_team.team, self.__mock_team.members
+        self.member = self.members[0]
+        self.other_member = self.members[1]
         assert not self.member.has_superpowers
         assert self.client.login(
             username=self.member.username, password=self.member.username
@@ -253,6 +260,7 @@ class TestMemberViewAsMember(TestCase):
     def tearDown(self) -> None:
         self.client.logout()
         clean_slate()
+        del self.__mock_team
         return super().tearDown()
 
     def test_member_cannot_access_team_settings_page(self):
@@ -320,7 +328,8 @@ class TestMemberViewAsMember(TestCase):
 class TestCtfView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.team, self.members = MockTeamWithMembers()
+        self.__mock_team = MockTeam.create_team_with_members()
+        self.team, self.members = self.__mock_team.team, self.__mock_team.members
 
     def tearDown(self) -> None:
         clean_slate()
@@ -330,7 +339,8 @@ class TestCtfView(TestCase):
 class TestChallengeView(TestCase):
     def setUp(self):
         self.client = Client()
-        self.team, self.members = MockTeamWithMembers()
+        self.__mock_team = MockTeam.create_team_with_members()
+        self.team, self.members = self.__mock_team.team, self.__mock_team.members
 
     def tearDown(self) -> None:
         clean_slate()

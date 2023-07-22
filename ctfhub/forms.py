@@ -1,5 +1,11 @@
 import json
 
+from django import forms
+import django.contrib.auth
+from django.contrib.auth.forms import UserChangeForm
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+
 from ctfhub.models import (
     Challenge,
     ChallengeCategory,
@@ -9,15 +15,11 @@ from ctfhub.models import (
     Tag,
     Team,
 )
-from django import forms
-from django.contrib.auth.forms import UserChangeForm
-from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
 
 
 class UserUpdateForm(UserChangeForm):
     class Meta:
-        model = User
+        model = django.contrib.auth.get_user_model()
         fields = [
             "username",
             "email",
@@ -93,7 +95,7 @@ class MemberUpdateForm(forms.ModelForm):
                 and not self.cleaned_data["selected_ctf"]
             ):
                 raise ValidationError("Guests MUST have a selected_ctf")
-        return super(MemberUpdateForm, self).clean()
+        return super().clean()
 
 
 class CtfCreateUpdateForm(forms.ModelForm):
@@ -160,29 +162,37 @@ class ChallengeImportForm(forms.Form):
         ("rCTF", "rCTF"),
     )
     format = forms.ChoiceField(choices=FORMAT_CHOICES, initial="CTFd")
-    data = forms.CharField(widget=forms.Textarea)
+    data = forms.CharField(widget=forms.Textarea)  # type: ignore  ## See https://docs.djangoproject.com/en/4.2/ref/forms/widgets/#specifying-widgets
 
     def clean_data(self):
         data = self.cleaned_data["data"]
 
         # Choose the cleaning method based on the format field.
-        if self.cleaned_data["format"] == "RAW":
-            return self._clean_raw_data(data)
-        elif self.cleaned_data["format"] == "CTFd":
-            return self._clean_ctfd_data(data)
-        elif self.cleaned_data["format"] == "rCTF":
-            return self._clean_rctf_data(data)
-        else:
-            raise forms.ValidationError("Invalid data format.")
+        if not self.cleaned_data["format"] in ("RAW", "CTFd", "rCTF"):
+            raise forms.ValidationError(
+                _("Invalid data format: must be in %(formats)s"),
+                params={"formats": str([x[0] for x in self.FORMAT_CHOICES])},
+            )
+
+        match self.cleaned_data["format"]:
+            case "RAW":
+                return self._clean_raw_data(data)
+            case "CTFd":
+                return self._clean_ctfd_data(data)
+            case "rCTF":
+                return self._clean_rctf_data(data)
 
     @staticmethod
     def _clean_raw_data(data):
-        challenges = []
-        for line in data.splitlines():
+        challenges: list[dict[str, str]] = []
+        for num, line in enumerate(data.splitlines()):
             parts = line.split("|")
             if len(parts) != 2:
                 raise forms.ValidationError(
-                    "RAW data line does not have exactly two parts."
+                    _(
+                        "RAW must respect a two-part format with | as separator: line %(linum)s - %(data)s"
+                    ),
+                    params={"linum": str(num + 1), "data": line},
                 )
             challenges.append(
                 {
@@ -200,10 +210,10 @@ class ChallengeImportForm(forms.Form):
                 raise ValidationError(
                     "Invalid JSON format. Please provide valid CTFd JSON data."
                 )
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as exc:
             raise ValidationError(
                 "Invalid JSON format. Please provide valid CTFd JSON data."
-            )
+            ) from exc
 
         return json_data["data"]
 
@@ -215,10 +225,10 @@ class ChallengeImportForm(forms.Form):
                 raise ValidationError(
                     "Invalid JSON format. Please provide valid rCTF JSON data."
                 )
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as exc:
             raise ValidationError(
                 "Invalid JSON format. Please provide valid rCTF JSON data."
-            )
+            ) from exc
 
         return json_data["data"]
 

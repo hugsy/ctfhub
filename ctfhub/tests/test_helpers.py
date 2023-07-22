@@ -64,21 +64,19 @@ class TestHelpers(TestCase):
 
 class TestUnauthHedgedocHelper(TestCase):
     def setUp(self) -> None:
-        self.email: str = "user1@ctfhub.localdomain"
-        self.password: str = "user1"
+        self.email: str = "unittestuser1@ctfhub.localdomain"
+        self.password: str = "unittestuser1"
         return super().setUp()
 
     def tearDown(self) -> None:
         return super().tearDown()
 
     @django_set_temporary_setting("HEDGEDOC_URL", "http://IShouldNotWork.com:3000")
-    @django_set_temporary_setting("HEDGEDOC_URL_PRIVATE", "http://not_valid:1337")
     def test_hedgedoc_url_valid(self):
         cli = helpers.HedgeDoc((self.email, self.password))
-        assert cli.public_url == "http://IShouldNotWork.com:3000"
 
         with pytest.raises(ValidationError):
-            assert cli.url
+            assert cli.public_url == cli.url  # should raise
 
     def test_hedgedoc_ping(self):
         assert helpers.HedgeDoc((self.email, self.password)).ping(
@@ -90,19 +88,19 @@ class TestUnauthHedgedocHelper(TestCase):
 
     def test_hedgedoc_register(self):
         valid_client = helpers.HedgeDoc((self.email, self.password))
-        assert valid_client.register()
-        assert valid_client.logged_in
-        assert valid_client.delete()
+        self.assertTrue(valid_client.register())
+        self.assertTrue(valid_client.logged_in)
+        self.assertTrue(valid_client.delete())
 
         invalid_client = helpers.HedgeDoc(("bad_user_name!!", "1234"))
-        assert not invalid_client.register()
-        assert not invalid_client.logged_in
+        self.assertFalse(invalid_client.register())
+        self.assertFalse(invalid_client.logged_in)
 
 
 class TestAuthHedgedocHelper(TestCase):
     def setUp(self) -> None:
-        self.email: str = "testuser02@ctfhub.localdomain"
-        self.password: str = "testuser02"
+        self.email: str = "unittestuser2@ctfhub.localdomain"
+        self.password: str = "unittestuser2"
         self.cli = helpers.HedgeDoc((self.email, self.password))
         assert self.cli.register()
         assert self.cli.logged_in

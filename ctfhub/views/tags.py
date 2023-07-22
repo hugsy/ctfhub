@@ -1,11 +1,12 @@
-from ctfhub.forms import TagCreateForm
-from ctfhub.mixins import MembersOnlyMixin
-from ctfhub.models import Tag
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render
 from django.urls.base import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView
+
+from ctfhub.forms import TagCreateForm
+from ctfhub.mixins import MembersOnlyMixin
+from ctfhub.models import Tag
 
 
 class TagCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
@@ -20,7 +21,8 @@ class TagCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     }
 
     def get(self, request, *args, **kwargs):
-        form = self.form_class(initial=self.initial) if self.form_class else {}
+        assert self.form_class
+        form = self.form_class(initial=self.initial)
         return render(request, self.template_name, {"form": form})
 
     def form_valid(self, form: TagCreateForm):
