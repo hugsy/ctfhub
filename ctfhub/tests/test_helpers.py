@@ -36,7 +36,9 @@ class TestHelpers(TestCase):
                 assert isinstance(ctf["organizers"], list)
                 assert isinstance(ctf["onsite"], bool)
                 assert isinstance(ctf["description"], str)
-                assert isinstance(ctf["weight"], float)
+                assert isinstance(ctf["weight"], int) or isinstance(
+                    ctf["weight"], float
+                )
                 assert isinstance(ctf["title"], str)
                 assert isinstance(ctf["url"], str)
                 assert isinstance(ctf["is_votable_now"], bool)
